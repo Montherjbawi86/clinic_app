@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  clinic: one
+  patient: one
+  from_clinic: MyString
+  to_clinic: MyString
+  reason: MyText
+  status: MyString
+
+two:
+  clinic: two
+  patient: two
+  from_clinic: MyString
+  to_clinic: MyString
+  reason: MyText
+  status: MyString

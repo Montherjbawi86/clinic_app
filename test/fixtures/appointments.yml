@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  clinic: one
+  patient: one
+  doctor: one
+  appointment_date: 2026-09-30
+  appointment_time: MyString
+  reason: MyText
+  reason_ar: MyText
+  status: MyString
+
+two:
+  clinic: two
+  patient: two
+  doctor: two
+  appointment_date: 2026-09-30
+  appointment_time: MyString
+  reason: MyText
+  reason_ar: MyText
+  status: MyString

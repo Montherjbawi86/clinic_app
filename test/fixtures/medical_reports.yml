@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  clinic: one
+  patient: one
+  doctor: one
+  diagnosis: MyText
+  treatment: MyText
+  notes: MyText
+
+two:
+  clinic: two
+  patient: two
+  doctor: two
+  diagnosis: MyText
+  treatment: MyText
+  notes: MyText

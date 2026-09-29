@@ -1,0 +1,44 @@
+<div class="space-y-6">
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-900">Patients Management</h1>
+      <p class="text-slate-500 text-sm">View and manage all registered clinic patients.</p>
+    </div>
+    <a href="/dashboard/patients/new" class="bg-blue-600 text-white px-4 py-2 rounded-xl font-semibold hover:bg-blue-700 transition text-sm shadow-sm">+ Add New Patient</a>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          <th class="p-4">Name</th>
+          <th class="p-4">Phone</th>
+          <th class="p-4">Gender</th>
+          <th class="p-4">Age</th>
+          <th class="p-4">Medical History</th>
+          <th class="p-4 text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100 text-sm">
+        <% if @patients.any? %>
+          <% @patients.each do |p| %>
+            <tr class="hover:bg-slate-50 transition">
+              <td class="p-4 font-semibold text-slate-800"><%= p.name %></td>
+              <td class="p-4 text-slate-600"><%= p.phone.presence || "N/A" %></td>
+              <td class="p-4 text-slate-600"><%= p.gender.presence || "N/A" %></td>
+              <td class="p-4 text-slate-600"><%= p.age.presence || "N/A" %></td>
+              <td class="p-4 text-slate-600 truncate max-w-xs"><%= p.medical_history.presence || "None recorded" %></td>
+              <td class="p-4 text-right">
+                <%= button_to "Delete", dashboard_patient_path(p), method: :delete, class: "text-rose-600 hover:text-rose-800 font-medium text-xs cursor-pointer", form: { data: { turbo_confirm: "Are you sure?" } } %>
+              </td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="6" class="p-8 text-center text-slate-400">No patients registered yet. Click "+ Add New Patient" to start.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

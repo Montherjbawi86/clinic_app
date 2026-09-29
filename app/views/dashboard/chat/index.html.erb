@@ -1,0 +1,13 @@
+<div class="max-w-3xl mx-auto py-6">
+  <h1 class="text-2xl font-bold text-gray-900 mb-4">AI Medical Assistant</h1>
+  <div class="bg-white border border-gray-200 rounded-lg p-4 h-96 overflow-y-auto mb-4 flex flex-col space-y-3 shadow-inner" id="chat-box">
+    <div class="bg-blue-50 text-blue-900 p-3 rounded-lg max-w-[80%] self-start">
+      <p class="text-sm">Hello! I am your AI medical assistant. Ask me anything regarding your clinical workflows.</p>
+    </div>
+  </div>
+  <%= form_with url: dashboard_chat_index_path, local: false, id: "chat-form", html: { class: "flex gap-2" } do |f| %>
+    <%= f.text_field :message, placeholder: "Type a prompt...", required: true, class: "flex-1 border border-gray-300 rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500" %>
+    <%= f.hidden_field :language, value: "en" %>
+    <%= f.submit "Send", class: "bg-blue-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-blue-700 transition cursor-pointer" %>
+  <% end %>
+</div>
