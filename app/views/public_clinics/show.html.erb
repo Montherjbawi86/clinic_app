@@ -1,0 +1,177 @@
+<% content_for :title, "#{@clinic.display_name} — ClinicApp" %>
+
+<div class="max-w-4xl mx-auto p-4 md:p-8">
+
+  <!-- Back link -->
+  <div class="mb-6">
+    <%= link_to root_path, class: "inline-flex items-center gap-2 text-sm text-teal-600 hover:text-teal-800 font-semibold no-underline" do %>
+      ← العودة لدليل العيادات
+    <% end %>
+  </div>
+
+  <!-- Clinic header card -->
+  <div class="bg-white rounded-3xl border border-slate-200 shadow-lg overflow-hidden mb-6">
+    <!-- Gradient bar -->
+    <div class="h-2" style="background: linear-gradient(90deg, #0d9488 0%, #0f766e 50%, #0891b2 100%);"></div>
+
+    <div class="p-6 md:p-8">
+      <div class="flex flex-col sm:flex-row items-start gap-6">
+        <!-- Logo -->
+        <div class="shrink-0 mx-auto sm:mx-0">
+          <% if @clinic.respond_to?(:logo) && @clinic.logo.attached? %>
+            <%= image_tag @clinic.logo,
+                  class: "w-28 h-28 rounded-2xl object-cover ring-4 ring-teal-100 shadow-md" %>
+          <% else %>
+            <div class="w-28 h-28 rounded-2xl text-white flex items-center justify-center text-5xl"
+                 style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); box-shadow: 0 15px 30px -10px rgba(13, 148, 136, 0.4);">
+              🏥
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Info -->
+        <div class="flex-1 min-w-0 text-center sm:text-start">
+          <h1 class="text-3xl font-black text-slate-900 mb-2">
+            <%= @clinic.display_name %>
+          </h1>
+          <% if @clinic.name_ar.present? && @clinic.name.present? %>
+            <p class="text-slate-500 mb-3"><%= @clinic.name %></p>
+          <% end %>
+
+          <!-- Badges -->
+          <div class="flex flex-wrap gap-2 justify-center sm:justify-start mb-4">
+            <% if @clinic.specialty.present? %>
+              <span class="inline-flex items-center gap-1 text-sm font-bold text-teal-700 bg-teal-50 px-3 py-1.5 rounded-full">
+                🩺 <%= @clinic.specialty %>
+              </span>
+            <% end %>
+            <% if @clinic.city.present? %>
+              <span class="inline-flex items-center gap-1 text-sm font-semibold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full">
+                📍 <%= @clinic.city %>
+              </span>
+            <% end %>
+            <% if @clinic.respond_to?(:open_now?) && @clinic.open_now? %>
+              <span class="inline-flex items-center gap-1.5 text-sm font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                مفتوح الآن
+              </span>
+            <% end %>
+          </div>
+
+          <!-- About -->
+          <% if @clinic.about_ar.present? || @clinic.about.present? %>
+            <p class="text-slate-600 leading-relaxed">
+              <%= @clinic.about_ar.presence || @clinic.about %>
+            </p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main grid -->
+  <div class="grid grid-cols-1 gap-6 mb-6">
+
+    <!-- Contact card -->
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-md p-6 md:col-span-2">
+      <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+        <span class="text-2xl">📞</span> معلومات الاتصال
+      </h2>
+
+      <div class="space-y-4 text-sm">
+        <% if @clinic.address_display.present? %>
+          <div class="flex items-start gap-3">
+            <span class="text-lg shrink-0">📍</span>
+            <div>
+              <div class="text-xs text-slate-500 mb-0.5">العنوان</div>
+              <div class="font-medium text-slate-800"><%= @clinic.address_display %></div>
+            </div>
+          </div>
+        <% end %>
+
+        <% if @clinic.phone.present? %>
+          <div class="flex items-start gap-3">
+            <span class="text-lg shrink-0">📞</span>
+            <div>
+              <div class="text-xs text-slate-500 mb-0.5">الهاتف</div>
+              <a href="tel:<%= @clinic.phone %>"
+                 class="text-lg font-bold text-teal-600 hover:text-teal-800 no-underline"
+                 dir="ltr">
+                <%= @clinic.phone %>
+              </a>
+            </div>
+          </div>
+        <% end %>
+
+        <% if @clinic.email.present? %>
+          <div class="flex items-start gap-3">
+            <span class="text-lg shrink-0">✉️</span>
+            <div>
+              <div class="text-xs text-slate-500 mb-0.5">البريد الإلكتروني</div>
+              <a href="mailto:<%= @clinic.email %>"
+                 class="font-medium text-teal-600 hover:text-teal-800 no-underline">
+                <%= @clinic.email %>
+              </a>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Big call button -->
+      <% if @clinic.phone.present? %>
+        <div class="mt-6 pt-6 border-t border-slate-100">
+          <a href="tel:<%= @clinic.phone %>"
+             class="block w-full bg-teal-600 hover:bg-teal-700 text-white text-center px-6 py-4 rounded-2xl font-bold text-lg transition no-underline shadow-lg shadow-teal-500/30">
+            📞 اتصل بالعيادة الآن
+          </a>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Quick stats -->
+    </div>
+
+  <!-- Working hours -->
+  <div class="bg-white rounded-3xl border border-slate-200 shadow-md p-6">
+    <h2 class="text-lg font-bold text-slate-800 mb-5 flex items-center gap-2">
+      <span class="text-2xl">🕐</span> ساعات العمل
+    </h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <%
+        day_labels = {
+          "monday"    => "الإثنين",
+          "tuesday"   => "الثلاثاء",
+          "wednesday" => "الأربعاء",
+          "thursday"  => "الخميس",
+          "friday"    => "الجمعة",
+          "saturday"  => "السبت",
+          "sunday"    => "الأحد"
+        }
+      %>
+      <% day_labels.each do |key, label| %>
+        <%
+          hours = @working_hours[key] || {}
+          is_open = hours["open"].present? && hours["close"].present?
+        %>
+        <div class="flex items-center justify-between p-3 rounded-xl <%= is_open ? 'bg-teal-50' : 'bg-slate-50' %>">
+          <span class="text-sm font-semibold <%= is_open ? 'text-teal-700' : 'text-slate-500' %>">
+            <%= label %>
+          </span>
+          <span class="text-sm font-medium <%= is_open ? 'text-teal-800' : 'text-rose-500' %>">
+            <% if is_open %>
+              <%= hours["open"] %> — <%= hours["close"] %>
+            <% else %>
+              مغلق
+            <% end %>
+          </span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="text-center mt-10 text-xs text-slate-400">
+    هذه الصفحة صادرة إلكترونياً من نظام ClinicApp
+  </div>
+</div>

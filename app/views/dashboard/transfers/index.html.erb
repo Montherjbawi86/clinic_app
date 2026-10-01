@@ -1,8 +1,116 @@
-<div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 max-w-xl mx-auto text-center">
-  <h1 class="text-2xl font-bold text-slate-900 mb-2">Patient Transfers</h1>
-  <p class="text-slate-500 mb-6">Manage cross-clinic specialist transfers and referrals.</p>
-  <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-sm text-slate-700 mb-6">
-    No pending transfers recorded.
+<% content_for :title, "التحويلات — ClinicApp" %>
+
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold text-slate-800">🚑 التحويلات</h1>
+    <p class="text-slate-500 mt-1">Transfer patients to another clinic.</p>
   </div>
-  <a href="/dashboard" class="inline-block bg-blue-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-blue-700 transition">Back to Dashboard</a>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Create form -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm lg:col-span-1 h-fit">
+      <h2 class="font-semibold text-slate-800 mb-4">New Transfer</h2>
+
+      <% if @destination_clinics.empty? %>
+        <div class="text-sm text-slate-500 bg-slate-50 rounded-lg p-4 border border-slate-200">
+          ⚠️ لا توجد عيادات أخرى لتحويل المرضى إليها.
+          <div class="text-xs mt-1 text-slate-400">
+            أنشئ عيادة ثانية من <strong>العيادات</strong> لتتمكن من التحويل.
+          </div>
+        </div>
+      <% else %>
+        <%= form_with model: [:dashboard, @transfer], class: "space-y-3" do |f| %>
+          <% if @transfer.errors.any? %>
+            <div class="bg-rose-50 border-l-4 border-rose-500 text-rose-800 p-3 rounded-r-lg text-sm">
+              <%= @transfer.errors.full_messages.to_sentence %>
+            </div>
+          <% end %>
+
+          <div>
+            <%= f.label :patient_id, class: "block text-sm font-medium text-slate-700 mb-1" %>
+            <%= f.collection_select :patient_id, @patients, :id, :display_name,
+                  { prompt: "Select patient" },
+                  class: "w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500" %>
+          </div>
+
+          <div>
+            <%= f.label :to_clinic_id, "Destination Clinic",
+                  class: "block text-sm font-medium text-slate-700 mb-1" %>
+            <%= f.collection_select :to_clinic_id, @destination_clinics, :id, :display_name,
+                  { prompt: "Select destination" },
+                  class: "w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500" %>
+          </div>
+
+          <div>
+            <%= f.label :reason, class: "block text-sm font-medium text-slate-700 mb-1" %>
+            <%= f.text_area :reason, rows: 3, placeholder: "Reason for transfer…",
+                  class: "w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500" %>
+          </div>
+
+          <%= f.submit "Create Transfer",
+                class: "w-full bg-teal-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-teal-700 cursor-pointer" %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <!-- List -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm lg:col-span-2 overflow-hidden">
+      <% if @transfers.any? %>
+        <table class="w-full text-sm">
+          <thead class="bg-slate-50 text-slate-500">
+            <tr>
+              <th class="text-start px-5 py-3 font-medium">Patient</th>
+              <th class="text-start px-5 py-3 font-medium">From</th>
+              <th class="text-start px-5 py-3 font-medium">To</th>
+              <th class="text-start px-5 py-3 font-medium">Status</th>
+              <th class="text-start px-5 py-3 font-medium">Created</th>
+              <th class="px-5 py-3"></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <% @transfers.each do |t| %>
+              <tr class="hover:bg-slate-50">
+                <td class="px-5 py-3 font-medium text-slate-800">
+                  <%= link_to t.patient&.display_name, dashboard_patient_path(t.patient),
+                        class: "hover:text-teal-600" if t.patient %>
+                </td>
+                <td class="px-5 py-3 text-slate-600"><%= t.from_clinic&.display_name || "—" %></td>
+                <td class="px-5 py-3 text-slate-600"><%= t.to_clinic&.display_name || "—" %></td>
+                <td class="px-5 py-3">
+                  <%
+                    badge =
+                      case t.status
+                      when "pending"   then "bg-amber-50 text-amber-700"
+                      when "accepted"  then "bg-emerald-50 text-emerald-700"
+                      when "rejected", "cancelled" then "bg-rose-50 text-rose-700"
+                      when "completed" then "bg-teal-50 text-teal-700"
+                      else "bg-slate-100 text-slate-700"
+                      end
+                  %>
+                  <span class="text-xs font-semibold px-2 py-1 rounded-full <%= badge %>"><%= t.status %></span>
+                </td>
+                <td class="px-5 py-3 text-slate-500"><%= t.created_at.strftime("%Y-%m-%d") %></td>
+                <td class="px-5 py-3 text-end">
+                  <%= button_to "Delete", dashboard_transfer_path(t), method: :delete,
+                        data: { turbo_confirm: "Delete this transfer?" },
+                        class: "text-xs text-rose-600 hover:text-rose-800 font-semibold" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <div class="p-12 text-center">
+          <div class="text-5xl">🚑</div>
+          <div class="text-slate-500 mt-3 text-sm">No transfers yet.</div>
+          <% if @destination_clinics.empty? %>
+            <div class="text-xs text-slate-400 mt-2">
+              Create a second clinic first to enable transfers.
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
 </div>

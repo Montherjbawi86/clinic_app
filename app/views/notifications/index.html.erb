@@ -1,0 +1,68 @@
+<% content_for :title, "الإشعارات — ClinicApp" %>
+
+<div class="max-w-3xl mx-auto space-y-6">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-800">🔔 الإشعارات</h1>
+      <p class="text-slate-500 mt-1">
+        <%= @unread_count %> غير مقروء
+      </p>
+    </div>
+    <div class="flex gap-2">
+      <%= link_to "الكل", notifications_path,
+            class: "px-3 py-2 rounded-lg text-sm font-semibold #{params[:filter].blank? ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'}" %>
+      <%= link_to "غير المقروء", notifications_path(filter: "unread"),
+            class: "px-3 py-2 rounded-lg text-sm font-semibold #{params[:filter] == 'unread' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700'}" %>
+      <% if @unread_count.positive? %>
+        <%= button_to "تحديد الكل كمقروء", mark_all_read_notifications_path, method: :post,
+              class: "px-3 py-2 rounded-lg text-sm font-semibold bg-teal-600 text-white hover:bg-teal-700 cursor-pointer" %>
+      <% end %>
+    </div>
+  </div>
+
+  <% if @notifications.any? %>
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <ul class="divide-y divide-slate-100">
+        <% @notifications.each do |n| %>
+          <%
+            sev = case n.severity
+                  when "success" then "bg-emerald-50 text-emerald-700"
+                  when "warning" then "bg-amber-50 text-amber-700"
+                  when "danger"  then "bg-rose-50 text-rose-700"
+                  else "bg-slate-100 text-slate-700"
+                  end
+          %>
+          <li class="p-4 flex items-start gap-3 <%= n.read ? '' : 'bg-teal-50/40' %>">
+            <div class="w-10 h-10 rounded-lg <%= sev %> flex items-center justify-center flex-shrink-0 font-bold">
+              <%= n.read ? "✓" : "●" %>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <div class="font-semibold text-slate-800 truncate"><%= n.title %></div>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full <%= sev %>"><%= n.notification_type&.titleize %></span>
+              </div>
+              <div class="text-sm text-slate-600 mt-1"><%= n.message %></div>
+              <div class="text-xs text-slate-400 mt-2">
+                <%= n.created_at.strftime("%Y-%m-%d %H:%M") %>
+              </div>
+            </div>
+            <div class="flex gap-1 flex-shrink-0">
+              <% unless n.read %>
+                <%= button_to "✓", mark_read_notification_path(n), method: :post,
+                      class: "p-2 rounded-lg text-emerald-600 hover:bg-emerald-50 font-bold cursor-pointer" %>
+              <% end %>
+              <%= button_to "×", notification_path(n), method: :delete,
+                    data: { turbo_confirm: "حذف الإشعار؟" },
+                    class: "p-2 rounded-lg text-rose-600 hover:bg-rose-50 font-bold cursor-pointer" %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% else %>
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 text-center">
+      <div class="text-4xl">🔕</div>
+      <div class="text-slate-500 mt-3">لا توجد إشعارات</div>
+    </div>
+  <% end %>
+</div>

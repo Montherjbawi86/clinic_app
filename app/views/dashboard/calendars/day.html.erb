@@ -1,0 +1,202 @@
+<% content_for :title, "#{@date.strftime('%Y-%m-%d')} — التوفر" %>
+
+<%
+  day_name_en = @date.strftime("%A").downcase
+  day_name_ar = {
+    "monday" => "الإثنين", "tuesday" => "الثلاثاء", "wednesday" => "الأربعاء",
+    "thursday" => "الخميس", "friday" => "الجمعة", "saturday" => "السبت", "sunday" => "الأحد"
+  }[day_name_en] || @date.strftime("%A")
+
+  prev_day = @date - 1.day
+  next_day = @date + 1.day
+%>
+
+<div class="max-w-3xl mx-auto space-y-5">
+
+  <!-- Header -->
+  <div>
+    <div class="flex items-center gap-2 text-sm text-slate-500 mb-2">
+      <%= link_to "لوحة التحكم", dashboard_path, class: "hover:text-teal-600" %>
+      <span>/</span>
+      <%= link_to "التقويم", dashboard_calendar_path(start: @date.beginning_of_month), class: "hover:text-teal-600" %>
+      <span>/</span>
+      <span class="text-slate-700 font-medium"><%= day_name_ar %></span>
+    </div>
+
+    <div class="flex items-center justify-between flex-wrap gap-3">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-800"><%= day_name_ar %></h1>
+        <p class="text-slate-500 mt-1"><%= @date.strftime("%d/%m/%Y") %></p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <%= link_to dashboard_day_dashboard_calendar_path(date: prev_day),
+              class: "w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center justify-center" do %>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        <% end %>
+        <%= link_to "اليوم",
+              dashboard_day_dashboard_calendar_path(date: Date.current),
+              class: "px-4 py-2 rounded-xl bg-teal-600 text-white font-semibold hover:bg-teal-700 text-sm" %>
+        <%= link_to dashboard_day_dashboard_calendar_path(date: next_day),
+              class: "w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 flex items-center justify-center" do %>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+          </svg>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <%
+    free   = @slots.count { |s| s[:status] == :free }
+    booked = @slots.count { |s| s[:status] == :booked }
+    break_ = @slots.count { |s| s[:status] == :break }
+  %>
+  <div class="grid grid-cols-3 gap-3">
+    <div class="bg-gradient-to-br from-emerald-50 to-emerald-100/50 border border-emerald-200 rounded-2xl p-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-lg">✅</div>
+        <div>
+          <div class="text-xs font-semibold text-emerald-700">متاح</div>
+          <div class="text-2xl font-bold text-emerald-700"><%= free %></div>
+        </div>
+      </div>
+    </div>
+    <div class="bg-gradient-to-br from-teal-50 to-teal-100/50 border border-teal-200 rounded-2xl p-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-teal-500 text-white flex items-center justify-center text-lg">📅</div>
+        <div>
+          <div class="text-xs font-semibold text-teal-700">محجوز</div>
+          <div class="text-2xl font-bold text-teal-700"><%= booked %></div>
+        </div>
+      </div>
+    </div>
+    <div class="bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200 rounded-2xl p-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center text-lg">🍽️</div>
+        <div>
+          <div class="text-xs font-semibold text-amber-700">استراحة</div>
+          <div class="text-2xl font-bold text-amber-700"><%= break_ %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slots timeline -->
+  <% if @slots.any? %>
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="px-5 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+        <h2 class="font-bold text-slate-800">🕐 الجدول الزمني</h2>
+        <div class="text-xs text-slate-500"><%= @slots.count %> فترة</div>
+      </div>
+
+      <ul class="divide-y divide-slate-100">
+        <% @slots.each do |slot| %>
+          <%
+            case slot[:status]
+            when :free
+              bg        = "hover:bg-emerald-50/50"
+              icon      = "✅"
+              label     = "متاح"
+              text_cl   = "text-emerald-700"
+              accent    = "bg-emerald-100"
+            when :booked
+              bg        = "bg-teal-50/30"
+              icon      = "📅"
+              label     = "محجوز"
+              text_cl   = "text-teal-700"
+              accent    = "bg-teal-100"
+            when :break
+              bg        = "bg-amber-50/40"
+              icon      = "🍽️"
+              label     = "استراحة"
+              text_cl   = "text-amber-700"
+              accent    = "bg-amber-100"
+            end
+          %>
+          <li class="<%= bg %> transition">
+            <div class="flex items-center gap-4 px-5 py-3">
+              <!-- Time pill -->
+              <div class="shrink-0 w-20 text-center">
+                <div class="text-sm font-bold text-slate-800 bg-white border border-slate-200 rounded-lg py-1.5 px-2 shadow-sm">
+                  <%= slot[:time] %>
+                </div>
+              </div>
+
+              <!-- Content -->
+              <div class="flex-1 min-w-0">
+                <% if slot[:status] == :booked && slot[:appointment] %>
+                  <%
+                    a = slot[:appointment]
+                    st_color = case a.status
+                               when "completed"   then "bg-emerald-100 text-emerald-700"
+                               when "checked_in"  then "bg-amber-100 text-amber-700"
+                               when "in_progress" then "bg-purple-100 text-purple-700"
+                               when "confirmed"   then "bg-indigo-100 text-indigo-700"
+                               when "scheduled"   then "bg-teal-100 text-teal-700"
+                               else "bg-slate-200 text-slate-700"
+                               end
+                  %>
+                  <div class="flex items-center justify-between gap-3">
+                    <div class="min-w-0">
+                      <div class="font-semibold text-slate-800 truncate">
+                        <%= a.patient&.display_name %>
+                      </div>
+                      <div class="text-xs text-slate-500 truncate">
+                        د. <%= a.doctor&.name || "—" %>
+                        <% if a.reason.present? %> · <%= a.reason %><% end %>
+                      </div>
+                    </div>
+                    <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full shrink-0 <%= st_color %>">
+                      <%= t("appointments.statuses.#{a.status}", default: a.status) %>
+                    </span>
+                  </div>
+                <% else %>
+                  <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg <%= accent %> flex items-center justify-center text-sm">
+                      <%= icon %>
+                    </div>
+                    <span class="text-sm font-semibold <%= text_cl %>"><%= label %></span>
+                  </div>
+                <% end %>
+              </div>
+
+              <!-- Action -->
+              <div class="shrink-0">
+                <% if slot[:status] == :free %>
+                  <%= link_to "＋ احجز",
+                        new_dashboard_appointment_path(
+                          appointment_date: @date,
+                          appointment_time: slot[:time],
+                          doctor_id: @doctor&.id
+                        ),
+                        class: "bg-teal-600 text-white px-4 py-2 rounded-xl font-semibold hover:bg-teal-700 text-sm shadow-sm" %>
+                <% elsif slot[:status] == :booked && slot[:appointment] %>
+                  <%= link_to "عرض ←",
+                        dashboard_appointment_path(slot[:appointment]),
+                        class: "text-sm text-teal-600 hover:underline font-semibold" %>
+                <% end %>
+              </div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% else %>
+    <!-- Empty state -->
+    <div class="bg-white rounded-2xl border-2 border-dashed border-slate-200 p-12 text-center">
+      <div class="text-6xl mb-4">🚫</div>
+      <div class="text-lg font-semibold text-slate-700">العيادة مغلقة</div>
+      <div class="text-sm text-slate-500 mt-2 max-w-sm mx-auto">
+        لا توجد ساعات عمل محددة لهذا اليوم. عيّن ساعات العمل من صفحة العيادة.
+      </div>
+      <%= link_to "⚙️ تعديل ساعات العمل",
+            edit_dashboard_clinic_path(current_clinic, anchor: "working-hours"),
+            class: "inline-block mt-5 bg-teal-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-teal-700" %>
+    </div>
+  <% end %>
+
+</div>

@@ -1,10 +1,318 @@
-<div class="flex flex-col items-center justify-center min-h-[70vh]">
-  <div class="p-8 bg-white shadow-md rounded-lg max-w-lg w-full text-center border border-gray-100">
-    <h1 class="text-3xl font-extrabold text-gray-900 mb-4">Clinic Management System</h1>
-    <p class="text-gray-600 mb-8">Manage your clinics, patients, appointments, medical records, and AI assistance seamlessly in Ruby on Rails.</p>
-    <div class="flex justify-center gap-4">
-      <a href="/session/new" class="bg-blue-600 text-white px-6 py-2.5 rounded-md font-medium hover:bg-blue-700 transition">Log In</a>
-      <a href="/registrations/new" class="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-md font-medium hover:bg-gray-200 transition">Sign Up</a>
+<% content_for :title, "دليل العيادات في سوريا — ClinicApp" %>
+
+<div class="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+
+  <!-- ═══════════════════════════════════════════════════════
+       HERO + FILTERS
+       ═══════════════════════════════════════════════════════ -->
+  <section class="relative overflow-hidden text-white">
+    <!-- Gradient background -->
+    <div class="absolute inset-0"
+         style="background: linear-gradient(135deg, #0f766e 0%, #0d9488 40%, #0891b2 100%);"></div>
+
+    <!-- Decorative blobs -->
+    <div class="absolute top-0 end-0 w-96 h-96 rounded-full blur-3xl opacity-30"
+         style="background: #5eead4; transform: translate(30%, -50%);"></div>
+    <div class="absolute bottom-0 start-0 w-80 h-80 rounded-full blur-3xl opacity-20"
+         style="background: #67e8f9; transform: translate(-40%, 40%);"></div>
+
+    <div class="relative max-w-5xl mx-auto px-6 py-16 md:py-20 text-center">
+
+      <!-- Badge -->
+      <div class="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-full mb-6"
+           style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); backdrop-filter: blur(8px);">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <%= @total_clinics %> عيادة في <%= @total_cities %> مدينة سورية
+      </div>
+
+      <!-- Title -->
+      <h1 class="text-4xl md:text-6xl font-black tracking-tight mb-5 leading-[1.1]">
+        ابحث عن عيادة
+        <span class="block mt-2" style="color: #99f6e4;">قريبة منك في سوريا</span>
+      </h1>
+
+      <p class="text-base md:text-lg max-w-2xl mx-auto mb-8 leading-relaxed" style="color: #ccfbf1;">
+        ابحث بالاسم، التخصص، أو المدينة · اكتشف <%= @total_specialties %> تخصص طبي
+      </p>
+
+      <!-- Search box -->
+      <%= form_with url: root_path, method: :get, class: "max-w-2xl mx-auto" do %>
+        <% if @selected_city.present? %><%= hidden_field_tag :city, @selected_city %><% end %>
+        <% if @selected_specialty.present? %><%= hidden_field_tag :specialty, @selected_specialty %><% end %>
+        <div class="flex flex-col sm:flex-row gap-3 p-2 bg-white rounded-2xl"
+             style="box-shadow: 0 25px 50px -12px rgba(13, 148, 136, 0.35);">
+          <div class="relative flex-1">
+            <span class="absolute inset-y-0 start-4 flex items-center pointer-events-none text-slate-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
+              </svg>
+            </span>
+            <input type="text" name="q" value="<%= params[:q] %>"
+                   placeholder="ابحث باسم العيادة، التخصص، أو المدينة…"
+                   class="w-full ps-12 pe-4 py-3.5 text-base text-slate-900 border-0 rounded-xl focus:outline-none focus:ring-0 bg-transparent">
+          </div>
+          <%= submit_tag "بحث",
+                class: "bg-teal-600 hover:bg-teal-700 text-white px-8 py-3.5 rounded-xl font-bold cursor-pointer transition shadow-lg shadow-teal-500/30" %>
+        </div>
+      <% end %>
+
+      <!-- ═══════════════════════════════════════════════════════
+           CITY FILTER — inside hero
+           ═══════════════════════════════════════════════════════ -->
+      <% if @available_cities.any? %>
+        <div class="mt-8">
+          <div class="flex items-center justify-center gap-2 mb-3">
+            <span class="text-sm">📍</span>
+            <span class="text-xs font-bold uppercase tracking-widest" style="color: #99f6e4;">المدينة</span>
+          </div>
+          <div class="flex flex-wrap justify-center gap-2">
+            <%= link_to root_path(q: params[:q], specialty: @selected_specialty),
+                  class: "text-xs font-semibold px-3.5 py-2 rounded-full no-underline transition hover:scale-105 #{@selected_city.nil? ? 'bg-white text-teal-700 shadow-lg' : 'text-white'}",
+                  style: @selected_city.nil? ? '' : 'background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);' do %>
+              الكل
+            <% end %>
+            <% @available_cities.each do |city| %>
+              <%= link_to root_path(city: city, q: params[:q], specialty: @selected_specialty),
+                    class: "text-xs font-semibold px-3.5 py-2 rounded-full no-underline transition hover:scale-105 #{@selected_city == city ? 'bg-white text-teal-700 shadow-lg' : 'text-white'}",
+                    style: @selected_city == city ? '' : 'background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);' do %>
+                <%= city %>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- ═══════════════════════════════════════════════════════
+           SPECIALTY FILTER — inside hero
+           ═══════════════════════════════════════════════════════ -->
+      <% if @available_specialties.any? %>
+        <div class="mt-6">
+          <div class="flex items-center justify-center gap-2 mb-3">
+            <span class="text-sm">🩺</span>
+            <span class="text-xs font-bold uppercase tracking-widest" style="color: #99f6e4;">التخصص</span>
+          </div>
+          <div class="flex flex-wrap justify-center gap-2">
+            <%= link_to root_path(q: params[:q], city: @selected_city),
+                  class: "text-xs font-semibold px-3.5 py-2 rounded-full no-underline transition hover:scale-105 #{@selected_specialty.nil? ? 'bg-white text-teal-700 shadow-lg' : 'text-white'}",
+                  style: @selected_specialty.nil? ? '' : 'background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);' do %>
+              الكل
+            <% end %>
+            <% @available_specialties.each do |spec| %>
+              <%= link_to root_path(specialty: spec, q: params[:q], city: @selected_city),
+                    class: "text-xs font-semibold px-3.5 py-2 rounded-full no-underline transition hover:scale-105 #{@selected_specialty == spec ? 'bg-white text-teal-700 shadow-lg' : 'text-white'}",
+                    style: @selected_specialty == spec ? '' : 'background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);' do %>
+                <%= spec %>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Active filters summary -->
+      <% if @selected_city.present? || @selected_specialty.present? || params[:q].present? %>
+        <div class="mt-8 inline-flex items-center gap-3 px-5 py-3 rounded-2xl flex-wrap justify-center"
+             style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); backdrop-filter: blur(8px);">
+          <span class="text-xs" style="color: #99f6e4;">النتائج:</span>
+          <span class="text-sm font-bold text-white"><%= @clinics.count %> عيادة</span>
+          <% if @selected_city.present? %>
+            <span class="text-xs font-semibold bg-white text-teal-700 px-2.5 py-1 rounded-full">
+              📍 <%= @selected_city %>
+            </span>
+          <% end %>
+          <% if @selected_specialty.present? %>
+            <span class="text-xs font-semibold bg-white text-teal-700 px-2.5 py-1 rounded-full">
+              🩺 <%= @selected_specialty %>
+            </span>
+          <% end %>
+          <% if params[:q].present? %>
+            <span class="text-xs font-semibold bg-white text-teal-700 px-2.5 py-1 rounded-full">
+              🔍 <%= params[:q] %>
+            </span>
+          <% end %>
+          <%= link_to root_path,
+                class: "text-xs text-white hover:text-teal-100 font-bold no-underline underline ms-2" do %>
+            ✕ مسح
+          <% end %>
+        </div>
+      <% end %>
     </div>
-  </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       CLINICS DIRECTORY
+       ═══════════════════════════════════════════════════════ -->
+  <section class="max-w-7xl mx-auto px-6 py-14">
+
+    <% if @clinics.any? %>
+
+      <% @clinics_by_city.each do |city, clinics| %>
+        <div class="mb-16">
+
+          <!-- City header -->
+          <div class="flex items-center justify-between mb-8 flex-wrap gap-4">
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl text-white shrink-0"
+                   style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.4);">
+                📍
+              </div>
+              <div>
+                <h2 class="text-2xl md:text-3xl font-black text-slate-900 m-0"><%= city.presence || "غير محدد" %></h2>
+                <div class="text-sm text-slate-500 mt-0.5">
+                  <%= clinics.count %> <%= clinics.count == 1 ? "عيادة" : "عيادات" %> متاحة
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cards grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            <% clinics.each do |clinic| %>
+              <%= link_to public_clinic_path(clinic.slug),
+                    class: "group bg-white rounded-2xl border border-slate-200 overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-teal-300 flex flex-col no-underline",
+                    style: "box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.06);" do %>
+
+                <div class="h-1.5" style="background: linear-gradient(90deg, #0d9488 0%, #0f766e 50%, #0891b2 100%);"></div>
+
+                <div class="p-6 flex flex-col items-center text-center flex-1">
+
+                  <!-- Logo -->
+                  <div class="relative mb-4">
+                    <% if clinic.respond_to?(:logo) && clinic.logo.attached? %>
+                      <%= image_tag clinic.logo,
+                            class: "w-20 h-20 rounded-2xl object-cover transition-transform group-hover:scale-105",
+                            style: "box-shadow: 0 0 0 3px #ccfbf1, 0 8px 20px -4px rgba(13, 148, 136, 0.3);" %>
+                    <% else %>
+                      <div class="w-20 h-20 rounded-2xl text-white flex items-center justify-center text-3xl transition-transform group-hover:scale-105"
+                           style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.4);">
+                        🏥
+                      </div>
+                    <% end %>
+
+                    <% if clinic.respond_to?(:open_now?) && clinic.open_now? %>
+                      <span class="absolute -bottom-1 -end-1 w-6 h-6 rounded-full bg-emerald-500 border-4 border-white shadow-md"></span>
+                    <% end %>
+                  </div>
+
+                  <!-- Name -->
+                  <h3 class="font-black text-slate-900 text-lg leading-tight mb-3 group-hover:text-teal-700 transition">
+                    <%= clinic.display_name %>
+                  </h3>
+
+                  <!-- Specialty pill -->
+                  <% if clinic.specialty.present? %>
+                    <span class="inline-block text-[11px] font-bold text-teal-700 bg-teal-50 px-3 py-1.5 rounded-full mb-4">
+                      🩺 <%= clinic.specialty %>
+                    </span>
+                  <% end %>
+
+                  <!-- Info -->
+                  <div class="space-y-3 w-full mb-5 flex-1">
+                    <% if clinic.address_display.present? %>
+                      <div class="flex items-center justify-center gap-2 text-sm text-slate-600">
+                        <span class="shrink-0">📍</span>
+                        <span class="line-clamp-2 leading-snug"><%= clinic.address_display %></span>
+                      </div>
+                    <% end %>
+                    <% if clinic.phone.present? %>
+                      <div class="flex items-center justify-center gap-2 text-sm">
+                        <span class="shrink-0">📞</span>
+                        <span class="text-teal-600 font-semibold" dir="ltr"><%= clinic.phone %></span>
+                      </div>
+                    <% end %>
+                  </div>
+
+                  <!-- Status + CTA -->
+                  <div class="w-full pt-4 border-t border-slate-100 flex flex-col items-stretch gap-3">
+                    <div class="flex justify-center">
+                      <% if clinic.respond_to?(:open_now?) && clinic.open_now? %>
+                        <span class="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full">
+                          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                          مفتوح الآن
+                        </span>
+                      <% elsif clinic.respond_to?(:working_hours_today) && clinic.working_hours_today.present? %>
+                        <span class="text-[11px] text-slate-500 font-medium">
+                          🕐 <%= clinic.working_hours_today["open"] %> — <%= clinic.working_hours_today["close"] %>
+                        </span>
+                      <% end %>
+                    </div>
+
+                    <div class="w-full bg-teal-600 group-hover:bg-teal-700 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition flex items-center justify-center gap-1.5 shadow-md shadow-teal-500/20">
+                      👁️ عرض التفاصيل
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+    <% else %>
+      <div class="text-center py-24">
+        <div class="w-28 h-28 mx-auto rounded-3xl bg-slate-100 text-slate-300 flex items-center justify-center text-6xl mb-8">🏥</div>
+        <h3 class="text-2xl font-bold text-slate-800 mb-3">
+          <% if params[:q].present? || @selected_city || @selected_specialty %>
+            لا توجد عيادات مطابقة
+          <% else %>
+            لا توجد عيادات مسجلة بعد
+          <% end %>
+        </h3>
+        <% if params[:q].present? || @selected_city || @selected_specialty %>
+          <%= link_to "عرض كل العيادات", root_path,
+                class: "inline-block bg-teal-600 hover:bg-teal-700 text-white px-7 py-3.5 rounded-xl font-bold transition no-underline" %>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+
+  <!-- STATS -->
+  <section class="bg-gradient-to-b from-white to-slate-50 border-y border-slate-200 py-16 px-6">
+    <div class="max-w-5xl mx-auto grid grid-cols-3 gap-8 text-center">
+      <div>
+        <div class="text-4xl md:text-5xl font-black mb-2"
+             style="background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+          <%= @total_clinics %>
+        </div>
+        <div class="text-sm md:text-base text-slate-500 font-semibold">عيادة مسجلة</div>
+      </div>
+      <div>
+        <div class="text-4xl md:text-5xl font-black mb-2"
+             style="background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+          <%= @total_cities %>
+        </div>
+        <div class="text-sm md:text-base text-slate-500 font-semibold">مدينة سورية</div>
+      </div>
+      <div>
+        <div class="text-4xl md:text-5xl font-black mb-2"
+             style="background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+          <%= @total_specialties %>
+        </div>
+        <div class="text-sm md:text-base text-slate-500 font-semibold">تخصص طبي</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <% unless logged_in? %>
+    <section class="max-w-7xl mx-auto px-6 py-20">
+      <div class="relative overflow-hidden rounded-3xl p-10 md:p-16 text-center text-white"
+           style="background: linear-gradient(135deg, #0f172a 0%, #134e4a 100%); box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.4);">
+        <div class="relative">
+          <h2 class="text-3xl md:text-5xl font-black mb-4">هل تدير عيادة؟</h2>
+          <p class="text-slate-300 max-w-xl mx-auto mb-10 leading-relaxed text-lg">
+            سجّل عيادتك مجاناً واعرضها في الدليل.
+          </p>
+          <div class="flex justify-center gap-4 flex-wrap">
+            <%= link_to "سجّل عيادتك مجاناً", new_registration_path,
+                  class: "bg-teal-500 hover:bg-teal-400 text-white px-8 py-4 rounded-xl font-bold transition no-underline shadow-xl shadow-teal-500/30" %>
+            <%= link_to "تسجيل الدخول", new_session_path,
+                  class: "text-white px-8 py-4 rounded-xl font-semibold transition no-underline",
+                  style: "background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);" %>
+          </div>
+        </div>
+      </div>
+    </section>
+  <% end %>
+
 </div>

@@ -1,0 +1,10 @@
+<%
+  accent ||= "text-slate-800"
+%>
+<div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+  <div class="flex items-center justify-between">
+    <div class="text-sm font-medium text-slate-500"><%= label %></div>
+    <div class="text-xl"><%= icon %></div>
+  </div>
+  <div class="text-3xl font-bold <%= accent %> mt-2"><%= value %></div>
+</div>

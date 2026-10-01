@@ -1,16 +1,45 @@
-<div class="max-w-md mx-auto mt-16 p-8 bg-white shadow-md rounded-lg">
-  <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Sign In</h1>
-  <%= form_with url: session_path, local: true do |f| %>
-    <div class="mb-4">
-      <%= f.label :email, class: "block text-sm font-medium text-gray-700 mb-1" %>
-      <%= f.email_field :email, required: true, class: "w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" %>
+<% content_for :title, "تسجيل الدخول — ClinicApp" %>
+
+<div class="max-w-md mx-auto py-12">
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-bold text-slate-800">تسجيل الدخول</h1>
+    <p class="text-slate-500 mt-2">أدخل بياناتك للمتابعة</p>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
+    <%= form_with url: session_path, class: "space-y-5" do |f| %>
+      <div>
+        <%= label_tag :email, "البريد الإلكتروني", class: "block text-sm font-semibold text-slate-700 mb-1.5" %>
+        <%= email_field_tag :email, params[:email], required: true, autofocus: true,
+              placeholder: "you@example.com",
+              class: "w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition" %>
+      </div>
+
+      <div>
+        <%= label_tag :password, "كلمة المرور", class: "block text-sm font-semibold text-slate-700 mb-1.5" %>
+        <%= password_field_tag :password, nil, required: true,
+              placeholder: "••••••••",
+              class: "w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition" %>
+      </div>
+
+      <%= submit_tag "دخول",
+            class: "w-full bg-teal-600 text-white px-4 py-3 rounded-xl font-semibold hover:bg-teal-700 cursor-pointer shadow-md shadow-teal-500/20 transition" %>
+    <% end %>
+
+    <div class="relative my-6">
+      <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200"></div></div>
+      <div class="relative flex justify-center text-xs">
+        <span class="bg-white px-3 text-slate-400">أو</span>
+      </div>
     </div>
-    <div class="mb-6">
-      <%= f.label :password, class: "block text-sm font-medium text-gray-700 mb-1" %>
-      <%= f.password_field :password, required: true, class: "w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" %>
-    </div>
-    <div>
-      <%= f.submit "Log In", class: "w-full bg-blue-600 text-white font-medium p-2 rounded-md hover:bg-blue-700 transition cursor-pointer" %>
-    </div>
-  <% end %>
+
+    <p class="text-center text-sm text-slate-500">
+      ليس لديك حساب؟
+      <%= link_to "أنشئ حساباً مجاناً", new_registration_path, class: "text-teal-600 hover:underline font-semibold" %>
+    </p>
+  </div>
+
+  <p class="text-center text-xs text-slate-400 mt-6">
+    بتسجيل الدخول، أنت توافق على شروط الاستخدام وسياسة الخصوصية.
+  </p>
 </div>

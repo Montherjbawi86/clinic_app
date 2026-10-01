@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="utf-8">
+  <style>
+    @page { size: A4 landscape; margin: 12mm; }
+    body { font-family: "Noto Naskh Arabic", "Geeza Pro", "Amiri", "Arial", sans-serif; color: #1e293b; font-size: 10px; line-height: 1.5; }
+    .header { text-align: center; border-bottom: 3px solid #0d9488; padding-bottom: 12px; margin-bottom: 18px; }
+    .clinic-name { font-size: 20px; font-weight: bold; color: #0d9488; }
+    .clinic-info { font-size: 10px; color: #64748b; margin-top: 4px; }
+    .doc-title { text-align: center; font-size: 16px; font-weight: bold; color: #0f766e; margin: 12px 0 18px; }
+    .meta { font-size: 10px; color: #64748b; text-align: center; margin-bottom: 12px; }
+    .summary { display: flex; justify-content: space-around; background: #f0fdfa; padding: 10px; border-radius: 8px; margin-bottom: 16px; }
+    .summary-item { text-align: center; }
+    .summary-value { font-size: 16px; font-weight: bold; color: #0f766e; display: block; }
+    table { width: 100%; border-collapse: collapse; font-size: 10px; }
+    thead { background: #0d9488; color: white; }
+    th, td { padding: 6px; text-align: right; border: 1px solid #e2e8f0; }
+    th { font-weight: bold; border-color: #0f766e; }
+    tbody tr:nth-child(even) { background: #f8fafc; }
+    .footer { margin-top: 24px; padding-top: 8px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 9px; color: #94a3b8; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="clinic-name"><%= current_clinic&.name_ar.presence || current_clinic&.name || "ClinicApp" %></div>
+    <div class="clinic-info">
+      <%= current_clinic&.address_ar.presence || current_clinic&.address %>
+      <% if current_clinic&.phone.present? %> · هاتف: <%= current_clinic.phone %><% end %>
+    </div>
+  </div>
+
+  <div class="doc-title">تقرير المدفوعات</div>
+  <div class="meta">
+    إجمالي: <%= @payments.count %> دفعة · تاريخ التقرير: <%= Date.current %>
+  </div>
+
+  <div class="summary">
+    <div class="summary-item"><span class="summary-value"><%= number_to_currency(@total_paid, unit: "", precision: 0) %></span>إجمالي المدفوع</div>
+    <div class="summary-item"><span class="summary-value"><%= number_to_currency(@month_paid, unit: "", precision: 0) %></span>هذا الشهر</div>
+    <div class="summary-item"><span class="summary-value"><%= number_to_currency(@today_paid, unit: "", precision: 0) %></span>اليوم</div>
+    <div class="summary-item"><span class="summary-value"><%= @count_paid %></span>العدد</div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 30px;">#</th>
+        <th style="width: 100px;">التاريخ</th>
+        <th>المريض</th>
+        <th style="width: 100px;">المبلغ</th>
+        <th style="width: 80px;">الطريقة</th>
+        <th style="width: 70px;">الحالة</th>
+        <th>المرجع</th>
+        <th>بواسطة</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @payments.each_with_index do |p, i| %>
+        <tr>
+          <td><%= i + 1 %></td>
+          <td><%= p.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+          <td><strong><%= p.patient&.display_name || "—" %></strong></td>
+          <td><strong><%= p.display_amount %></strong></td>
+          <td><%= { "cash" => "نقدي", "card" => "بطاقة", "transfer" => "حوالة", "insurance" => "تأمين" }[p.method] || p.method.presence || "—" %></td>
+          <td><%= t("payments.statuses.#{p.status}", default: p.status) %></td>
+          <td><%= p.reference.presence || "—" %></td>
+          <td><%= p.user&.name || "—" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <div class="footer">
+    تم الإنشاء في <%= Time.current.strftime("%Y-%m-%d %H:%M") %> — نظام ClinicApp
+  </div>
+
+</body>
+</html>

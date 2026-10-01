@@ -1,0 +1,218 @@
+<% content_for :title, "#{@appointment.patient&.display_name} — #{@appointment.appointment_date}" %>
+
+<div class="space-y-6">
+  <%= link_to "← #{t('appointments.title')}", dashboard_appointments_path,
+        class: "text-sm text-teal-600 hover:underline" %>
+
+  <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+    <div class="flex items-start justify-between flex-wrap gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-800">
+          <%= @appointment.patient&.display_name %>
+        </h1>
+        <p class="text-slate-500 mt-1">
+          <%= @appointment.appointment_date %> ·
+          <%= @appointment.appointment_time&.strftime("%H:%M") %>
+          · <%= @appointment.duration_minutes %> <%= t("appointments.duration_unit") %>
+        </p>
+      </div>
+      <%
+        badge = case @appointment.status
+                when "scheduled"  then "bg-teal-50 text-teal-700"
+                when "confirmed"  then "bg-indigo-50 text-indigo-700"
+                when "checked_in" then "bg-amber-50 text-amber-700"
+                when "in_progress"then "bg-purple-50 text-purple-700"
+                when "completed"  then "bg-emerald-50 text-emerald-700"
+                when "cancelled", "no_show" then "bg-rose-50 text-rose-700"
+                else "bg-slate-100 text-slate-700"
+                end
+      %>
+      <span class="text-sm font-semibold px-3 py-1.5 rounded-full <%= badge %>">
+        <%= t("appointments.statuses.#{@appointment.status}", default: @appointment.status) %>
+      </span>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 text-sm">
+      <div>
+        <div class="text-slate-500"><%= t("appointments.doctor") %></div>
+        <div class="font-medium"><%= @appointment.doctor&.name || "—" %></div>
+      </div>
+      <div>
+        <div class="text-slate-500"><%= t("appointments.reason") %></div>
+        <div class="font-medium"><%= @appointment.reason.presence || "—" %></div>
+      </div>
+      <% if @appointment.checked_in_by %>
+        <div>
+          <div class="text-slate-500"><%= t("appointments.checked_in_by") %></div>
+          <div class="font-medium text-amber-700"><%= @appointment.checked_in_by.name %></div>
+        </div>
+      <% end %>
+      <% if @appointment.completed_by %>
+        <div>
+          <div class="text-slate-500"><%= t("appointments.completed_by") %></div>
+          <div class="font-medium text-emerald-700"><%= @appointment.completed_by.name %></div>
+        </div>
+      <% end %>
+      <% if @appointment.cancelled_by %>
+        <div>
+          <div class="text-slate-500"><%= t("appointments.cancelled_by") %></div>
+          <div class="font-medium text-rose-700"><%= @appointment.cancelled_by.name %></div>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @appointment.cancellation_reason.present? %>
+      <div class="mt-6 p-4 rounded-xl bg-rose-50 border border-rose-200">
+        <div class="text-sm font-semibold text-rose-800"><%= t("appointments.cancellation_reason") %></div>
+        <div class="text-sm text-rose-700 mt-1"><%= @appointment.cancellation_reason %></div>
+      </div>
+    <% end %>
+
+    <!-- Action bar -->
+    <div class="flex flex-wrap gap-2 mt-6 pt-4 border-t border-slate-100">       <%= link_to "📅 موعد متابعة",
+             new_dashboard_appointment_path(
+               patient_id:       @appointment.patient_id,
+               doctor_id:        @appointment.doctor_id,
+               appointment_date: (Date.current + 2.weeks).strftime("%Y-%m-%d"),
+               reason:           "متابعة"
+             ),
+             class: "inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700 text-sm shadow-sm" %>
+
+
+      <%= link_to "🖨️ طباعة الوصفة",
+            prescription_dashboard_appointment_path(@appointment, format: :pdf),
+            target: "_blank",
+            class: "bg-slate-800 text-white px-4 py-2 rounded-lg font-semibold hover:bg-slate-900" %>
+      <% if @appointment.status == "scheduled" || @appointment.status == "confirmed" %>
+        <%= button_to "✓ #{t('appointments.actions.check_in')}",
+              check_in_dashboard_appointment_path(@appointment), method: :patch,
+              class: "bg-amber-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-amber-600" %>
+      <% end %>
+      <% if @appointment.status == "checked_in" %>
+        <%= button_to "▶ #{t('appointments.actions.start')}",
+              start_visit_dashboard_appointment_path(@appointment), method: :patch,
+              class: "bg-purple-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-purple-600" %>
+      <% end %>
+      <% if @appointment.status == "in_progress" %>
+        <%= form_with url: complete_dashboard_appointment_path(@appointment), method: :patch, class: "flex gap-2" do %>
+          <%= submit_tag "✓ #{t('appointments.actions.complete')}",
+                class: "bg-emerald-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-emerald-600 cursor-pointer" %>
+        <% end %>
+      <% end %>
+      <% if @appointment.open? %>
+        <%= link_to "✕ #{t('appointments.actions.no_show')}",
+              "#", onclick: "document.getElementById('no-show-form').classList.toggle('hidden'); return false;",
+              class: "text-rose-600 px-4 py-2 rounded-lg font-semibold hover:bg-rose-50" %>
+        <%= link_to "🚫 #{t('appointments.actions.cancel')}",
+              "#", onclick: "document.getElementById('cancel-form').classList.toggle('hidden'); return false;",
+              class: "text-rose-600 px-4 py-2 rounded-lg font-semibold hover:bg-rose-50" %>
+      <% end %>
+    </div>
+
+    <!-- Cancel form (hidden by default) -->
+    <div id="cancel-form" class="hidden mt-4 p-4 bg-rose-50 border border-rose-200 rounded-xl">
+      <%= form_with url: cancel_dashboard_appointment_path(@appointment), method: :patch, class: "space-y-2" do %>
+        <%= text_area_tag :cancellation_reason, nil, rows: 2, required: true,
+              placeholder: t("appointments.cancellation_reason_placeholder"),
+              class: "w-full border border-rose-300 rounded-lg px-3 py-2" %>
+        <%= submit_tag t("appointments.actions.confirm_cancel"),
+              class: "bg-rose-600 text-white px-4 py-2 rounded-lg font-semibold cursor-pointer hover:bg-rose-700" %>
+      <% end %>
+    </div>
+
+    <div id="no-show-form" class="hidden mt-4">
+      <%= button_to t("appointments.actions.confirm_no_show"),
+            no_show_dashboard_appointment_path(@appointment), method: :patch,
+            data: { turbo_confirm: t("appointments.no_show_confirm") },
+            class: "bg-rose-600 text-white px-4 py-2 rounded-lg font-semibold cursor-pointer hover:bg-rose-700" %>
+    </div>
+  </div>
+
+  <!-- Visit notes / completion -->
+  <% if @appointment.status == "in_progress" || @appointment.status == "completed" %>
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+      <h2 class="font-semibold text-slate-800 mb-4">📝 <%= t("appointments.visit_notes") %></h2>
+
+      <%= form_with url: complete_dashboard_appointment_path(@appointment), method: :patch, class: "space-y-4" do %>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div>
+            <%= label_tag :vitals_bp, t("appointments.vitals.bp"), class: "block text-xs font-medium text-slate-600 mb-1" %>
+            <%= text_field_tag "vitals[blood_pressure]", @appointment.vitals&.dig("blood_pressure"),
+                  placeholder: "120/80", class: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" %>
+          </div>
+          <div>
+            <%= label_tag :vitals_hr, t("appointments.vitals.hr"), class: "block text-xs font-medium text-slate-600 mb-1" %>
+            <%= text_field_tag "vitals[heart_rate]", @appointment.vitals&.dig("heart_rate"),
+                  placeholder: "72", class: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" %>
+          </div>
+          <div>
+            <%= label_tag :vitals_temp, t("appointments.vitals.temp"), class: "block text-xs font-medium text-slate-600 mb-1" %>
+            <%= text_field_tag "vitals[temperature]", @appointment.vitals&.dig("temperature"),
+                  placeholder: "36.8", class: "w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" %>
+          </div>
+        </div>
+
+        <div>
+          <%= label_tag :visit_notes, t("appointments.visit_notes_ar"), class: "block text-sm font-medium text-slate-700 mb-1" %>
+          <%= text_area_tag :visit_notes_ar, @appointment.visit_notes_ar, rows: 3, dir: "rtl",
+                class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+        </div>
+        <div>
+          <%= label_tag :visit_notes, t("appointments.visit_notes_en"), class: "block text-sm font-medium text-slate-700 mb-1" %>
+          <%= text_area_tag :visit_notes, @appointment.visit_notes, rows: 3,
+                class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+        </div>
+        <div>
+          <%= label_tag :follow_up_date, t("appointments.follow_up"), class: "block text-sm font-medium text-slate-700 mb-1" %>
+          <%= date_field_tag :follow_up_date, @appointment.follow_up_date,
+                class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+        </div>
+
+        <% if @appointment.status == "in_progress" %>
+          <%= submit_tag "✓ #{t('appointments.actions.complete_visit')}",
+                class: "bg-emerald-600 text-white px-5 py-2 rounded-lg font-semibold cursor-pointer hover:bg-emerald-700" %>
+        <% else %>
+          <%= submit_tag t("actions.save"),
+                class: "bg-slate-800 text-white px-5 py-2 rounded-lg font-semibold cursor-pointer hover:bg-slate-900" %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- Link to create report -->
+  <% if @appointment.completed? || @appointment.status == "in_progress" %>
+    <div class="bg-teal-50 border border-teal-200 rounded-2xl p-5 flex items-center justify-between flex-wrap gap-3">
+      <div>
+        <div class="font-semibold text-teal-900"><%= t("appointments.create_report_prompt") %></div>
+        <div class="text-sm text-teal-700 mt-1"><%= t("appointments.create_report_hint") %></div>
+      </div>
+      <%= link_to "📋 #{t('reports.new')}",
+            dashboard_reports_path(patient_id: @appointment.patient_id, appointment_id: @appointment.id),
+            class: "bg-teal-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-teal-700" %>
+    </div>
+  <% end %>
+
+  <!-- Medications for this visit -->
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm">
+    <div class="p-5 border-b border-slate-200 flex items-center justify-between">
+      <h2 class="font-semibold text-slate-800">💊 <%= t("medications.title") %></h2>
+      <%= link_to "＋ #{t('medications.new')}",
+            dashboard_medications_path(patient_id: @appointment.patient_id, appointment_id: @appointment.id),
+            class: "text-sm text-teal-600 hover:underline" %>
+    </div>
+    <% if @medications.any? %>
+      <ul class="divide-y divide-slate-100">
+        <% @medications.each do |m| %>
+          <li class="p-4">
+            <div class="font-medium text-slate-800"><%= m.display_name %></div>
+            <div class="text-xs text-slate-500">
+              <%= m.dosage %> · <%= m.frequency.presence || "—" %> · <%= m.duration.presence || "—" %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="p-6 text-sm text-slate-500"><%= t("medications.no_medications") %></p>
+    <% end %>
+  </div>
+</div>

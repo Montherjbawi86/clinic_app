@@ -1,13 +1,61 @@
-<div class="max-w-3xl mx-auto py-6">
-  <h1 class="text-2xl font-bold text-gray-900 mb-4">AI Medical Assistant</h1>
-  <div class="bg-white border border-gray-200 rounded-lg p-4 h-96 overflow-y-auto mb-4 flex flex-col space-y-3 shadow-inner" id="chat-box">
-    <div class="bg-blue-50 text-blue-900 p-3 rounded-lg max-w-[80%] self-start">
-      <p class="text-sm">Hello! I am your AI medical assistant. Ask me anything regarding your clinical workflows.</p>
-    </div>
+<% content_for :title, "المساعد الذكي — ClinicApp" %>
+
+<div class="max-w-3xl mx-auto space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold text-slate-800">🤖 المساعد الذكي</h1>
+    <p class="text-slate-500 mt-1">AI medical assistant. Ask about your clinic records.</p>
   </div>
-  <%= form_with url: dashboard_chat_index_path, local: false, id: "chat-form", html: { class: "flex gap-2" } do |f| %>
-    <%= f.text_field :message, placeholder: "Type a prompt...", required: true, class: "flex-1 border border-gray-300 rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500" %>
-    <%= f.hidden_field :language, value: "en" %>
-    <%= f.submit "Send", class: "bg-blue-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-blue-700 transition cursor-pointer" %>
-  <% end %>
+
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div id="chat-messages" class="h-[28rem] overflow-y-auto p-5 space-y-3 bg-slate-50"></div>
+
+    <%= form_with url: dashboard_chat_path, method: :post, id: "chat-form", class: "p-4 border-t border-slate-200 flex gap-2" do %>
+      <%= text_field_tag :message, nil, placeholder: "Type a message…", autocomplete: "off",
+            class: "flex-1 border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-500" %>
+      <%= submit_tag "Send", class: "bg-teal-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-teal-700 cursor-pointer" %>
+    <% end %>
+  </div>
 </div>
+
+<script>
+  (function () {
+    const box = document.getElementById("chat-messages");
+    const form = document.getElementById("chat-form");
+    if (!box || !form) return;
+
+    function add(role, text) {
+      const wrap = document.createElement("div");
+      wrap.className = role === "user" ? "text-end" : "text-start";
+      const bubble = document.createElement("div");
+      bubble.className = "inline-block max-w-[80%] px-4 py-2 rounded-2xl text-sm " +
+        (role === "user" ? "bg-teal-600 text-white" : "bg-white border border-slate-200 text-slate-800");
+      bubble.textContent = text;
+      wrap.appendChild(bubble);
+      box.appendChild(wrap);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    fetch("<%= dashboard_chat_path %>", { headers: { Accept: "application/json" } })
+      .then(r => r.json())
+      .then(data => (data.messages || []).forEach(m => add(m.sender_role || m.role, m.content)))
+      .catch(() => {});
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const input = form.querySelector("input[name=message]");
+      const text = input.value.trim();
+      if (!text) return;
+      add("user", text);
+      input.value = "";
+
+      const csrf = document.querySelector("meta[name=csrf-token]").content;
+      const res = await fetch("<%= dashboard_chat_path %>", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf, Accept: "application/json" },
+        body: JSON.stringify({ message: text, language: "<%= I18n.locale %>" })
+      });
+      const data = await res.json();
+      if (data.reply) add("assistant", data.reply);
+    });
+  })();
+</script>

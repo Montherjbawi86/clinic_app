@@ -1,0 +1,123 @@
+<% content_for :title, "الصور الطبية — #{@patient.display_name}" %>
+
+<div class="space-y-6">
+  <%= link_to "← #{@patient.display_name}", dashboard_patient_path(@patient),
+        class: "text-sm text-teal-600 hover:underline" %>
+
+  <div>
+    <h1 class="text-2xl font-bold text-slate-800">📷 الصور الطبية</h1>
+    <p class="text-slate-500 mt-1">صور شعاعية، أشعة مقطعية، رنين مغناطيسي، وأي صور طبية أخرى</p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Upload form -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm h-fit">
+      <h2 class="font-semibold text-slate-800 mb-4">رفع صورة جديدة</h2>
+
+      <%= form_with model: [:dashboard, @patient, @image], class: "space-y-3", multipart: true do |f| %>
+        <% if @image.errors.any? %>
+          <div class="bg-rose-50 border-l-4 border-rose-500 text-rose-800 p-3 rounded-r-lg text-sm">
+            <%= @image.errors.full_messages.to_sentence %>
+          </div>
+        <% end %>
+
+        <div>
+          <%= f.label :file, "الصورة", class: "block text-sm font-medium text-slate-700 mb-1" %>
+          <%= f.file_field :file, accept: "image/*", required: true,
+                class: "block w-full text-sm text-slate-500 file:me-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" %>
+          <div class="text-xs text-slate-400 mt-1">JPG, PNG · بحد أقصى 20 ميغابايت</div>
+        </div>
+
+        <div>
+          <%= f.label :title, "العنوان", class: "block text-sm font-medium text-slate-700 mb-1" %>
+          <%= f.text_field :title, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+        </div>
+
+        <div>
+          <%= f.label :image_type, "النوع", class: "block text-sm font-medium text-slate-700 mb-1" %>
+          <%= f.select :image_type,
+                [
+                  ["أشعة سينية", "xray"],
+                  ["رنين مغناطيسي", "mri"],
+                  ["أشعة مقطعية", "ct"],
+                  ["موجات فوق صوتية", "ultrasound"],
+                  ["صورة عامة", "photo"],
+                  ["أخرى", "other"]
+                ],
+                { include_blank: true },
+                class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+        </div>
+
+        <div>
+          <%= f.label :body_part, "المنطقة", class: "block text-sm font-medium text-slate-700 mb-1" %>
+          <%= f.text_field :body_part, placeholder: "صدر، رأس، بطن…",
+                class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+        </div>
+
+        <div>
+          <%= f.label :taken_on, "تاريخ الصورة", class: "block text-sm font-medium text-slate-700 mb-1" %>
+          <%= f.date_field :taken_on, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+        </div>
+
+        <div>
+          <%= f.label :notes, "ملاحظات", class: "block text-sm font-medium text-slate-700 mb-1" %>
+          <%= f.text_area :notes, rows: 2, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+        </div>
+
+        <%= f.submit "رفع الصورة",
+              class: "w-full bg-teal-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-teal-700 cursor-pointer" %>
+      <% end %>
+    </div>
+
+    <!-- Gallery -->
+    <div class="lg:col-span-2">
+      <% if @images.any? %>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <% @images.each do |img| %>
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden group">
+              <div class="relative aspect-square bg-slate-100">
+                <% if img.file.attached? && img.image? %>
+                  <%= link_to url_for(img.file), target: "_blank" do %>
+                    <%= image_tag img.file, class: "w-full h-full object-cover group-hover:scale-105 transition" %>
+                  <% end %>
+                <% else %>
+                  <div class="w-full h-full flex flex-col items-center justify-center text-slate-400">
+                    <span class="text-4xl">📄</span>
+                    <span class="text-xs mt-1"><%= img.file.filename.to_s.truncate(20) if img.file.attached? %></span>
+                  </div>
+                <% end %>
+                <% if img.image_type.present? %>
+                  <span class="absolute top-2 start-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-600 text-white">
+                    <%= img.image_type.upcase %>
+                  </span>
+                <% end %>
+              </div>
+              <div class="p-3">
+                <div class="text-sm font-semibold text-slate-800 truncate"><%= img.display_title %></div>
+                <div class="text-xs text-slate-500 truncate">
+                  <%= img.body_part.presence || "—" %>
+                  · <%= img.taken_on&.strftime("%Y-%m-%d") || img.created_at.strftime("%Y-%m-%d") %>
+                </div>
+                <div class="flex justify-between items-center mt-2">
+                  <%= link_to "عرض", url_for(img.file), target: "_blank",
+                        class: "text-xs text-teal-600 hover:underline font-semibold" %>
+                  <%= button_to "حذف", dashboard_patient_medical_image_path(@patient, img),
+                        method: :delete,
+                        data: { turbo_confirm: "حذف هذه الصورة؟" },
+                        class: "text-xs text-rose-600 hover:underline font-semibold" %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="bg-white rounded-2xl border-2 border-dashed border-slate-200 p-12 text-center">
+          <div class="text-5xl mb-3">📷</div>
+          <div class="text-slate-500">لا توجد صور طبية بعد</div>
+          <div class="text-xs text-slate-400 mt-1">ارفع أول صورة من النموذج على اليسار</div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

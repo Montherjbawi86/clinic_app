@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="utf-8">
+  <style>
+    @page { size: A4; margin: 12mm; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Noto Naskh Arabic", "Geeza Pro", "Amiri", "Arial", sans-serif;
+      color: #1e293b;
+      font-size: 11px;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* ============ HEADER ============ */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px solid #0d9488;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+    .clinic-info { flex: 1; }
+    .clinic-name {
+      font-size: 22px;
+      font-weight: bold;
+      color: #0d9488;
+      margin-bottom: 4px;
+    }
+    .clinic-meta {
+      font-size: 10px;
+      color: #64748b;
+      line-height: 1.4;
+    }
+    .report-badge {
+      background: #f0fdfa;
+      border: 2px solid #0d9488;
+      color: #0f766e;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 14px;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .report-number {
+      font-size: 10px;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    /* ============ PATIENT INFO ============ */
+    .info-grid {
+      display: flex;
+      flex-wrap: wrap;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 15px;
+      gap: 8px 20px;
+    }
+    .info-item { flex: 1 1 22%; min-width: 120px; }
+    .info-label {
+      color: #64748b;
+      font-size: 9px;
+      margin-bottom: 2px;
+    }
+    .info-value {
+      font-weight: bold;
+      font-size: 11px;
+      color: #0f172a;
+    }
+    .info-value.highlight { color: #0d9488; }
+
+    /* ============ SECTIONS ============ */
+    .section {
+      margin-bottom: 14px;
+      page-break-inside: avoid;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #0d9488;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px 6px 0 0;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .section-body {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-top: none;
+      border-radius: 0 0 6px 6px;
+      padding: 12px;
+      font-size: 11px;
+      color: #334155;
+      white-space: pre-wrap;
+      min-height: 40px;
+    }
+
+    /* ============ MEDICATIONS TABLE ============ */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10px;
+    }
+    thead {
+      background: #0d9488;
+      color: white;
+    }
+    th, td {
+      padding: 6px 8px;
+      text-align: right;
+      border: 1px solid #e2e8f0;
+    }
+    th { font-weight: bold; }
+    tbody tr:nth-child(even) { background: #f8fafc; }
+
+    /* ============ FOLLOW-UP ============ */
+    .followup-box {
+      background: #fefce8;
+      border: 2px solid #facc15;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 15px;
+    }
+    .followup-title {
+      color: #a16207;
+      font-weight: bold;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+    .followup-date {
+      font-size: 16px;
+      font-weight: bold;
+      color: #0f172a;
+    }
+
+    /* ============ FOOTER ============ */
+    .signature-row {
+      margin-top: 30px;
+      display: flex;
+      justify-content: space-between;
+      gap: 40px;
+    }
+    .signature-line {
+      flex: 1;
+      border-top: 1px solid #94a3b8;
+      padding-top: 6px;
+      font-size: 10px;
+      color: #64748b;
+      text-align: center;
+    }
+
+    .page-footer {
+      margin-top: 30px;
+      padding-top: 8px;
+      border-top: 1px solid #e2e8f0;
+      text-align: center;
+      font-size: 9px;
+      color: #94a3b8;
+    }
+
+    .qr-box {
+      text-align: center;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px dashed #e2e8f0;
+    }
+    .qr-box img {
+      width: 100px;
+      height: 100px;
+      display: inline-block;
+    }
+    .qr-caption {
+      font-size: 9px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============ CLINIC HEADER ============ -->
+  <div class="header">
+    <div class="clinic-info">
+      <div class="clinic-name"><%= current_clinic&.name_ar.presence || current_clinic&.name || "ClinicApp" %></div>
+      <div class="clinic-meta">
+        <%= current_clinic&.address_ar.presence || current_clinic&.address %>
+        <% if current_clinic&.phone.present? %> · 📞 <%= current_clinic.phone %><% end %>
+        <% if current_clinic&.email.present? %> · ✉️ <%= current_clinic.email %><% end %>
+      </div>
+    </div>
+    <div style="text-align: center;">
+      <div class="report-badge">📋 تقرير طبي</div>
+      <div class="report-number">رقم التقرير: #<%= @report.id.to_s.rjust(6, "0") %></div>
+    </div>
+  </div>
+
+  <!-- ============ PATIENT INFO ============ -->
+  <div class="info-grid">
+    <div class="info-item">
+      <div class="info-label">اسم المريض</div>
+      <div class="info-value highlight"><%= @patient&.display_name || "—" %></div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">العمر</div>
+      <div class="info-value"><%= @patient&.age.presence || @patient&.age_from_dob || "—" %> سنة</div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">الجنس</div>
+      <div class="info-value"><%= @patient&.gender == "male" ? "ذكر" : (@patient&.gender == "female" ? "أنثى" : "—") %></div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">فصيلة الدم</div>
+      <div class="info-value"><%= @patient&.blood_type.presence || "—" %></div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">الطبيب</div>
+      <div class="info-value">د. <%= @doctor&.name || "—" %></div>
+    </div>
+    <div class="info-item">
+      <div class="info-label">التاريخ</div>
+      <div class="info-value"><%= @report.created_at.strftime("%Y-%m-%d · %H:%M") %></div>
+    </div>
+    <% if @appointment.present? %>
+      <div class="info-item">
+        <div class="info-label">رقم الموعد</div>
+        <div class="info-value">#<%= @appointment.id %></div>
+      </div>
+    <% end %>
+    <% if @patient&.phone.present? %>
+      <div class="info-item">
+        <div class="info-label">الهاتف</div>
+        <div class="info-value"><%= @patient.phone %></div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- ============ ALLERGIES WARNING ============ -->
+  <% if @patient&.allergies.present? %>
+    <div style="background: #fef2f2; border: 2px solid #ef4444; border-radius: 6px; padding: 10px; margin-bottom: 12px;">
+      <div style="color: #991b1b; font-weight: bold; font-size: 12px; margin-bottom: 2px;">⚠️ تنبيه: حساسية</div>
+      <div style="color: #7f1d1d; font-size: 11px;"><%= @patient.allergies %></div>
+    </div>
+  <% end %>
+
+  <!-- ============ DIAGNOSIS ============ -->
+  <div class="section">
+    <div class="section-title">🔍 التشخيص</div>
+    <div class="section-body"><%= @report.display_diagnosis.presence || "—" %></div>
+  </div>
+
+  <!-- ============ TREATMENT ============ -->
+  <div class="section">
+    <div class="section-title">💊 العلاج</div>
+    <div class="section-body"><%= @report.display_treatment.presence || "—" %></div>
+  </div>
+
+  <!-- ============ MEDICATIONS TABLE ============ -->
+  <% if @medications.any? %>
+    <div class="section">
+      <div class="section-title">💊 الأدوية الموصوفة (<%= @medications.count %>)</div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 30px;">#</th>
+            <th>الدواء</th>
+            <th style="width: 70px;">الجرعة</th>
+            <th style="width: 90px;">التكرار</th>
+            <th style="width: 70px;">المدة</th>
+            <th>تعليمات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @medications.each_with_index do |m, i| %>
+            <tr>
+              <td><%= i + 1 %></td>
+              <td><strong><%= m.display_name %></strong></td>
+              <td><%= m.dosage %></td>
+              <td><%= m.frequency.presence || "—" %></td>
+              <td><%= m.duration.presence || "—" %></td>
+              <td><%= m.instructions.presence || "—" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+
+  <!-- ============ NOTES ============ -->
+  <% if @report.notes.present? || @report.notes_ar.present? %>
+    <div class="section">
+      <div class="section-title">📝 ملاحظات</div>
+      <div class="section-body"><%= @report.notes_ar.presence || @report.notes %></div>
+    </div>
+  <% end %>
+
+  <!-- ============ FOLLOW-UP ============ -->
+  <% if @report.follow_up_date.present? %>
+    <div class="followup-box">
+      <div class="followup-title">🔄 موعد المتابعة</div>
+      <div class="followup-date"><%= @report.follow_up_date.strftime("%A، %d %B %Y") %></div>
+      <div style="font-size: 10px; color: #64748b; margin-top: 2px;">
+        بعد <%= (@report.follow_up_date - @report.created_at.to_date).to_i %> يوم
+      </div>
+    </div>
+  <% end %>
+
+  <!-- ============ SIGNATURE ============ -->
+  <div class="signature-row">
+    <div class="signature-line">
+      توقيع الطبيب
+      <div style="margin-top: 4px; font-size: 10px; color: #1e293b;">
+        د. <%= @doctor&.name %>
+      </div>
+    </div>
+    <div class="signature-line">
+      ختم العيادة
+    </div>
+  </div>
+
+  <!-- ============ QR CODE ============ -->
+  <% if @report_qr.present? %>
+    <div class="qr-box">
+      <img src="<%= @report_qr %>" alt="QR">
+      <div class="qr-caption">امسح الرمز للتحقق من التقرير</div>
+    </div>
+  <% end %>
+
+  <!-- ============ FOOTER ============ -->
+  <div class="page-footer">
+    تم إنشاء التقرير في <%= @report.created_at.strftime("%Y-%m-%d %H:%M") %>
+    · صادر من نظام ClinicApp
+    <% if @report.updated_at > @report.created_at + 1.minute %>
+      · آخر تحديث: <%= @report.updated_at.strftime("%Y-%m-%d %H:%M") %>
+    <% end %>
+  </div>
+
+</body>
+</html>

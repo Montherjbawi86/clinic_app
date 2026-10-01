@@ -1,33 +1,103 @@
-<div class="max-w-md mx-auto mt-12 p-8 bg-white shadow-md rounded-lg">
-  <h1 class="text-2xl font-bold text-gray-900 mb-6 text-center">Create an Account</h1>
-  
-  <%= form_with model: @user, url: registrations_path, local: true do |f| %>
-    <div class="mb-4">
-      <%= f.label :name, class: "block text-sm font-medium text-gray-700 mb-1" %>
-      <%= f.text_field :name, required: true, class: "w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" %>
+<% content_for :title, "إنشاء حساب — ClinicApp" %>
+
+<div class="max-w-lg mx-auto py-12">
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-bold text-slate-800">إنشاء حساب جديد</h1>
+    <p class="text-slate-500 mt-2">ابدأ بإدارة عيادتك في دقائق</p>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
+    <%= form_with model: @user, url: registrations_path, class: "space-y-5" do |f| %>
+      <% if @user.errors.any? %>
+        <div class="bg-rose-50 border-l-4 border-rose-500 text-rose-800 p-4 rounded-r-xl text-sm">
+          <div class="font-semibold mb-1">يوجد خطأ في البيانات:</div>
+          <ul class="list-disc ms-5 space-y-0.5">
+            <% @user.errors.full_messages.each do |m| %><li><%= m %></li><% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div>
+        <%= f.label :name, "الاسم الكامل", class: "block text-sm font-semibold text-slate-700 mb-1.5" %>
+        <%= f.text_field :name, required: true, autofocus: true,
+              placeholder: "د. محمد الأحمد",
+              class: "w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition" %>
+      </div>
+
+      <div>
+        <%= f.label :email, "البريد الإلكتروني", class: "block text-sm font-semibold text-slate-700 mb-1.5" %>
+        <%= f.email_field :email, required: true,
+              placeholder: "doctor@clinic.sy",
+              class: "w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition" %>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <%= f.label :password, "كلمة المرور", class: "block text-sm font-semibold text-slate-700 mb-1.5" %>
+          <%= f.password_field :password, required: true,
+                placeholder: "8 أحرف على الأقل",
+                class: "w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition" %>
+        </div>
+        <div>
+          <%= f.label :password_confirmation, "تأكيد كلمة المرور", class: "block text-sm font-semibold text-slate-700 mb-1.5" %>
+          <%= f.password_field :password_confirmation, required: true,
+                placeholder: "أعد كلمة المرور",
+                class: "w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition" %>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <%= f.label :role, "الدور", class: "block text-sm font-semibold text-slate-700 mb-1.5" %>
+          <%= f.select :role,
+                [["طبيب","doctor"],["مالك عيادة","owner"],["ممرض/ة","nurse"],["استقبال","receptionist"],["محاسب","accountant"]],
+                { selected: "doctor" },
+                class: "w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition" %>
+        </div>
+        <div>
+          <%= f.label :locale, "اللغة", class: "block text-sm font-semibold text-slate-700 mb-1.5" %>
+          <%= f.select :locale, [["العربية","ar"],["English","en"]], { selected: "ar" },
+                class: "w-full border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition" %>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-2 text-sm">
+        <%= check_box_tag :terms, "1", false, required: true,
+              class: "mt-1 rounded border-slate-300 text-teal-600 focus:ring-teal-500" %>
+        <label for="terms" class="text-slate-600">
+          أوافق على <%= link_to "الشروط والأحكام", "#", class: "text-teal-600 hover:underline" %> وسياسة الخصوصية.
+        </label>
+      </div>
+
+      <%= f.submit "إنشاء الحساب",
+            class: "w-full bg-teal-600 text-white px-4 py-3 rounded-xl font-semibold hover:bg-teal-700 cursor-pointer shadow-md shadow-teal-500/20 transition" %>
+    <% end %>
+
+    <div class="relative my-6">
+      <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200"></div></div>
+      <div class="relative flex justify-center text-xs">
+        <span class="bg-white px-3 text-slate-400">أو</span>
+      </div>
     </div>
 
-    <div class="mb-4">
-      <%= f.label :email, class: "block text-sm font-medium text-gray-700 mb-1" %>
-      <%= f.email_field :email, required: true, class: "w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" %>
-    </div>
+    <p class="text-center text-sm text-slate-500">
+      لديك حساب بالفعل؟
+      <%= link_to "سجّل دخولك", new_session_path, class: "text-teal-600 hover:underline font-semibold" %>
+    </p>
+  </div>
 
-    <div class="mb-4">
-      <%= f.label :password, class: "block text-sm font-medium text-gray-700 mb-1" %>
-      <%= f.password_field :password, required: true, class: "w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" %>
+  <div class="mt-6 grid grid-cols-3 gap-4 text-center text-xs text-slate-500">
+    <div class="bg-white rounded-xl border border-slate-200 p-3">
+      <div class="text-lg">🔒</div>
+      <div class="mt-1">بيانات مشفّرة</div>
     </div>
-
-    <div class="mb-6">
-      <%= f.label :password_confirmation, "Confirm Password", class: "block text-sm font-medium text-gray-700 mb-1" %>
-      <%= f.password_field :password_confirmation, required: true, class: "w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" %>
+    <div class="bg-white rounded-xl border border-slate-200 p-3">
+      <div class="text-lg">🇸🇾</div>
+      <div class="mt-1">مصمم لسوريا</div>
     </div>
-
-    <div>
-      <%= f.submit "Sign Up", class: "w-full bg-blue-600 text-white font-medium p-2.5 rounded-md hover:bg-blue-700 transition cursor-pointer" %>
+    <div class="bg-white rounded-xl border border-slate-200 p-3">
+      <div class="text-lg">⚡</div>
+      <div class="mt-1">إعداد فوري</div>
     </div>
-  <% end %>
-
-  <div class="mt-4 text-center text-sm text-gray-600">
-    Already have an account? <a href="/session/new" class="text-blue-600 hover:underline font-medium">Log In</a>
   </div>
 </div>

@@ -1,0 +1,55 @@
+<% content_for :title, "QR — #{@patient.display_name}" %>
+
+<div class="max-w-md mx-auto space-y-6">
+
+  <div class="text-center">
+    <%= link_to "← #{@patient.display_name}", dashboard_patient_path(@patient),
+          class: "text-sm text-teal-600 hover:underline" %>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm text-center">
+    <h1 class="text-xl font-bold text-slate-800 mb-1">QR المريض</h1>
+    <p class="text-sm text-slate-500 mb-6">
+      امسح الرمز لفتح ملف المريض على الجوال
+    </p>
+
+    <div class="inline-block p-4 bg-white rounded-2xl border-2 border-slate-100">
+      <div class="w-56 h-56">
+        <%= @qr_svg %>
+      </div>
+    </div>
+
+    <div class="mt-6">
+      <div class="text-xs text-slate-400 mb-1">اسم المريض</div>
+      <div class="font-bold text-slate-800"><%= @patient.display_name %></div>
+      <% if @patient.phone.present? %>
+        <div class="text-xs text-slate-500 mt-1"><%= @patient.phone %></div>
+      <% end %>
+      <div class="text-[10px] text-slate-300 mt-2 break-all"><%= @qr_text %></div>
+    </div>
+
+    <div class="mt-6 flex justify-center gap-2">
+      <button onclick="window.print()"
+              class="bg-teal-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-teal-700 text-sm cursor-pointer">
+        🖨️ طباعة
+      </button>
+      <%= link_to "الملف الكامل", dashboard_patient_path(@patient),
+            class: "bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-semibold hover:bg-slate-50 text-sm" %>
+    </div>
+  </div>
+
+  <div class="bg-teal-50 border border-teal-200 rounded-2xl p-4 text-sm text-teal-800">
+    <div class="font-semibold mb-1">💡 استخدامات الرمز</div>
+    <ul class="list-disc ms-5 space-y-1 text-xs">
+      <li>طبعه على بطاقة المريض</li>
+      <li>لصقه على ملفه الورقي</li>
+      <li>أرسله للمريض لفتح ملفه بسرعة</li>
+    </ul>
+  </div>
+
+</div>
+
+<style media="print">
+  body { background: white !important; }
+  nav, header, footer, button, .no-print { display: none !important; }
+</style>

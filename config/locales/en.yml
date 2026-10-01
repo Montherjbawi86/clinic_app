@@ -1,31 +1,294 @@
-# Files in the config/locales directory are used for internationalization and
-# are automatically loaded by Rails. If you want to use locales other than
-# English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t "hello"
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t("hello") %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more about the API, please read the Rails Internationalization guide
-# at https://guides.rubyonrails.org/i18n.html.
-#
-# Be aware that YAML interprets the following case-insensitive strings as
-# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
-# must be quoted to be interpreted as strings. For example:
-#
-#     en:
-#       "yes": yup
-#       enabled: "ON"
-
 en:
-  hello: "Hello world"
+  app_name: "Clinic Management System"
+  brand: "ClinicApp"
+
+  nav:
+    overview:      "Overview"
+    patients:      "Patients"
+    appointments:  "Appointments"
+    calendar:      "Calendar"
+    reports:       "Reports"
+    medications:   "Medications"
+    transfers:     "Transfers"
+    payments:      "Payments"
+    clinics:       "Clinics"
+    subscriptions: "Subscriptions"
+    chat:          "AI Assistant"
+    profile:       "Profile"
+    notifications: "Notifications"
+    logout:        "Log Out"
+    dashboard:     "Dashboard"
+    login:         "Log In"
+    signup:        "Sign Up"
+    signup_free:   "Sign Up Free"
+    search_placeholder: "Search for a patient…"
+    current_clinic: "Current Clinic"
+    medical:       "Medical"
+    admin:         "Admin"
+
+  actions:
+    new: "New"
+    edit: "Edit"
+    delete: "Delete"
+    cancel: "Cancel"
+    save: "Save"
+    update: "Update"
+    create: "Create"
+    search: "Search"
+    filter: "Filter"
+    back: "Back"
+    view: "View"
+    archive: "Archive"
+    print: "Print"
+    today: "Today"
+    all: "All"
+
+  overview:
+    title: "Overview"
+    subtitle: "Summary of your clinic"
+    patients: "Patients"
+    today_appointments: "Today"
+    this_week: "This Week"
+    unread: "Unread"
+    revenue_month: "Revenue (Month)"
+    pending_payments: "Pending Payments"
+    today_schedule: "Today's Schedule"
+    new_patients: "New Patients"
+    recent_payments: "Recent Payments"
+    no_appointments_today: "No appointments today."
+    no_patients_yet: "No patients yet."
+    no_payments_yet: "No payments yet."
+    view_all: "View all"
+
+  patients:
+    title: "Patients"
+    new: "New Patient"
+    name: "Name"
+    phone: "Phone"
+    gender: "Gender"
+    age: "Age"
+    blood_type: "Blood Type"
+    allergies: "Allergies"
+    created: "Patient registered successfully."
+    updated: "Patient updated."
+    archived: "Patient archived."
+
+  appointments:
+    title: "Appointments"
+    subtitle: "All appointments at this clinic"
+    new: "New Appointment"
+    patient: "Patient"
+    doctor: "Doctor"
+    select_patient: "Select patient"
+    select_doctor: "Select doctor"
+    date: "Date"
+    time: "Time"
+    duration: "Duration (min)"
+    duration_unit: "min"
+    reason: "Reason"
+    status: "Status"
+    statuses:
+      scheduled:  "Scheduled"
+      confirmed:  "Confirmed"
+      checked_in: "Checked In"
+      in_progress: "In Progress"
+      completed:  "Completed"
+      cancelled:  "Cancelled"
+      no_show:    "No Show"
+    filters:
+      upcoming:  "Upcoming"
+      open:      "Open"
+      completed: "Completed"
+      cancelled: "Cancelled"
+    scheduled: "Appointment scheduled successfully."
+    checked_in_notice: "Patient checked in."
+    started_notice:    "Visit started."
+    completed_notice:  "Visit completed."
+    cancelled_notice:  "Appointment cancelled."
+    no_show_notice:    "Marked as no-show."
+    destroyed_notice:  "Appointment deleted."
+    cancelled_by:  "Cancelled by"
+    checked_in_by: "Checked in by"
+    completed_by:  "Completed by"
+    cancellation_reason: "Cancellation Reason"
+    cancellation_reason_placeholder: "Reason for cancellation…"
+    visit_notes:   "Visit Notes"
+    visit_notes_ar: "Visit Notes (Arabic)"
+    visit_notes_en: "Visit Notes (English)"
+    follow_up: "Follow-up Date"
+    vitals:
+      bp:   "Blood Pressure"
+      hr:   "Heart Rate"
+      temp: "Temperature"
+    actions:
+      check_in:       "Check In"
+      start:          "Start Visit"
+      complete:       "Complete"
+      complete_visit: "Complete Visit"
+      cancel:         "Cancel"
+      confirm_cancel: "Confirm Cancellation"
+      no_show:        "No Show"
+      confirm_no_show: "Confirm No-Show"
+    no_show_confirm: "Confirm the patient did not show up?"
+    create_report_prompt: "Create a medical report for this visit"
+    create_report_hint: "Record diagnosis, treatment, and follow-up"
+    no_appointments: "No appointments yet."
+
+  reports:
+    title: "Medical Reports"
+    new: "New Report"
+    patient: "Patient"
+    diagnosis: "Diagnosis"
+    treatment: "Treatment"
+    notes: "Notes"
+    follow_up: "Follow-up Date"
+    created: "Medical report added successfully."
+    removed: "Report removed."
+    no_reports: "No reports yet."
+
+  medications:
+    title: "Medications"
+    new: "New Prescription"
+    patient: "Patient"
+    name: "Medication"
+    name_ar: "Arabic Name"
+    dosage: "Dosage"
+    frequency: "Frequency"
+    duration: "Duration"
+    route: "Route"
+    routes:
+      oral: "Oral"
+      topical: "Topical"
+      injection: "Injection"
+      inhalation: "Inhalation"
+      sublingual: "Sublingual"
+      rectal: "Rectal"
+    quantity: "Quantity"
+    refills: "Refills"
+    instructions: "Instructions"
+    status: "Status"
+    created: "Medication prescribed successfully."
+    removed: "Prescription removed."
+    no_medications: "No prescriptions yet."
+    prescribe: "Prescribe"
+
+  transfers:
+    title: "Transfers"
+    new: "New Transfer"
+    patient: "Patient"
+    from: "From"
+    to: "To"
+    destination: "Destination Clinic"
+    reason: "Reason"
+    status: "Status"
+    created: "Transfer request created."
+    removed: "Transfer removed."
+    no_transfers: "No transfers yet."
+    no_destinations: "No other clinics available to transfer to."
+
+  payments:
+    title: "Payments"
+    new: "New Payment"
+    record: "Record Payment"
+    patient: "Patient"
+    patient_optional: "Select patient (optional)"
+    amount: "Amount"
+    currency: "Currency"
+    method: "Method"
+    methods:
+      cash: "Cash"
+      card: "Card"
+      transfer: "Bank Transfer"
+      insurance: "Insurance"
+      stripe: "Stripe"
+    status: "Status"
+    statuses:
+      pending: "Pending"
+      paid: "Paid"
+      failed: "Failed"
+      refunded: "Refunded"
+      cancelled: "Cancelled"
+    reference: "Reference"
+    notes: "Notes"
+    date: "Date"
+    by: "By"
+    total_paid: "Total Paid"
+    total_pending: "Pending"
+    created: "Payment recorded."
+    removed: "Payment removed."
+    no_payments: "No payments yet."
+
+  clinics:
+    title: "Clinics"
+    subtitle: "Clinics you belong to"
+    members: "Members"
+    owner: "Owner"
+    phone: "Phone"
+    email: "Email"
+    city: "City"
+    specialty: "Specialty"
+    address: "Address"
+
+  notifications:
+    title: "Notifications"
+    empty: "No notifications"
+    mark_read: "Mark as read"
+    mark_all: "Mark all as read"
+    marked_read: "Marked as read."
+    all_marked_read: "All marked as read."
+
+  chat:
+    title: "AI Assistant"
+    subtitle: "AI-powered medical assistant"
+    placeholder: "Type a message…"
+    send: "Send"
+
+  profile:
+    title: "Profile"
+    edit: "Edit Profile"
+    name: "Full Name"
+    email: "Email"
+    locale: "Preferred Language"
+    updated: "Profile updated."
+
+  auth:
+    login_title: "Log In"
+    email: "Email"
+    password: "Password"
+    login_button: "Log In"
+    no_account: "Don't have an account?"
+    signup_link: "Create one free"
+    signup_title: "Create Account"
+    name: "Full Name"
+    role: "Role"
+    locale: "Language"
+    have_account: "Already have an account?"
+    login_link: "Log in"
+    or: "or"
+
+  home:
+    hero_title_1: "Modern Clinic"
+    hero_title_2: "Management System"
+    hero_subtitle: "Manage your patients, appointments, medical reports, medications, and payments — all in one place."
+    cta_primary: "Get Started Free"
+    cta_secondary: "Log In"
+
+  footer:
+    built: "Built with Ruby on Rails & Tailwind CSS"
+
+  common:
+    none: "—"
+
+  time:
+    formats:
+      short: "%H:%M"
+      long: "%Y-%m-%d %H:%M"
+
+  days:
+    monday:    "Monday"
+    tuesday:   "Tuesday"
+    wednesday: "Wednesday"
+    thursday:  "Thursday"
+    friday:    "Friday"
+    saturday:  "Saturday"
+    sunday:    "Sunday"

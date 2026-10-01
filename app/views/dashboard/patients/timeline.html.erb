@@ -1,0 +1,284 @@
+<% content_for :title, "الخط الزمني — #{@patient.display_name}" %>
+
+<%
+  # Month names in Arabic
+  month_names = {
+    "01" => "يناير", "02" => "فبراير", "03" => "مارس", "04" => "أبريل",
+    "05" => "مايو",  "06" => "يونيو", "07" => "يوليو", "08" => "أغسطس",
+    "09" => "سبتمبر","10" => "أكتوبر","11" => "نوفمبر","12" => "ديسمبر"
+  }
+%>
+
+<div class="max-w-3xl mx-auto space-y-6">
+
+  <!-- ===== Header ===== -->
+  <div>
+    <%= link_to "← #{@patient.display_name}", dashboard_patient_path(@patient),
+          class: "text-sm text-teal-600 hover:underline" %>
+
+    <div class="mt-4 flex items-center gap-4">
+      <div class="shrink-0">
+        <% if @patient.photo.attached? %>
+          <%= image_tag @patient.photo, class: "w-16 h-16 rounded-2xl object-cover ring-2 ring-teal-100 shadow-sm" %>
+        <% else %>
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-teal-700 text-white flex items-center justify-center text-2xl font-bold shadow-sm">
+            <%= @patient.display_name&.split&.map { |w| w[0] }&.join&.upcase&.[](0,2) %>
+          </div>
+        <% end %>
+      </div>
+      <div class="flex-1 min-w-0">
+        <h1 class="text-2xl font-bold text-slate-800">📜 الخط الزمني</h1>
+        <p class="text-slate-500 text-sm">سجل كامل لأحداث <%= @patient.display_name %></p>
+      </div>
+      <%= link_to "⬇️ تصدير", "#", onclick: "window.print(); return false;",
+            class: "px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 text-sm shrink-0" %>
+    </div>
+  </div>
+
+  <!-- ===== Stat pills + quick actions ===== -->
+  <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
+    <%
+      pills = {
+        "all"         => ["📊", "الكل",       @type_counts.values.sum,  "bg-slate-100 text-slate-700"],
+        "appointment" => ["📅", "مواعيد",     @type_counts["appointment"] || 0, "bg-teal-100 text-teal-700"],
+        "report"      => ["📋", "تقارير",     @type_counts["report"] || 0,      "bg-emerald-100 text-emerald-700"],
+        "medication"  => ["💊", "أدوية",      @type_counts["medication"] || 0,  "bg-purple-100 text-purple-700"],
+        "payment"     => ["💳", "مدفوعات",    @type_counts["payment"] || 0,     "bg-amber-100 text-amber-700"],
+        "image"       => ["📷", "صور",        @type_counts["image"] || 0,       "bg-sky-100 text-sky-700"],
+      }
+
+      # Where the "＋ add" button should go for each type
+      add_paths = {
+        "appointment" => new_dashboard_appointment_path(patient_id: @patient.id),
+        "report"      => dashboard_reports_path(patient_id: @patient.id),
+        "medication"  => dashboard_medications_path(patient_id: @patient.id),
+        "payment"     => dashboard_payments_path(patient_id: @patient.id),
+        "image"       => dashboard_patient_medical_images_path(@patient),
+      }
+    %>
+    <% pills.each do |key, (icon, label, count, colors)| %>
+      <% active = @current_filter == key %>
+      <div class="relative group">
+        <%= link_to timeline_dashboard_patient_path(@patient, type: key, from: @current_from, to: @current_to),
+              class: "block rounded-xl p-3 text-center transition #{active ? 'bg-teal-600 text-white shadow-md' : 'bg-white border border-slate-200 hover:shadow-sm hover:border-teal-300'}" do %>
+          <div class="text-lg"><%= icon %></div>
+          <div class="text-xs font-semibold <%= active ? 'text-white' : 'text-slate-600' %> mt-1"><%= label %></div>
+          <div class="text-xl font-bold <%= active ? 'text-white' : 'text-slate-800' %>"><%= count %></div>
+        <% end %>
+
+        <% if add_paths[key] && !active %>
+          <%= link_to add_paths[key],
+                class: "absolute -top-1 -end-1 w-6 h-6 rounded-full bg-teal-500 text-white flex items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition shadow-md hover:bg-teal-600",
+                title: "إضافة #{label}" do %>
+            ＋
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- ===== Date filter ===== -->
+  <div class="bg-white border border-slate-200 rounded-xl p-3">
+    <%= form_with url: timeline_dashboard_patient_path(@patient), method: :get, class: "flex flex-wrap gap-2 items-center" do %>
+      <%= hidden_field_tag :type, @current_filter %>
+      <div class="text-xs text-slate-500">من:</div>
+      <%= date_field_tag :from, @current_from, class: "text-xs border border-slate-300 rounded-lg px-2 py-1" %>
+      <div class="text-xs text-slate-500">إلى:</div>
+      <%= date_field_tag :to, @current_to, class: "text-xs border border-slate-300 rounded-lg px-2 py-1" %>
+      <%= submit_tag "تصفية", class: "bg-teal-600 text-white px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer hover:bg-teal-700" %>
+      <% if @current_from.present? || @current_to.present? %>
+        <%= link_to "مسح", timeline_dashboard_patient_path(@patient, type: @current_filter),
+              class: "text-xs text-slate-500 hover:text-slate-700" %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <!-- ===== Timeline ===== -->
+  <% if @events.any? %>
+
+    <% @events_by_month.each do |month_key, month_events| %>
+      <% year, month = month_key.split("-") %>
+
+      <!-- Month divider -->
+      <div class="flex items-center gap-3 pt-2">
+        <div class="text-sm font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-full">
+          <%= month_names[month] %> <%= year %>
+        </div>
+        <div class="text-xs text-slate-400"><%= month_events.size %> حدث</div>
+        <div class="flex-1 h-px bg-slate-200"></div>
+      </div>
+
+      <!-- Events in this month -->
+      <div class="relative">
+        <div class="absolute inset-y-0 start-5 w-0.5 bg-slate-200" aria-hidden="true"></div>
+
+        <ul class="space-y-3">
+          <% month_events.each do |event| %>
+            <%
+              icon, color, ring, title, detail =
+                case event[:type]
+                when "appointment"
+                  a = event[:record]
+                  ["📅", "bg-teal-100 text-teal-700", "ring-teal-200",
+                   "موعد — #{t("appointments.statuses.#{a.status}", default: a.status)}",
+                   "#{a.appointment_date} #{format_time(a.appointment_time)} — #{a.reason.presence || "—"}"]
+                when "report"
+                  r = event[:record]
+                  ["📋", "bg-emerald-100 text-emerald-700", "ring-emerald-200",
+                   "تقرير طبي",
+                   r.display_diagnosis.to_s.truncate(140)]
+                when "medication"
+                  m = event[:record]
+                  ["💊", "bg-purple-100 text-purple-700", "ring-purple-200",
+                   "وصفة طبية — #{m.status}",
+                   "#{m.display_name} — #{m.dosage} · #{m.frequency.presence || "—"}"]
+                when "payment"
+                  p = event[:record]
+                  ["💳", "bg-amber-100 text-amber-700", "ring-amber-200",
+                   "دفعة — #{p.status}",
+                   "#{p.display_amount} · #{p.method.presence || "—"}"]
+                when "transfer"
+                  t = event[:record]
+                  ["🚑", "bg-rose-100 text-rose-700", "ring-rose-200",
+                   "تحويل — #{t.status}",
+                   "من #{t.from_clinic&.display_name || '—'} إلى #{t.to_clinic&.display_name || '—'}"]
+                when "image"
+                  i = event[:record]
+                  ["📷", "bg-sky-100 text-sky-700", "ring-sky-200",
+                   "صورة طبية",
+                   i.display_title.to_s]
+                else
+                  ["•", "bg-slate-100 text-slate-700", "ring-slate-200",
+                   event[:type].titleize, ""]
+                end
+            %>
+            <li class="relative ps-14">
+              <div class="absolute start-1 w-9 h-9 rounded-full <%= color %> ring-4 ring-white flex items-center justify-center shadow-sm">
+                <%= icon %>
+              </div>
+              <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md hover:border-teal-200 transition">
+                <div class="flex items-center justify-between gap-2 flex-wrap">
+                  <div class="font-semibold text-slate-800"><%= title %></div>
+                  <div class="text-xs text-slate-400 whitespace-nowrap flex items-center gap-1">
+                    🕐 <%= event[:at].strftime("%H:%M") %>
+                  </div>
+                </div>
+                <div class="text-sm text-slate-600 mt-1"><%= detail %></div>
+
+                <%# ── MEDICATION: inline QR ── %>
+                <% if event[:type] == "medication" %>
+                  <%
+                    m = event[:record]
+                    if m.public_token.present?
+                      require "rqrcode"
+                      qr_url = public_medication_url(m.public_token)
+                      qr_obj = RQRCode::QRCode.new(qr_url)
+                      qr_svg = qr_obj.as_svg(
+                        offset: 0,
+                        color: "0f172a",
+                        shape_rendering: "crispEdges",
+                        module_size: 3,
+                        standalone: true,
+                        use_path: true
+                      )
+                    end
+                  %>
+                  <% if m.public_token.present? %>
+                    <div class="mt-3 flex items-start gap-3 bg-purple-50/50 border border-purple-100 rounded-lg p-3">
+                      <a href="<%= public_medication_path(m.public_token) %>" target="_blank"
+                         title="امسح لعرض الوصفة"
+                         class="shrink-0 bg-white border border-purple-200 rounded-lg p-1.5 hover:border-purple-400 transition">
+                        <div class="w-16 h-16 flex items-center justify-center">
+                          <%= qr_svg.html_safe %>
+                        </div>
+                      </a>
+                      <div class="flex-1 min-w-0">
+                        <div class="text-xs font-semibold text-purple-800 mb-1">📱 رمز الوصفة</div>
+                        <div class="text-[11px] text-slate-600 mb-2">
+                          امسح الرمز لفتح الوصفة على جوال المريض
+                        </div>
+                        <div class="flex items-center gap-2 text-[11px]">
+                          <a href="<%= public_medication_path(m.public_token) %>" target="_blank"
+                             class="text-purple-600 hover:text-purple-800 font-semibold">
+                            📱 عرض
+                          </a>
+                          <span class="text-slate-300">·</span>
+                          <button type="button"
+                                  onclick="navigator.clipboard.writeText('<%= public_medication_url(m.public_token) %>'); this.textContent='✅ تم'; setTimeout(() => this.textContent='📋 نسخ', 1500)"
+                                  class="text-slate-500 hover:text-slate-700 font-semibold cursor-pointer bg-transparent border-0 p-0">
+                            📋 نسخ
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  <% end %>
+                <% end %>
+
+                <div class="flex items-center justify-between mt-2">
+                  <div class="text-xs text-slate-400"><%= event[:at].strftime("%d %B %Y") %></div>
+                  <%
+                    link_path =
+                      case event[:type]
+                      when "appointment" then dashboard_appointment_path(event[:record])
+                      when "medication"  then dashboard_medication_path(event[:record])
+                      when "image"       then dashboard_patient_medical_images_path(event[:record].patient)
+                      else nil
+                      end
+                  %>
+                  <% if link_path.present? %>
+                    <%= link_to "عرض ←", link_path,
+                          class: "text-xs text-teal-600 hover:underline font-semibold" %>
+                  <% end %>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+  <% else %>
+    <!-- ===== Empty state ===== -->
+    <div class="bg-white rounded-2xl border-2 border-dashed border-slate-200 p-12 text-center">
+      <div class="text-6xl mb-4">📭</div>
+      <div class="text-lg font-semibold text-slate-700 mb-2">
+        <% if @current_filter != "all" %>
+          لا توجد <%= pills[@current_filter]&.last&.first || "أحداث" %>
+        <% else %>
+          لا توجد أحداث بعد
+        <% end %>
+      </div>
+      <div class="text-sm text-slate-500 mb-6 max-w-md mx-auto">
+        <% if @current_filter != "all" %>
+          جرّب تصفية مختلفة أو اعرض كل الأحداث.
+        <% else %>
+          عندما تبدأ بإضافة مواعيد، تقارير، أدوية، أو مدفوعات، ستظهر هنا تلقائياً.
+        <% end %>
+      </div>
+
+      <% if @current_filter != "all" %>
+        <%= link_to "عرض الكل", timeline_dashboard_patient_path(@patient),
+              class: "bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-semibold hover:bg-slate-50 text-sm" %>
+      <% else %>
+        <div class="flex flex-wrap justify-center gap-2">
+          <%= link_to "📅 إضافة موعد", dashboard_appointments_path(patient_id: @patient.id),
+                class: "bg-teal-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-teal-700 text-sm" %>
+          <%= link_to "📋 تقرير", dashboard_reports_path(patient_id: @patient.id),
+                class: "bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-semibold hover:bg-slate-50 text-sm" %>
+          <%= link_to "💊 وصفة", dashboard_medications_path(patient_id: @patient.id),
+                class: "bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-semibold hover:bg-slate-50 text-sm" %>
+          <%= link_to "💳 دفعة", dashboard_payments_path(patient_id: @patient.id),
+                class: "bg-white border border-slate-300 text-slate-700 px-4 py-2 rounded-lg font-semibold hover:bg-slate-50 text-sm" %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+</div>
+
+<style media="print">
+  body { background: white !important; }
+  nav, header, footer, button, .no-print, [role="search"] { display: none !important; }
+  .shadow-sm, .shadow-md { box-shadow: none !important; }
+  .rounded-xl, .rounded-2xl { border-radius: 4px !important; }
+</style>

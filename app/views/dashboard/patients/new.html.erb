@@ -1,44 +1,16 @@
-<div class="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
-  <h1 class="text-2xl font-bold text-slate-900 mb-6">Register New Patient</h1>
-  
-  <%= form_with model: [:dashboard, @patient], local: true do |f| %>
-    <div class="space-y-4">
-      <div>
-        <%= f.label :name, "Patient Full Name", class: "block text-sm font-semibold text-slate-700 mb-1" %>
-        <%= f.text_field :name, required: true, class: "w-full border border-slate-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" %>
-      </div>
+<% content_for :title, "New Patient — ClinicApp" %>
 
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <%= f.label :phone, "Phone Number", class: "block text-sm font-semibold text-slate-700 mb-1" %>
-          <%= f.text_field :phone, class: "w-full border border-slate-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none" %>
-        </div>
-        <div>
-          <%= f.label :gender, "Gender", class: "block text-sm font-semibold text-slate-700 mb-1" %>
-          <%= f.select :gender, [["Male", "Male"], ["Female", "Female"]], { prompt: "Select Gender" }, class: "w-full border border-slate-300 rounded-xl p-3 bg-white focus:ring-2 focus:ring-blue-500 outline-none" %>
-        </div>
-      </div>
+<div class="max-w-3xl mx-auto space-y-6">
+  <%= link_to "← Back", dashboard_patients_path, class: "text-sm text-teal-600 hover:underline" %>
+  <h1 class="text-2xl font-bold text-slate-800">👥 New Patient</h1>
 
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <%= f.label :age, "Age", class: "block text-sm font-semibold text-slate-700 mb-1" %>
-          <%= f.number_field :age, class: "w-full border border-slate-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none" %>
-        </div>
-        <div>
-          <%= f.label :date_of_birth, "Date of Birth", class: "block text-sm font-semibold text-slate-700 mb-1" %>
-          <%= f.date_field :date_of_birth, class: "w-full border border-slate-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none" %>
-        </div>
+  <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+    <%= form_with model: [:dashboard, @patient], class: "space-y-4" do |f| %>
+      <%= render "form", f: f, patient: @patient %>
+      <div class="flex justify-end gap-2 pt-2">
+        <%= link_to "Cancel", dashboard_patients_path, class: "px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 font-semibold" %>
+        <%= f.submit "Create Patient", class: "bg-teal-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-teal-700 cursor-pointer shadow-sm" %>
       </div>
-
-      <div>
-        <%= f.label :medical_history, "Medical History / Notes", class: "block text-sm font-semibold text-slate-700 mb-1" %>
-        <%= f.text_area :medical_history, rows: 3, class: "w-full border border-slate-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none" %>
-      </div>
-
-      <div class="pt-4 flex gap-3">
-        <%= f.submit "Save Patient", class: "flex-1 bg-blue-600 text-white font-semibold p-3 rounded-xl hover:bg-blue-700 transition cursor-pointer shadow-sm" %>
-        <a href="/dashboard/patients" class="px-6 py-3 border border-slate-300 rounded-xl font-semibold text-slate-700 hover:bg-slate-50 transition text-center">Cancel</a>
-      </div>
-    </div>
-  <% end %>
+    <% end %>
+  </div>
 </div>

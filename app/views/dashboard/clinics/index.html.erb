@@ -1,0 +1,18 @@
+<% content_for :title, "العيادات — ClinicApp" %>
+
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold text-slate-800">🏥 العيادات</h1>
+    <p class="text-slate-500 mt-1">Clinics you belong to.</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <% @clinics.each do |clinic| %>
+      <%= link_to dashboard_clinic_path(clinic), class: "block bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition" do %>
+        <div class="font-semibold text-slate-800"><%= clinic.display_name %></div>
+        <div class="text-sm text-slate-500 mt-1"><%= clinic.address_display.presence || "—" %></div>
+        <div class="text-xs text-slate-400 mt-3">Owner: <%= clinic.owner&.name %></div>
+      <% end %>
+    <% end %>
+  </div>
+</div>

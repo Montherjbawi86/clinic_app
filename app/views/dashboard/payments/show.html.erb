@@ -1,0 +1,48 @@
+<% content_for :title, "دفعة ##{@payment.id}" %>
+
+<div class="max-w-2xl mx-auto space-y-6">
+  <%= link_to "← المدفوعات", dashboard_payments_path, class: "text-sm text-teal-600 hover:underline" %>
+
+  <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+    <div class="flex items-start justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-800">💳 دفعة #<%= @payment.id %></h1>
+        <p class="text-slate-500 mt-1"><%= @payment.created_at.strftime("%Y-%m-%d %H:%M") %></p>
+      </div>
+      <span class="text-sm font-semibold px-3 py-1.5 rounded-full
+        <%= @payment.status == "paid" ? "bg-emerald-50 text-emerald-700" : @payment.status == "pending" ? "bg-amber-50 text-amber-700" : "bg-slate-100 text-slate-700" %>">
+        <%= t("payments.statuses.#{@payment.status}", default: @payment.status) %>
+      </span>
+    </div>
+
+    <div class="text-center my-6 p-6 bg-teal-50 rounded-2xl">
+      <div class="text-sm text-slate-600">المبلغ</div>
+      <div class="text-4xl font-bold text-teal-700 mt-2"><%= @payment.display_amount %></div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 text-sm">
+      <div><div class="text-slate-500">المريض</div>
+        <div class="font-medium">
+          <% if @payment.patient %>
+            <%= link_to @payment.patient.display_name, dashboard_patient_path(@payment.patient), class: "text-teal-600 hover:underline" %>
+          <% else %>—<% end %>
+        </div>
+      </div>
+      <div><div class="text-slate-500">الطريقة</div><div class="font-medium"><%= @payment.method.presence || "—" %></div></div>
+      <div><div class="text-slate-500">المرجع</div><div class="font-medium"><%= @payment.reference.presence || "—" %></div></div>
+      <div><div class="text-slate-500">بواسطة</div><div class="font-medium"><%= @payment.user&.name %></div></div>
+      <div class="col-span-2"><div class="text-slate-500">ملاحظات</div><div class="font-medium whitespace-pre-wrap"><%= @payment.notes.presence || "—" %></div></div>
+    </div>
+
+    <div class="flex flex-wrap gap-2 mt-6 pt-4 border-t border-slate-100">
+      <%= link_to "🧾 طباعة الإيصال", receipt_dashboard_payment_path(@payment, format: :pdf),
+            target: "_blank",
+            class: "bg-slate-800 text-white px-4 py-2 rounded-lg font-semibold hover:bg-slate-900" %>
+      <% if @payment.status == "paid" %>
+        <%= button_to "↩️ استرجاع", refund_dashboard_payment_path(@payment), method: :patch,
+              data: { turbo_confirm: "استرجاع الدفعة؟" },
+              class: "bg-white border border-sky-300 text-sky-600 px-4 py-2 rounded-lg font-semibold hover:bg-sky-50" %>
+      <% end %>
+    </div>
+  </div>
+</div>

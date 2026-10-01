@@ -1,0 +1,76 @@
+<% if patient.errors.any? %>
+  <div class="bg-rose-50 border-l-4 border-rose-500 text-rose-800 p-4 rounded-r-xl">
+    <ul class="text-sm list-disc ms-5">
+      <% patient.errors.full_messages.each do |m| %><li><%= m %></li><% end %>
+    </ul>
+  </div>
+<% end %>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div>
+    <%= f.label :name, "Name (EN)", class: "block text-sm font-medium text-slate-700 mb-1" %>
+    <%= f.text_field :name, class: "w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500" %>
+  </div>
+  <div>
+    <%= f.label :name_ar, "الاسم (AR)", class: "block text-sm font-medium text-slate-700 mb-1" %>
+    <%= f.text_field :name_ar, dir: "rtl", class: "w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500" %>
+  </div>
+  <div>
+    <%= f.label :phone, class: "block text-sm font-medium text-slate-700 mb-1" %>
+    <%= f.text_field :phone, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+  </div>
+  <div>
+    <%= f.label :national_id, "National ID", class: "block text-sm font-medium text-slate-700 mb-1" %>
+    <%= f.text_field :national_id, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+  </div>
+  <div>
+    <%= f.label :gender, class: "block text-sm font-medium text-slate-700 mb-1" %>
+    <%= f.select :gender, [["Male","male"],["Female","female"]], { include_blank: true },
+          class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+  </div>
+  <div>
+    <%= f.label :blood_type, class: "block text-sm font-medium text-slate-700 mb-1" %>
+    <%= f.select :blood_type, %w[A+ A- B+ B- AB+ AB- O+ O-], { include_blank: true },
+          class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+  </div>
+  <div>
+    <%= f.label :date_of_birth, class: "block text-sm font-medium text-slate-700 mb-1" %>
+    <%= f.date_field :date_of_birth, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+  </div>
+  <div>
+    <%= f.label :age, class: "block text-sm font-medium text-slate-700 mb-1" %>
+    <%= f.number_field :age, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+  </div>
+  <div class="md:col-span-2">
+    <%= f.label :address, class: "block text-sm font-medium text-slate-700 mb-1" %>
+    <%= f.text_field :address, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+  </div>
+  <div>
+    <%= f.label :emergency_name, "Emergency Contact", class: "block text-sm font-medium text-slate-700 mb-1" %>
+    <%= f.text_field :emergency_name, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+  </div>
+  <div>
+    <%= f.label :emergency_phone, "Emergency Phone", class: "block text-sm font-medium text-slate-700 mb-1" %>
+    <%= f.text_field :emergency_phone, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+  </div>
+  <div>
+    <%= f.label :insurance_provider, class: "block text-sm font-medium text-slate-700 mb-1" %>
+    <%= f.text_field :insurance_provider, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+  </div>
+  <div>
+    <%= f.label :insurance_number, class: "block text-sm font-medium text-slate-700 mb-1" %>
+    <%= f.text_field :insurance_number, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+  </div>
+  <div class="md:col-span-2">
+    <%= f.label :allergies, class: "block text-sm font-medium text-slate-700 mb-1" %>
+    <%= f.text_area :allergies, rows: 2, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+  </div>
+  <div class="md:col-span-2">
+    <%= f.label :chronic_conditions, class: "block text-sm font-medium text-slate-700 mb-1" %>
+    <%= f.text_area :chronic_conditions, rows: 2, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+  </div>
+  <div class="md:col-span-2">
+    <%= f.label :medical_history, class: "block text-sm font-medium text-slate-700 mb-1" %>
+    <%= f.text_area :medical_history, rows: 4, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+  </div>
+</div>

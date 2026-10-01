@@ -1,0 +1,103 @@
+<!-- QR Modal — hidden by default, opened by clicking 📱 on a medication row -->
+<div id="qr-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" onclick="closeQrModal(event)">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden" onclick="event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="bg-gradient-to-br from-teal-500 to-teal-700 p-4 text-white relative">
+      <button type="button" onclick="closeQrModal()"
+              class="absolute top-3 end-3 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white cursor-pointer">
+        ✕
+      </button>
+      <div class="text-center">
+        <div class="text-2xl mb-1">📱</div>
+        <div class="font-bold text-lg">رمز الوصفة</div>
+        <div class="text-xs text-teal-100">امسح الرمز لعرض الوصفة على الجوال</div>
+      </div>
+    </div>
+
+    <!-- QR -->
+    <div class="p-6 text-center">
+      <div id="qr-modal-image" class="bg-white p-4 rounded-xl border-2 border-slate-100 inline-block">
+        <!-- QR SVG will be injected here -->
+      </div>
+
+      <div id="qr-modal-title" class="text-sm font-semibold text-slate-800 mt-4"></div>
+      <div id="qr-modal-meta" class="text-xs text-slate-500 mt-1"></div>
+
+      <!-- Actions -->
+      <div class="grid grid-cols-2 gap-2 mt-5">
+        <button type="button"
+                id="qr-modal-download"
+                class="inline-flex items-center justify-center gap-2 bg-teal-600 text-white px-4 py-2.5 rounded-lg font-semibold hover:bg-teal-700 text-sm cursor-pointer">
+          ⬇️ تحميل
+        </button>
+        <button type="button"
+                id="qr-modal-copy"
+                class="inline-flex items-center justify-center gap-2 bg-white border border-slate-300 text-slate-700 px-4 py-2.5 rounded-lg font-semibold hover:bg-slate-50 text-sm cursor-pointer">
+          📋 نسخ الرابط
+        </button>
+      </div>
+
+      <button type="button"
+              id="qr-modal-open"
+              class="w-full mt-2 text-center text-xs text-teal-600 hover:text-teal-800 font-semibold cursor-pointer">
+        🔗 فتح الصفحة على المتصفح ←
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Global QR modal controller ──
+  window.openQrModal = function (data) {
+    const modal = document.getElementById("qr-modal");
+    if (!modal) return;
+
+    document.getElementById("qr-modal-image").innerHTML = data.svg;
+    document.getElementById("qr-modal-title").textContent = data.title || "";
+    document.getElementById("qr-modal-meta").textContent  = data.meta  || "";
+
+    // Download button — saves SVG as file
+    const downloadBtn = document.getElementById("qr-modal-download");
+    downloadBtn.onclick = function () {
+      const svg = document.getElementById("qr-modal-image").innerHTML;
+      const blob = new Blob([svg], { type: "image/svg+xml" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "qr-" + (data.slug || "medication") + ".svg";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
+
+    // Copy link
+    const copyBtn = document.getElementById("qr-modal-copy");
+    copyBtn.onclick = function () {
+      navigator.clipboard.writeText(data.url || "");
+      copyBtn.textContent = "✅ تم النسخ";
+      setTimeout(function () { copyBtn.textContent = "📋 نسخ الرابط"; }, 2000);
+    };
+
+    // Open page
+    const openBtn = document.getElementById("qr-modal-open");
+    openBtn.onclick = function () {
+      if (data.url) window.open(data.url, "_blank");
+    };
+
+    modal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  };
+
+  window.closeQrModal = function (event) {
+    if (event && event.target !== event.currentTarget) return;
+    const modal = document.getElementById("qr-modal");
+    if (modal) modal.classList.add("hidden");
+    document.body.style.overflow = "";
+  };
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") window.closeQrModal();
+  });
+</script>

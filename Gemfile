@@ -14,7 +14,6 @@ gem "importmap-rails"
 gem "turbo-rails"
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
 gem "stimulus-rails"
-# Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 # Use Redis adapter to run Action Cable in production
@@ -59,3 +58,16 @@ end
 
 
 gem "jose", "~> 1.2"
+
+gem "discard", "~> 2.0"
+
+
+gem "prawn", "~> 2.4"
+
+gem "prawn-table", "~> 0.2.2"
+
+gem "wicked_pdf", "~> 2.8"
+
+gem "wkhtmltopdf-binary", "~> 0.12.6"
+
+gem "rqrcode", "~> 3.2"

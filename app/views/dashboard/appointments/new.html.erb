@@ -1,0 +1,62 @@
+<% content_for :title, "موعد جديد — ClinicApp" %>
+
+<div class="max-w-2xl mx-auto space-y-6">
+  <%= link_to "← المواعيد", dashboard_appointments_path, class: "text-sm text-teal-600 hover:underline" %>
+
+  <div>
+    <h1 class="text-2xl font-bold text-slate-800">📅 موعد جديد</h1>
+    <p class="text-slate-500 mt-1">احجز موعداً لمريض</p>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+    <%= form_with model: [:dashboard, @appointment], class: "space-y-4" do |f| %>
+      <% if @appointment.errors.any? %>
+        <div class="bg-rose-50 border-l-4 border-rose-500 text-rose-800 p-3 rounded-r-lg text-sm">
+          <%= @appointment.errors.full_messages.to_sentence %>
+        </div>
+      <% end %>
+
+      <div>
+        <%= f.label :patient_id, "المريض", class: "block text-sm font-medium text-slate-700 mb-1" %>
+        <%= f.collection_select :patient_id, @patients, :id, :display_name,
+              { prompt: "اختر المريض" },
+              class: "w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500" %>
+      </div>
+
+      <div>
+        <%= f.label :doctor_id, "الطبيب", class: "block text-sm font-medium text-slate-700 mb-1" %>
+        <%= f.collection_select :doctor_id, @doctors, :id, :name,
+              { prompt: "اختر الطبيب" },
+              class: "w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500" %>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <%= f.label :appointment_date, "التاريخ", class: "block text-sm font-medium text-slate-700 mb-1" %>
+          <%= f.date_field :appointment_date, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+        </div>
+        <div>
+          <%= f.label :appointment_time, "الوقت", class: "block text-sm font-medium text-slate-700 mb-1" %>
+          <%= f.time_field :appointment_time, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+        </div>
+      </div>
+
+      <div>
+        <%= f.label :duration_minutes, "المدة (دقيقة)", class: "block text-sm font-medium text-slate-700 mb-1" %>
+        <%= f.number_field :duration_minutes, value: 30, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+      </div>
+
+      <div>
+        <%= f.label :reason, "السبب", class: "block text-sm font-medium text-slate-700 mb-1" %>
+        <%= f.text_area :reason, rows: 2, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <%= link_to "إلغاء", dashboard_appointments_path,
+              class: "px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 font-semibold" %>
+        <%= f.submit "حجز الموعد",
+              class: "bg-teal-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-teal-700 cursor-pointer" %>
+      </div>
+    <% end %>
+  </div>
+</div>

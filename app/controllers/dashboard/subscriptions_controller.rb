@@ -1,6 +1,5 @@
-class Dashboard::SubscriptionsController < ApplicationController
-  before_action :require_login
+class Dashboard::SubscriptionsController < Dashboard::BaseController
   def index
-    @subscriptions = Subscription.all
+    @subscriptions = current_clinic.subscriptions.order(created_at: :desc)
   end
 end

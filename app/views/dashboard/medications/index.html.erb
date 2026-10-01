@@ -1,67 +1,283 @@
-<div class="space-y-8">
-  <div class="flex justify-between items-center">
+<% content_for :title, "الأدوية — ClinicApp" %>
+
+<div class="space-y-6">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between flex-wrap gap-3">
     <div>
-      <h1 class="text-2xl font-bold text-slate-900">Medications & Prescriptions</h1>
-      <p class="text-slate-500 text-sm">Track patient prescriptions and drug items.</p>
+      <h1 class="text-2xl font-bold text-slate-800">💊 الأدوية</h1>
+      <p class="text-slate-500 mt-1">الوصفات الطبية الموصوفة للمرضى</p>
+    </div>
+    <div class="flex gap-2">
+      <%= link_to "📄 طباعة / PDF", dashboard_medications_path(format: :pdf, q: params[:q], filter: @filter, sort: @sort),
+            target: "_blank",
+            class: "px-4 py-2 rounded-lg bg-slate-800 text-white font-semibold hover:bg-slate-900 text-sm" %>
+      <%= link_to "📥 CSV", dashboard_medications_path(format: :csv, q: params[:q], filter: @filter),
+            class: "px-4 py-2 rounded-lg bg-white border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 text-sm" %>
     </div>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 h-fit">
-      <h2 class="text-lg font-bold text-slate-900 mb-4">Prescribe Medication</h2>
-      <%= form_with model: [:dashboard, @medication], local: true do |f| %>
-        <div class="space-y-4">
+  <!-- Stats -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+      <div class="text-xs text-slate-500">💊 الإجمالي</div>
+      <div class="text-2xl font-bold text-slate-800 mt-1"><%= @total_count %></div>
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+      <div class="text-xs text-slate-500">✅ فعالة</div>
+      <div class="text-2xl font-bold text-emerald-600 mt-1"><%= @active_count %></div>
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+      <div class="text-xs text-slate-500">🏁 مكتملة</div>
+      <div class="text-2xl font-bold text-sky-600 mt-1"><%= @completed_count %></div>
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+      <div class="text-xs text-slate-500">🔁 بحاجة تجديد</div>
+      <div class="text-2xl font-bold text-amber-600 mt-1"><%= @refill_due_count %></div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="flex flex-wrap items-center gap-2">
+    <% filters = [
+      ["all",          "الكل",          @total_count,         "bg-slate-800"],
+      ["active",       "فعالة",         @active_count,        "bg-emerald-600"],
+      ["completed",    "مكتملة",        @completed_count,     "bg-sky-600"],
+      ["discontinued", "موقوفة",         @discontinued_count,  "bg-rose-600"],
+      ["refill_due",   "بحاجة تجديد",   @refill_due_count,    "bg-amber-600"],
+    ] %>
+    <% filters.each do |key, label, count, active_bg| %>
+      <% active = @filter == key %>
+      <%= link_to dashboard_medications_path(filter: key, q: params[:q], sort: @sort),
+            class: "px-3 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition #{active ? "#{active_bg} text-white shadow-sm" : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}" do %>
+        <%= label %>
+        <span class="text-xs px-1.5 py-0.5 rounded-full <%= active ? 'bg-white/20' : 'bg-slate-100 text-slate-600' %>"><%= count %></span>
+      <% end %>
+    <% end %>
+
+    <div class="ms-auto">
+      <%= form_with url: dashboard_medications_path, method: :get, class: "flex gap-2" do %>
+        <%= hidden_field_tag :filter, @filter %>
+        <input type="text" name="q" value="<%= params[:q] %>" placeholder="ابحث بالدواء أو المريض…"
+               class="border border-slate-300 rounded-lg px-3 py-2 text-sm w-56">
+        <%= select_tag :sort,
+              options_for_select([["الأحدث","recent"],["الأقدم","oldest"],["المريض","patient"]], @sort),
+              onchange: "this.form.submit()",
+              class: "text-sm border border-slate-300 rounded-lg px-2 py-2" %>
+        <%= submit_tag "بحث", class: "bg-slate-800 text-white px-4 py-2 rounded-lg font-semibold text-sm cursor-pointer" %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Prescribe form -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm lg:col-span-1 h-fit">
+      <h2 class="font-semibold text-slate-800 mb-4">💊 وصف دواء جديد</h2>
+      <%= form_with model: [:dashboard, @medication], class: "space-y-3" do |f| %>
+        <% if @medication.errors.any? %>
+          <div class="bg-rose-50 border-l-4 border-rose-500 text-rose-800 p-3 rounded-r-lg text-sm">
+            <%= @medication.errors.full_messages.to_sentence %>
+          </div>
+        <% end %>
+
+        <div>
+          <%= f.label :patient_id, "المريض", class: "block text-sm font-medium text-slate-700 mb-1" %>
+          <%= f.collection_select :patient_id, @patients, :id, :display_name,
+                { prompt: "اختر المريض" }, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+        </div>
+        <div>
+          <%= f.label :name, "اسم الدواء (EN)", class: "block text-sm font-medium text-slate-700 mb-1" %>
+          <%= f.text_field :name, placeholder: "e.g. Amoxicillin", class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+        </div>
+        <div>
+          <%= f.label :name_ar, "الاسم (AR)", class: "block text-sm font-medium text-slate-700 mb-1" %>
+          <%= f.text_field :name_ar, dir: "rtl", placeholder: "أموكسيسيلين", class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
           <div>
-            <%= f.label :patient_id, "Patient", class: "block text-sm font-semibold text-slate-700 mb-1" %>
-            <%= f.collection_select :patient_id, Patient.all, :id, :name, { prompt: "Choose patient..." }, class: "w-full border border-slate-300 rounded-xl p-3 bg-white outline-none" %>
+            <%= f.label :dosage, "الجرعة", class: "block text-sm font-medium text-slate-700 mb-1" %>
+            <%= f.text_field :dosage, placeholder: "500mg", class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
           </div>
           <div>
-            <%= f.label :name, "Medication Name", class: "block text-sm font-semibold text-slate-700 mb-1" %>
-            <%= f.text_field :name, required: true, placeholder: "e.g., Amoxicillin 500mg", class: "w-full border border-slate-300 rounded-xl p-3 outline-none" %>
+            <%= f.label :route, "الطريق", class: "block text-sm font-medium text-slate-700 mb-1" %>
+            <%= f.select :route, Medication::ROUTES.map { |r| [t("medications.routes.#{r}", default: r.titleize), r] },
+                  { include_blank: true }, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <%= f.label :frequency, "التكرار", class: "block text-sm font-medium text-slate-700 mb-1" %>
+            <%= f.text_field :frequency, placeholder: "3x daily", class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
           </div>
           <div>
-            <%= f.label :dosage, "Dosage", class: "block text-sm font-semibold text-slate-700 mb-1" %>
-            <%= f.text_field :dosage, placeholder: "e.g., 1 tablet twice daily", class: "w-full border border-slate-300 rounded-xl p-3 outline-none" %>
+            <%= f.label :duration, "المدة", class: "block text-sm font-medium text-slate-700 mb-1" %>
+            <%= f.text_field :duration, placeholder: "7 days", class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <%= f.label :quantity, "الكمية", class: "block text-sm font-medium text-slate-700 mb-1" %>
+            <%= f.number_field :quantity, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
           </div>
           <div>
-            <%= f.label :instructions, "Special Instructions", class: "block text-sm font-semibold text-slate-700 mb-1" %>
-            <%= f.text_area :instructions, rows: 2, placeholder: "Take after meals", class: "w-full border border-slate-300 rounded-xl p-3 outline-none" %>
+            <%= f.label :refills, "تجديدات", class: "block text-sm font-medium text-slate-700 mb-1" %>
+            <%= f.number_field :refills, value: 0, class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
           </div>
-          <div>
-            <%= f.submit "Add Prescription", class: "w-full bg-blue-600 text-white font-semibold p-3 rounded-xl hover:bg-blue-700 transition cursor-pointer shadow-sm" %>
+        </div>
+        <div>
+          <%= f.label :instructions, "تعليمات", class: "block text-sm font-medium text-slate-700 mb-1" %>
+          <%= f.text_area :instructions, rows: 2, placeholder: "بعد الأكل", class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+        </div>
+        <%= f.submit "وصف الدواء", class: "w-full bg-teal-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-teal-700 cursor-pointer" %>
+      <% end %>
+    </div>
+
+    <!-- Medications table -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm lg:col-span-2 overflow-hidden">
+      <% if @medications.any? %>
+        <table class="w-full text-sm">
+          <thead class="bg-slate-50 text-slate-500">
+            <tr>
+              <th class="text-start px-4 py-3 font-medium">المريض</th>
+              <th class="text-start px-4 py-3 font-medium">الدواء</th>
+              <th class="text-start px-4 py-3 font-medium">الجرعة</th>
+              <th class="text-start px-4 py-3 font-medium">التكرار</th>
+              <th class="text-start px-4 py-3 font-medium">الحالة</th>
+              <th class="px-4 py-3"></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <% @medications.each do |m| %>
+              <%
+                badge = case m.status
+                        when "active"       then ["bg-emerald-50 text-emerald-700", "✅"]
+                        when "completed"    then ["bg-sky-50 text-sky-700",         "🏁"]
+                        when "discontinued" then ["bg-rose-50 text-rose-700",       "⛔"]
+                        else ["bg-slate-100 text-slate-700", "•"]
+                        end
+              %>
+              <tr class="hover:bg-slate-50">
+                <td class="px-4 py-3">
+                  <% if m.patient %>
+                    <%= link_to m.patient.display_name, dashboard_patient_path(m.patient),
+                          class: "font-medium text-slate-800 hover:text-teal-600" %>
+                  <% else %>
+                    <span class="text-slate-400">—</span>
+                  <% end %>
+                </td>
+                <td class="px-4 py-3">
+                  <%= link_to dashboard_medication_path(m), class: "block hover:opacity-80" do %>
+                    <div class="font-medium text-teal-700 hover:text-teal-900 hover:underline"><%= m.display_name %></div>
+                  <% end %>
+                  <% if m.name_ar.present? && m.name.present? %>
+                    <div class="text-xs text-slate-400"><%= m.name %></div>
+                  <% end %>
+                  <div class="text-xs text-slate-400 mt-0.5">د. <%= m.doctor&.name || "—" %></div>
+                </td>
+                <td class="px-4 py-3 text-slate-600">
+                  <%= m.dosage %>
+                  <% if m.quantity.present? %>
+                    <div class="text-xs text-slate-400">x<%= m.quantity %></div>
+                  <% end %>
+                </td>
+                <td class="px-4 py-3 text-slate-600 text-xs">
+                  <%= m.frequency.presence || "—" %>
+                  <% if m.duration.present? %>
+                    <div class="text-slate-400"><%= m.duration %></div>
+                  <% end %>
+                </td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full <%= badge[0] %>">
+                    <%= badge[1] %> <%= m.status %>
+                  </span>
+                  <% if m.refills.to_i > 0 && m.status == "active" %>
+                    <div class="text-xs text-amber-600 mt-1">🔁 <%= m.refills %> متاح</div>
+                  <% end %>
+                </td>
+                <td class="px-4 py-3 text-end whitespace-nowrap">
+                  <div class="inline-flex gap-2">
+                    <% if m.appointment.present? %>
+                      <%= link_to "🖨️", prescription_dashboard_appointment_path(m.appointment, format: :pdf),
+                            target: "_blank", title: "طباعة",
+                            class: "text-teal-600 hover:text-teal-800" %>
+                      <% if m.appointment.public_token.present? %>
+                        <%= link_to "📱", public_prescription_path(m.appointment.public_token),
+                              target: "_blank", title: "QR / عرض المريض",
+                              class: "text-sky-600 hover:text-sky-800" %>
+                      <% end %>
+                    <% end %>
+                    <% if m.public_token.present? %>
+                      <%
+                        require "rqrcode"
+                        qr_url = public_medication_url(m.public_token,
+                                      host: ENV["APP_HOST"].presence ||
+                                            (require "socket"; Socket.ip_address_list.find { |ip| ip.ipv4? && !ip.ipv4_loopback? }&.ip_address) ||
+                                            request.host,
+                                      port: request.port)
+                        qr_obj = RQRCode::QRCode.new(qr_url)
+                        qr_svg = qr_obj.as_svg(
+                          offset: 0,
+                          color: "0f172a",
+                          shape_rendering: "crispEdges",
+                          module_size: 4,
+                          standalone: true,
+                          use_path: true
+                        )
+                        qr_json = {
+                          svg:   qr_svg,
+                          url:   public_medication_url(m.public_token),
+                          title: m.display_name,
+                          meta:  "#{m.dosage} · #{m.patient&.display_name || ""}",
+                          slug:  "med-#{m.id}"
+                        }.to_json
+                      %>
+                      <button type="button"
+                              onclick='openQrModal(<%= raw qr_json.gsub("'", "&#39;") %>)'
+                              title="عرض QR"
+                              class="text-purple-600 hover:text-purple-800 cursor-pointer bg-transparent border-0">
+                        📱
+                      </button>
+                    <% end %>
+
+                    <% if m.status == "active" %>
+                      <% if m.refills.to_i > 0 %>
+                        <%= button_to "🔁", refill_dashboard_medication_path(m), method: :patch,
+                              title: "تجديد",
+                              class: "text-amber-600 hover:text-amber-800 cursor-pointer" %>
+                      <% end %>
+                      <%= button_to "🏁", complete_dashboard_medication_path(m), method: :patch,
+                            title: "إكمال",
+                            class: "text-emerald-600 hover:text-emerald-800 cursor-pointer" %>
+                      <%= button_to "⛔", discontinue_dashboard_medication_path(m), method: :patch,
+                            data: { turbo_confirm: "إيقاف الوصفة؟" },
+                            title: "إيقاف",
+                            class: "text-rose-600 hover:text-rose-800 cursor-pointer" %>
+                    <% end %>
+                    <%= button_to "🗑️", dashboard_medication_path(m), method: :delete,
+                          data: { turbo_confirm: "حذف الوصفة؟" },
+                          title: "حذف",
+                          class: "text-slate-400 hover:text-rose-600 cursor-pointer" %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <div class="p-12 text-center">
+          <div class="text-5xl mb-3">💊</div>
+          <div class="text-slate-500 text-sm">
+            <% if params[:q].present? %>
+              لا نتائج مطابقة لبحثك
+            <% else %>
+              لا توجد وصفات بعد
+            <% end %>
           </div>
         </div>
       <% end %>
     </div>
-
-    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-      <div class="p-4 border-b border-slate-200 bg-slate-50 font-bold text-slate-700">Active Prescriptions</div>
-      <table class="w-full text-left border-collapse">
-        <thead>
-          <tr class="border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider bg-slate-50/50">
-            <th class="p-4">Patient</th>
-            <th class="p-4">Medication</th>
-            <th class="p-4">Dosage</th>
-            <th class="p-4">Instructions</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100 text-sm">
-          <% if @medications.any? %>
-            <% @medications.each do |med| %>
-              <tr class="hover:bg-slate-50">
-                <td class="p-4 font-semibold text-slate-800"><%= med.patient&.name || "N/A" %></td>
-                <td class="p-4 text-blue-600 font-semibold"><%= med.name %></td>
-                <td class="p-4 text-slate-700"><%= med.dosage.presence || "N/A" %></td>
-                <td class="p-4 text-slate-500"><%= med.instructions.presence || "None" %></td>
-              </tr>
-            <% end %>
-          <% else %>
-            <tr>
-              <td colspan="4" class="p-8 text-center text-slate-400">No medications prescribed yet.</td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
   </div>
 </div>
+
+<%= render "qr_modal" %>

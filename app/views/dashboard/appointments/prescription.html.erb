@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="utf-8">
+  <style>
+    @page { size: A4; margin: 15mm; }
+    body { font-family: "Noto Naskh Arabic", "Geeza Pro", "Arial", sans-serif; color: #1e293b; }
+    .header { text-align: center; border-bottom: 2px solid #0d9488; padding-bottom: 12px; margin-bottom: 20px; }
+    .clinic-name { font-size: 22px; font-weight: bold; color: #0d9488; }
+    .clinic-info { font-size: 11px; color: #64748b; margin-top: 4px; }
+    .prescription-title {
+      text-align: center; font-size: 18px; font-weight: bold;
+      margin: 20px 0; color: #0f766e;
+    }
+    .info-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px 20px; font-size: 12px; margin-bottom: 20px;
+      padding: 12px; background: #f0fdfa; border-radius: 8px;
+    }
+    .info-label { color: #64748b; }
+    .info-value { font-weight: 600; color: #0f172a; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+    thead { background: #0d9488; color: white; }
+    th, td { padding: 8px; text-align: right; border: 1px solid #e2e8f0; }
+    th { font-weight: bold; }
+    tbody tr:nth-child(even) { background: #f8fafc; }
+    .notes { margin-top: 20px; padding: 12px; background: #fefce8; border-radius: 8px; font-size: 12px; }
+    .notes-title { font-weight: bold; color: #a16207; margin-bottom: 4px; }
+    .footer { margin-top: 40px; display: flex; justify-content: space-between; align-items: end; }
+    .signature { text-align: left; font-size: 12px; }
+    .signature-line { border-top: 1px solid #94a3b8; padding-top: 4px; margin-top: 40px; width: 200px; }
+    .page-footer { text-align: center; font-size: 10px; color: #94a3b8; margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 8px; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="clinic-name"><%= @clinic.name_ar.presence || @clinic.name %></div>
+    <div class="clinic-info">
+      <%= @clinic.address_ar.presence || @clinic.address %>
+      <% if @clinic.phone.present? %> · هاتف: <%= @clinic.phone %><% end %>
+    </div>
+  </div>
+
+  <div class="prescription-title">وصفة طبية</div>
+
+  <div class="info-grid">
+    <div>
+      <span class="info-label">اسم المريض:</span>
+      <span class="info-value"><%= @appointment.patient.display_name %></span>
+    </div>
+    <div>
+      <span class="info-label">التاريخ:</span>
+      <span class="info-value"><%= @appointment.appointment_date %></span>
+    </div>
+    <div>
+      <span class="info-label">العمر:</span>
+      <span class="info-value"><%= @appointment.patient.age.presence || @appointment.patient.age_from_dob || "—" %></span>
+    </div>
+    <div>
+      <span class="info-label">الطبيب:</span>
+      <span class="info-value">د. <%= @appointment.doctor&.name || current_user.name %></span>
+    </div>
+    <% if @appointment.patient.allergies.present? %>
+      <div style="grid-column: 1 / -1;">
+        <span class="info-label">الحساسية:</span>
+        <span class="info-value" style="color: #dc2626;"><%= @appointment.patient.allergies %></span>
+      </div>
+    <% end %>
+  </div>
+
+  <h3 style="font-size: 14px; color: #0f766e; margin-bottom: 6px;">الأدوية الموصوفة</h3>
+
+  <% if @medications.any? %>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 40px;">#</th>
+          <th>الدواء</th>
+          <th>الجرعة</th>
+          <th>التكرار</th>
+          <th>المدة</th>
+          <th>ملاحظات</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @medications.each_with_index do |m, i| %>
+          <tr>
+            <td><%= i + 1 %></td>
+            <td><%= m.display_name %></td>
+            <td><%= m.dosage %></td>
+            <td><%= m.frequency.presence || "—" %></td>
+            <td><%= m.duration.presence || "—" %></td>
+            <td><%= m.instructions.presence || "—" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p style="text-align: center; color: #94a3b8; padding: 20px;">لا توجد أدوية موصوفة</p>
+  <% end %>
+
+  <% if @appointment.respond_to?(:visit_notes) && @appointment.visit_notes.present? %>
+    <div class="notes">
+      <div class="notes-title">ملاحظات الزيارة:</div>
+      <div><%= @appointment.visit_notes %></div>
+    </div>
+  <% end %>
+
+  <div class="footer">
+    <div class="signature">
+      <div class="signature-line">توقيع الطبيب</div>
+    </div>
+  </div>
+
+  <!-- QR Code -->
+  <% if @qr_data_uri.present? %>
+    <div style="margin-top: 24px; text-align: center;">
+      <div style="display: inline-block; padding: 10px; background: white; border: 2px solid #e2e8f0; border-radius: 12px;">
+        <img src="<%= @qr_data_uri %>" style="width: 130px; height: 130px; display: block;" alt="QR">
+      </div>
+      <div style="font-size: 10px; color: #64748b; margin-top: 6px;">
+        امسح الرمز لعرض الوصفة على جوالك
+      </div>
+    </div>
+  <% end %>
+
+  <div class="page-footer">
+    هذه الوصفة صادرة إلكترونياً من نظام ClinicApp
+  </div>
+
+</body>
+</html>

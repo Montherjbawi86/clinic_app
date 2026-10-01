@@ -1,0 +1,177 @@
+<% content_for :title, "الملف الشخصي — ClinicApp" %>
+
+<div class="max-w-3xl mx-auto space-y-5">
+
+  <!-- Header -->
+  <div>
+    <%= link_to dashboard_path, class: "text-sm text-teal-600 hover:underline" do %>
+      ← لوحة التحكم
+    <% end %>
+    <h1 class="text-2xl font-bold text-slate-800 mt-2">👤 الملف الشخصي</h1>
+    <p class="text-slate-500 text-sm mt-1">إدارة معلوماتك وعياداتك</p>
+  </div>
+
+  <!-- User card -->
+  <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+      <div class="w-20 h-20 rounded-full text-white flex items-center justify-center text-3xl font-bold shadow-md shrink-0"
+           style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);">
+        <%= @user.name.to_s[0]&.upcase %>
+      </div>
+      <div class="flex-1 min-w-0">
+        <h2 class="text-xl font-bold text-slate-800"><%= @user.name %></h2>
+        <p class="text-slate-500 text-sm truncate"><%= @user.email %></p>
+        <div class="flex flex-wrap gap-2 mt-2">
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-teal-50 text-teal-700">
+            <%= @user.role&.titleize || "Doctor" %>
+          </span>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700">
+            <%= @user.locale == "ar" ? "🇸🇾 العربية" : "🌐 English" %>
+          </span>
+        </div>
+      </div>
+      <%= link_to "✏️ تعديل الملف", edit_profile_path,
+            class: "bg-teal-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-teal-700 text-sm shrink-0" %>
+    </div>
+  </div>
+
+  <!-- ═══════ MY CLINICS SECTION ═══════ -->
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+
+    <!-- Header -->
+    <div class="p-5 border-b border-slate-200 flex items-center justify-between flex-wrap gap-3">
+      <div>
+        <h3 class="font-bold text-slate-800 flex items-center gap-2">
+          🏥 عياداتي
+          <% if @clinics.any? %>
+            <span class="text-xs font-semibold text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full">
+              <%= @clinics.count %>
+            </span>
+          <% end %>
+        </h3>
+        <p class="text-xs text-slate-500 mt-1">العيادات التي تديرها أو تعمل فيها</p>
+      </div>
+      <% if @clinics.any? %>
+        <%= link_to "＋ عيادة جديدة", new_dashboard_clinic_path,
+              class: "bg-teal-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-teal-700 text-sm" %>
+      <% end %>
+    </div>
+
+    <!-- Content -->
+    <% if @clinics.any? %>
+
+      <!-- Warning if some clinics are incomplete -->
+      <% if @has_incomplete_clinic %>
+        <div class="m-4 p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3">
+          <div class="text-2xl shrink-0">⚠️</div>
+          <div class="flex-1 min-w-0">
+            <div class="font-semibold text-amber-900 text-sm">عندك عيادة ببيانات ناقصة</div>
+            <div class="text-xs text-amber-700 mt-1">أكمل المدينة والتخصص لتظهر في الدليل العام</div>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- List of clinics -->
+      <ul class="divide-y divide-slate-100">
+        <% @clinics.each do |clinic| %>
+          <%
+            is_complete = clinic.city.present? && clinic.specialty.present?
+          %>
+          <li class="p-5 hover:bg-slate-50 transition">
+            <div class="flex items-start gap-4">
+
+              <!-- Icon -->
+              <div class="w-14 h-14 rounded-2xl text-white flex items-center justify-center text-2xl shrink-0"
+                   style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);">
+                🏥
+              </div>
+
+              <!-- Info -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h4 class="font-bold text-slate-800 truncate"><%= clinic.display_name %></h4>
+                  <% if clinic.owner == @user %>
+                    <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">
+                      👑 المالك
+                    </span>
+                  <% end %>
+                  <% if !is_complete %>
+                    <span class="text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full">
+                      ⚠️ ناقص
+                    </span>
+                  <% elsif clinic.is_public %>
+                    <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                      ✅ عام
+                    </span>
+                  <% end %>
+                </div>
+
+                <div class="flex flex-wrap gap-3 mt-2 text-xs text-slate-500">
+                  <% if clinic.city.present? %>
+                    <span>📍 <%= clinic.city %></span>
+                  <% end %>
+                  <% if clinic.specialty.present? %>
+                    <span>🩺 <%= clinic.specialty %></span>
+                  <% end %>
+                  <% if clinic.phone.present? %>
+                    <span dir="ltr">📞 <%= clinic.phone %></span>
+                  <% end %>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center gap-2 mt-3 flex-wrap">
+                  <% if !is_complete %>
+                    <%= link_to "🏥 أكمل البيانات", edit_dashboard_clinic_path(clinic),
+                          class: "text-xs font-bold text-white bg-amber-500 hover:bg-amber-600 px-3 py-1.5 rounded-lg" %>
+                  <% end %>
+                  <%= link_to "👁️ عرض", dashboard_clinic_path(clinic),
+                        class: "text-xs font-semibold text-teal-600 hover:text-teal-800" %>
+                  <%= link_to "✏️ تعديل", edit_dashboard_clinic_path(clinic),
+                        class: "text-xs font-semibold text-slate-600 hover:text-slate-800" %>
+                </div>
+              </div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+
+    <% else %>
+
+      <!-- Empty state — NO CLINIC YET -->
+      <div class="p-12 text-center">
+        <div class="w-20 h-20 mx-auto rounded-3xl bg-teal-50 text-teal-600 flex items-center justify-center text-4xl mb-5">
+          🏥
+        </div>
+        <h4 class="text-lg font-bold text-slate-800 mb-2">لا توجد عيادة بعد</h4>
+        <p class="text-sm text-slate-500 mb-6 max-w-sm mx-auto">
+          أنشئ عيادتك الأولى لتبدأ بإدارة المرضى والمواعيد والتقارير.
+        </p>
+        <%= link_to new_dashboard_clinic_path,
+              class: "inline-flex items-center gap-2 bg-teal-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-teal-700 shadow-md" do %>
+          ＋ إنشاء عيادة جديدة
+        <% end %>
+      </div>
+
+    <% end %>
+  </div>
+
+  <!-- Change password -->
+  <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+    <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+      🔒 تغيير كلمة المرور
+    </h3>
+    <%= form_with url: update_profile_password_path, method: :patch, class: "grid grid-cols-1 md:grid-cols-3 gap-3" do %>
+      <%= password_field_tag :current_password, nil, placeholder: "كلمة المرور الحالية", required: true,
+            class: "border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:border-teal-500" %>
+      <%= password_field_tag :password, nil, placeholder: "كلمة المرور الجديدة", required: true,
+            class: "border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:border-teal-500" %>
+      <%= password_field_tag :password_confirmation, nil, placeholder: "تأكيد كلمة المرور", required: true,
+            class: "border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:border-teal-500" %>
+      <div class="md:col-span-3">
+        <%= submit_tag "🔄 تحديث كلمة المرور",
+              class: "bg-slate-800 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-slate-900 cursor-pointer" %>
+      </div>
+    <% end %>
+  </div>
+
+</div>

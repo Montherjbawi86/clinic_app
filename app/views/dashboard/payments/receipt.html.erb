@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="utf-8">
+  <style>
+    @page {
+      size: A5;
+      margin: 8mm;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: "Noto Naskh Arabic", "Geeza Pro", "Amiri", "Arial", sans-serif;
+      color: #1e293b;
+      font-size: 12px;
+      line-height: 1.4;
+      direction: rtl;
+    }
+
+    /* ============ CLINIC HEADER ============ */
+    .header {
+      text-align: center;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #0d9488;
+      margin-bottom: 10px;
+    }
+    .clinic-name {
+      font-size: 18px;
+      font-weight: bold;
+      color: #0d9488;
+      margin-bottom: 2px;
+    }
+    .clinic-info {
+      font-size: 10px;
+      color: #64748b;
+      line-height: 1.4;
+    }
+
+    /* ============ RECEIPT TITLE ============ */
+    .receipt-title {
+      text-align: center;
+      font-size: 14px;
+      font-weight: bold;
+      color: #0f766e;
+      background: #f0fdfa;
+      border: 1px solid #14b8a6;
+      border-radius: 6px;
+      padding: 6px 12px;
+      margin: 8px 0;
+    }
+    .receipt-number {
+      font-size: 10px;
+      color: #64748b;
+      font-weight: normal;
+    }
+
+    /* ============ WHO PAID (patient) ============ */
+    .payer-box {
+      background: #ecfeff;
+      border: 2px solid #06b6d4;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .payer-label {
+      font-size: 10px;
+      color: #0e7490;
+      font-weight: bold;
+      margin-bottom: 3px;
+    }
+    .payer-name {
+      font-size: 16px;
+      font-weight: bold;
+      color: #0f172a;
+    }
+    .payer-meta {
+      font-size: 10px;
+      color: #64748b;
+      margin-top: 3px;
+    }
+
+    /* ============ INFO TABLE ============ */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 10px;
+    }
+    .info-table td {
+      padding: 5px 8px;
+      font-size: 11px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .info-table tr:last-child td {
+      border-bottom: none;
+    }
+    .info-label {
+      color: #64748b;
+      width: 45%;
+      font-weight: 500;
+    }
+    .info-value {
+      color: #0f172a;
+      font-weight: bold;
+      text-align: left;
+    }
+
+    /* ============ AMOUNT BOX ============ */
+    .amount-box {
+      background: #0d9488;
+      color: white;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      margin: 10px 0;
+    }
+    .amount-label {
+      font-size: 10px;
+      opacity: 0.9;
+      margin-bottom: 4px;
+    }
+    .amount-value {
+      font-size: 24px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+
+    /* ============ STATUS BADGE ============ */
+    .status-row {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 16px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .status-paid {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .status-failed {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .status-refunded {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    /* ============ NOTES ============ */
+    .notes-box {
+      background: #fefce8;
+      border: 1px solid #facc15;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 10px;
+      color: #713f12;
+      margin-bottom: 8px;
+    }
+
+    /* ============ SIGNATURE ============ */
+    .signature-area {
+      margin-top: 12px;
+      text-align: left;
+    }
+    .signature-line {
+      display: inline-block;
+      border-top: 1px solid #94a3b8;
+      padding-top: 3px;
+      width: 140px;
+      font-size: 10px;
+      color: #64748b;
+      text-align: center;
+    }
+
+    /* ============ FOOTER ============ */
+    .footer {
+      margin-top: 10px;
+      padding-top: 6px;
+      border-top: 1px solid #e2e8f0;
+      text-align: center;
+      font-size: 9px;
+      color: #94a3b8;
+    }
+    .footer-thanks {
+      color: #0d9488;
+      font-weight: bold;
+      font-size: 11px;
+      margin-bottom: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CLINIC HEADER -->
+  <div class="header">
+    <div class="clinic-name"><%= current_clinic&.name_ar.presence || current_clinic&.name || "ClinicApp" %></div>
+    <div class="clinic-info">
+      <%= current_clinic&.address_ar.presence || current_clinic&.address %>
+      <% if current_clinic&.phone.present? %> · 📞 <%= current_clinic.phone %><% end %>
+      <% if current_clinic&.email.present? %> · ✉️ <%= current_clinic.email %><% end %>
+    </div>
+  </div>
+
+  <!-- RECEIPT TITLE -->
+  <div class="receipt-title">
+    💳 إيصال دفع
+    <div class="receipt-number">رقم الإيصال: #<%= @payment.id.to_s.rjust(6, "0") %></div>
+  </div>
+
+  <!-- WHO PAID -->
+  <% if @payment.patient %>
+    <div class="payer-box">
+      <div class="payer-label">المريض الدافع</div>
+      <div class="payer-name"><%= @payment.patient.display_name %></div>
+      <% if @payment.patient.phone.present? %>
+        <div class="payer-meta">📞 <%= @payment.patient.phone %></div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- INFO ROWS -->
+  <table class="info-table">
+    <tr>
+      <td class="info-label">📅 التاريخ</td>
+      <td class="info-value"><%= @payment.created_at.strftime("%Y-%m-%d · %H:%M") %></td>
+    </tr>
+    <tr>
+      <td class="info-label">💳 طريقة الدفع</td>
+      <td class="info-value">
+        <%= {
+          "cash"      => "💵 نقدي",
+          "card"      => "💳 بطاقة",
+          "transfer"  => "🏦 حوالة",
+          "insurance" => "🛡️ تأمين",
+          "stripe"    => "🌐 إلكتروني"
+        }[@payment.method] || @payment.method.presence || "—" %>
+      </td>
+    </tr>
+    <% if @payment.reference.present? %>
+      <tr>
+        <td class="info-label">🔖 المرجع</td>
+        <td class="info-value"><%= @payment.reference %></td>
+      </tr>
+    <% end %>
+    <tr>
+      <td class="info-label">👨‍⚕️ المسجِّل</td>
+      <td class="info-value"><%= @payment.user&.name || "—" %></td>
+    </tr>
+  </table>
+
+  <!-- STATUS -->
+  <% 
+    status_class = case @payment.status
+                   when "paid"     then "status-paid"
+                   when "pending"  then "status-pending"
+                   when "failed"   then "status-failed"
+                   when "refunded" then "status-refunded"
+                   else "status-pending"
+                   end
+    status_label = {
+      "paid"      => "✅ مدفوعة",
+      "pending"   => "⏳ معلّقة",
+      "failed"    => "❌ فشلت",
+      "refunded"  => "↩️ مسترجعة",
+      "cancelled" => "🚫 ملغاة"
+    }[@payment.status] || @payment.status
+  %>
+  <div class="status-row">
+    <span class="status-badge <%= status_class %>"><%= status_label %></span>
+  </div>
+
+  <!-- AMOUNT -->
+  <div class="amount-box">
+    <div class="amount-label">المبلغ المدفوع</div>
+    <div class="amount-value"><%= @payment.display_amount %></div>
+  </div>
+
+  <!-- NOTES -->
+  <% if @payment.notes.present? %>
+    <div class="notes-box">
+      📝 <%= @payment.notes %>
+    </div>
+  <% end %>
+
+  <!-- SIGNATURE -->
+  <div class="signature-area">
+    <div class="signature-line">توقيع المستلم</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-thanks">شكراً لتعاملكم معنا</div>
+    <div>إيصال إلكتروني من نظام ClinicApp · <%= Time.current.strftime("%Y-%m-%d %H:%M") %></div>
+  </div>
+
+</body>
+</html>
