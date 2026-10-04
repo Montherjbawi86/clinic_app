@@ -73,7 +73,7 @@
           ]],
           [ nil, [
             ["🤖", "nav.chat", dashboard_chat_path, false],
-          ]],
+          ] + (current_user&.super_admin? ? [["👑", "Admin", admin_root_path, true]] : [])],
         ]
       %>
 
@@ -128,6 +128,13 @@
           <%= button_to "EN", switch_locale_path(locale: "en"), method: :post,
                 class: "px-2.5 py-1 text-xs font-bold rounded-md #{I18n.locale == :en ? 'bg-white shadow text-teal-600' : 'text-slate-500'} cursor-pointer" %>
         </div>
+
+        <% if current_user&.super_admin? %>
+          <%= link_to admin_root_path,
+                class: "px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-100 text-amber-800 hover:bg-amber-200 flex items-center gap-1.5" do %>
+            👑 Admin
+          <% end %>
+        <% end %>
 
         <%= link_to notifications_path, class: "relative p-2 rounded-lg hover:bg-slate-100 text-slate-600" do %>
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">

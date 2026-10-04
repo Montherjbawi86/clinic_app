@@ -1,0 +1,31 @@
+<%
+  is_last = @step == "followup"
+%>
+
+<div class="flex flex-wrap gap-3 mt-6 pt-5 border-t border-slate-100">
+  <% if is_last %>
+    <%= button_tag "✓ إكمال الزيارة",
+          type: "submit",
+          name: "next_action",
+          value: "close",
+          class: "flex-1 min-w-[140px] bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold cursor-pointer shadow-md shadow-emerald-500/20" %>
+  <% else %>
+    <%= button_tag "✓ حفظ والمتابعة ←",
+          type: "submit",
+          name: "next_action",
+          value: "next",
+          class: "flex-1 min-w-[140px] bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-xl font-bold cursor-pointer shadow-md shadow-teal-500/20" %>
+
+    <%= button_tag "⏭️ تخطي",
+          type: "submit",
+          name: "next_action",
+          value: "skip",
+          class: "flex-1 min-w-[100px] bg-white border-2 border-slate-300 text-slate-700 hover:bg-slate-50 px-6 py-3 rounded-xl font-bold cursor-pointer" %>
+
+    <%= button_tag "✕ إغلاق",
+          type: "submit",
+          name: "next_action",
+          value: "close",
+          class: "flex-1 min-w-[100px] bg-white border-2 border-slate-300 text-slate-700 hover:bg-slate-50 px-6 py-3 rounded-xl font-bold cursor-pointer" %>
+  <% end %>
+</div>

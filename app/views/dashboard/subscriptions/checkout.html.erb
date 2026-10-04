@@ -1,0 +1,101 @@
+<% content_for :title, "#{t('subscriptions.checkout.title')} — ClinicApp" %>
+
+<div class="max-w-2xl mx-auto space-y-5">
+  <%= link_to "← #{t('subscriptions.title')}", dashboard_subscriptions_path,
+        class: "text-sm text-teal-600 hover:underline" %>
+
+  <div>
+    <h1 class="text-2xl font-bold text-slate-800">💳 <%= t("subscriptions.checkout.title") %></h1>
+    <p class="text-slate-500 mt-1">
+      <%= @plan.titleize %> —
+      <strong><%= number_to_currency(@price, unit: "SYP ", precision: 0) %></strong>
+    </p>
+  </div>
+
+  <div class="bg-gradient-to-br from-teal-50 to-cyan-50 border-2 border-teal-200 rounded-2xl p-5">
+    <div class="flex items-start gap-3">
+      <div class="text-2xl">📋</div>
+      <div class="flex-1">
+        <h2 class="font-bold text-slate-800 mb-2"><%= t("subscriptions.checkout.step1") %></h2>
+        <p class="text-sm text-slate-600 mb-3">
+          <%= t("subscriptions.checkout.transfer_amount", amount: number_to_currency(@price, unit: "SYP ", precision: 0)) %>
+        </p>
+
+        <div class="space-y-2 text-sm">
+          <div class="bg-white rounded-lg p-3 border border-slate-200">
+            <div class="font-semibold text-slate-800">📱 Sham Cash</div>
+            <div class="text-slate-600 font-mono" dir="ltr">0999 123 456</div>
+          </div>
+          <div class="bg-white rounded-lg p-3 border border-slate-200">
+            <div class="font-semibold text-slate-800">🏦 Bank Transfer</div>
+            <div class="text-slate-600 font-mono" dir="ltr">SY12 3456 7890 1234 5678</div>
+          </div>
+          <div class="bg-white rounded-lg p-3 border border-slate-200">
+            <div class="font-semibold text-slate-800">📞 Syriatel Cash</div>
+            <div class="text-slate-600 font-mono" dir="ltr">0999 654 321</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%= form_with url: submit_payment_dashboard_subscriptions_path,
+        method: :post, multipart: true, class: "space-y-4" do %>
+
+    <%= hidden_field_tag :plan, @plan %>
+
+    <div class="bg-white border-2 border-slate-200 rounded-2xl p-5">
+      <div class="flex items-start gap-3 mb-4">
+        <div class="text-2xl">📸</div>
+        <div>
+          <h2 class="font-bold text-slate-800"><%= t("subscriptions.checkout.step2") %></h2>
+          <p class="text-sm text-slate-500"><%= t("subscriptions.checkout.upload_hint") %></p>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+            <div>
+          <div class="text-sm font-medium text-slate-700 mb-1"><%= t("subscriptions.checkout.label_method") %></div>
+          <%= select_tag :payment_method,
+                options_for_select([
+                  ["Sham Cash",     "sham_cash"],
+                  ["Bank Transfer", "bank_transfer"],
+                  ["Cash",          "cash"],
+                  ["Syriatel Cash", "syriatel_cash"]
+                ]),
+                class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+        </div>
+
+        <div>
+          <%= label_tag :transaction_reference, t("subscriptions.checkout.reference"),
+                class: "block text-sm font-medium text-slate-700 mb-1" %>
+          <%= text_field_tag :transaction_reference, nil,
+                placeholder: "TXN-12345678", dir: "ltr",
+                class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+        </div>
+
+        <div>
+          <%= label_tag :payment_proof, t("subscriptions.checkout.proof"),
+                class: "block text-sm font-medium text-slate-700 mb-1" %>
+          <%= file_field_tag :payment_proof, accept: "image/*", required: true,
+                class: "w-full border-2 border-dashed border-teal-300 rounded-lg px-3 py-6 bg-teal-50/30 cursor-pointer" %>
+          <p class="text-xs text-slate-500 mt-1">PNG / JPG — max 5 MB</p>
+        </div>
+
+        <div>
+          <%= label_tag :payment_proof_note, t("subscriptions.checkout.note"),
+                class: "block text-sm font-medium text-slate-700 mb-1" %>
+          <%= text_area_tag :payment_proof_note, nil, rows: 2,
+                class: "w-full border border-slate-300 rounded-lg px-3 py-2" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex gap-2 justify-end">
+      <%= link_to t("actions.cancel"), dashboard_subscriptions_path,
+            class: "px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-semibold" %>
+      <%= submit_tag t("subscriptions.checkout.submit"),
+            class: "bg-teal-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-teal-700 cursor-pointer" %>
+    </div>
+  <% end %>
+</div>

@@ -15,6 +15,9 @@ class Dashboard::PatientsController < Dashboard::BaseController
       when "allergies"  then scope.where("allergies IS NOT NULL AND allergies != ''")
       when "insurance"  then scope.where("insurance_provider IS NOT NULL AND insurance_provider != ''")
       when "chronic"    then scope.where("chronic_conditions IS NOT NULL AND chronic_conditions != ''")
+      when "in_clinic"  then scope.where(id: current_clinic.appointments.where(appointment_date: Date.current, status: %w[checked_in in_progress]).select(:patient_id))
+      when "today"      then scope.where(id: current_clinic.appointments.where(appointment_date: Date.current).select(:patient_id))
+      when "pending"    then scope.where(id: current_clinic.payments.pending.select(:patient_id))
       else scope
       end
 
@@ -31,10 +34,44 @@ class Dashboard::PatientsController < Dashboard::BaseController
     @patients = scope
 
     # Stats
-    @total_count    = current_clinic.patients.count
-    @new_month      = current_clinic.patients.where(created_at: Time.current.all_month).count
+    @total_count     = current_clinic.patients.count
+    @new_month       = current_clinic.patients.where(created_at: Time.current.all_month).count
     @allergies_count = current_clinic.patients.where("allergies IS NOT NULL AND allergies != ''").count
     @insurance_count = current_clinic.patients.where("insurance_provider IS NOT NULL AND insurance_provider != ''").count
+
+    # Status filters counts
+    @in_clinic_count = current_clinic.patients.where(id: current_clinic.appointments.where(appointment_date: Date.current, status: %w[checked_in in_progress]).select(:patient_id)).count
+    @today_count     = current_clinic.patients.where(id: current_clinic.appointments.where(appointment_date: Date.current).select(:patient_id)).count
+    @pending_count   = current_clinic.patients.where(id: current_clinic.payments.pending.select(:patient_id)).count
+
+    # Preload patient status data (avoids N+1)
+    patient_ids = @patients.map(&:id)
+    today = Date.current
+
+    @today_appts = current_clinic.appointments
+                                 .where(patient_id: patient_ids, appointment_date: today)
+                                 .order(:appointment_time)
+                                 .group_by(&:patient_id)
+
+    @upcoming_appts = current_clinic.appointments
+                                    .where(patient_id: patient_ids)
+                                    .where("appointment_date > ?", today)
+                                    .where("appointment_date <= ?", today + 7.days)
+                                    .where(status: %w[scheduled confirmed])
+                                    .order(:appointment_date, :appointment_time)
+                                    .group_by(&:patient_id)
+
+    @recent_meds = current_clinic.medications
+                                 .where(patient_id: patient_ids)
+                                 .where("created_at > ?", 30.days.ago)
+                                 .order(created_at: :desc)
+                                 .group_by(&:patient_id)
+
+    @pending_payments = current_clinic.payments
+                                      .pending
+                                      .where(patient_id: patient_ids)
+                                      .group(:patient_id)
+                                      .sum(:amount)
 
     respond_to do |format|
       format.html
@@ -61,17 +98,14 @@ class Dashboard::PatientsController < Dashboard::BaseController
   end
 
   def show
-    # Visit history — group everything by appointment
     @visits = @patient.appointments
                      .includes(:doctor, :medications, :medical_report, :payment)
                      .order(appointment_date: :desc, appointment_time: :desc)
 
-    # Items not linked to an appointment
     @loose_medications = @patient.medications.where(appointment_id: nil).recent
     @loose_reports     = @patient.medical_reports.where(appointment_id: nil).recent.limit(5)
     @loose_payments    = @patient.payments.where(appointment_id: nil).recent.limit(5)
 
-    # Stats
     @visits_count       = @visits.where(status: "completed").count
     @total_paid         = @patient.payments.paid.sum(:amount)
     @balance_due        = @patient.payments.pending.sum(:amount)
@@ -112,7 +146,6 @@ class Dashboard::PatientsController < Dashboard::BaseController
   def timeline
     @events = []
 
-    # Build all events
     @patient.appointments.each    { |a| @events << { at: a.created_at, type: "appointment", record: a } }
     @patient.medical_reports.each { |r| @events << { at: r.created_at, type: "report",      record: r } }
     @patient.medications.each     { |m| @events << { at: m.created_at, type: "medication",  record: m } }
@@ -120,12 +153,10 @@ class Dashboard::PatientsController < Dashboard::BaseController
     @patient.transfers.each       { |t| @events << { at: t.created_at, type: "transfer",    record: t } }
     @patient.medical_images.each  { |i| @events << { at: i.created_at, type: "image",       record: i } }
 
-    # Filter by type if requested
     if params[:type].present? && params[:type] != "all"
       @events = @events.select { |e| e[:type] == params[:type] }
     end
 
-    # Filter by date range
     if params[:from].present?
       from = Date.parse(params[:from]) rescue nil
       @events = @events.select { |e| e[:at].to_date >= from } if from
@@ -136,12 +167,8 @@ class Dashboard::PatientsController < Dashboard::BaseController
     end
 
     @events.sort_by! { |e| -e[:at].to_i }
-
-    # Group by month for display
     @events_by_month = @events.group_by { |e| e[:at].strftime("%Y-%m") }
 
-    # Counts per type
-    @type_counts = @patient.appointments.count  # placeholder, replaced below
     all_events = []
     @patient.appointments.each    { |a| all_events << "appointment" }
     @patient.medical_reports.each { |r| all_events << "report" }
@@ -154,6 +181,10 @@ class Dashboard::PatientsController < Dashboard::BaseController
     @current_filter = params[:type].presence || "all"
     @current_from   = params[:from]
     @current_to     = params[:to]
+
+    @vitals_service = VitalsChartData.new(@patient)
+    @vitals_data    = @vitals_service.all_series
+    @vitals_present = @vitals_service.any_data?
   end
 
   def new

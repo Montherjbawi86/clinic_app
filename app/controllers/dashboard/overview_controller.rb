@@ -37,5 +37,11 @@ class Dashboard::OverviewController < Dashboard::BaseController
                                        .where(appointment_date: (today + 1.day)..(today + 7.days))
                                        .where.not(status: %w[cancelled no_show])
                                        .count
+
+    # Pending public bookings — need clinic accept/reject
+    @pending_bookings = current_clinic.appointments
+                                      .where(source: "public_booking", status: "scheduled")
+                                      .includes(:patient)
+                                      .order(appointment_date: :asc, appointment_time: :asc)
   end
 end

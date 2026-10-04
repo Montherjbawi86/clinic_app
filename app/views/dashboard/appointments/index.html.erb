@@ -39,6 +39,7 @@
         ["open",      t("appointments.filters.open"),      @counts[:open]],
         ["completed", t("appointments.filters.completed"), @counts[:completed]],
         ["cancelled", t("appointments.filters.cancelled"), @counts[:cancelled]],
+        ["pending_bookings", "🔔 طلبات جديدة", @counts[:pending_bookings]],
       ]
     %>
     <% tabs.each do |key, label, count| %>

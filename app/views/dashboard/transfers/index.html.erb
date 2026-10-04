@@ -1,22 +1,22 @@
-<% content_for :title, "التحويلات — ClinicApp" %>
+<% content_for :title, "#{t('transfers.title')} — ClinicApp" %>
 
 <div class="space-y-6">
   <div>
-    <h1 class="text-2xl font-bold text-slate-800">🚑 التحويلات</h1>
-    <p class="text-slate-500 mt-1">Transfer patients to another clinic.</p>
+    <h1 class="text-2xl font-bold text-slate-800">🚑 <%= t("transfers.title") %></h1>
+    <p class="text-slate-500 mt-1"><%= t("transfers.subtitle") %></p>
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
     <!-- Create form -->
     <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm lg:col-span-1 h-fit">
-      <h2 class="font-semibold text-slate-800 mb-4">New Transfer</h2>
+      <h2 class="font-semibold text-slate-800 mb-4"><%= t("transfers.new_transfer") %></h2>
 
       <% if @destination_clinics.empty? %>
         <div class="text-sm text-slate-500 bg-slate-50 rounded-lg p-4 border border-slate-200">
-          ⚠️ لا توجد عيادات أخرى لتحويل المرضى إليها.
+          <%= t("transfers.no_destinations_title") %>
           <div class="text-xs mt-1 text-slate-400">
-            أنشئ عيادة ثانية من <strong>العيادات</strong> لتتمكن من التحويل.
+            <%= t("transfers.no_destinations_hint").sub(t("transfers.no_destinations_hint_strong"), "").html_safe rescue t("transfers.no_destinations_hint") %>
           </div>
         </div>
       <% else %>
@@ -28,27 +28,27 @@
           <% end %>
 
           <div>
-            <%= f.label :patient_id, class: "block text-sm font-medium text-slate-700 mb-1" %>
+            <%= f.label :patient_id, t("transfers.form.patient"), class: "block text-sm font-medium text-slate-700 mb-1" %>
             <%= f.collection_select :patient_id, @patients, :id, :display_name,
-                  { prompt: "Select patient" },
+                  { prompt: t("transfers.form.select_patient") },
                   class: "w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500" %>
           </div>
 
           <div>
-            <%= f.label :to_clinic_id, "Destination Clinic",
+            <%= f.label :to_clinic_id, t("transfers.form.destination"),
                   class: "block text-sm font-medium text-slate-700 mb-1" %>
             <%= f.collection_select :to_clinic_id, @destination_clinics, :id, :display_name,
-                  { prompt: "Select destination" },
+                  { prompt: t("transfers.form.select_destination") },
                   class: "w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500" %>
           </div>
 
           <div>
-            <%= f.label :reason, class: "block text-sm font-medium text-slate-700 mb-1" %>
-            <%= f.text_area :reason, rows: 3, placeholder: "Reason for transfer…",
+            <%= f.label :reason, t("transfers.form.reason"), class: "block text-sm font-medium text-slate-700 mb-1" %>
+            <%= f.text_area :reason, rows: 3, placeholder: t("transfers.form.reason_placeholder"),
                   class: "w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500" %>
           </div>
 
-          <%= f.submit "Create Transfer",
+          <%= f.submit t("transfers.form.submit"),
                 class: "w-full bg-teal-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-teal-700 cursor-pointer" %>
         <% end %>
       <% end %>
@@ -60,40 +60,41 @@
         <table class="w-full text-sm">
           <thead class="bg-slate-50 text-slate-500">
             <tr>
-              <th class="text-start px-5 py-3 font-medium">Patient</th>
-              <th class="text-start px-5 py-3 font-medium">From</th>
-              <th class="text-start px-5 py-3 font-medium">To</th>
-              <th class="text-start px-5 py-3 font-medium">Status</th>
-              <th class="text-start px-5 py-3 font-medium">Created</th>
+              <th class="text-start px-5 py-3 font-medium"><%= t("transfers.table.patient") %></th>
+              <th class="text-start px-5 py-3 font-medium"><%= t("transfers.table.from") %></th>
+              <th class="text-start px-5 py-3 font-medium"><%= t("transfers.table.to") %></th>
+              <th class="text-start px-5 py-3 font-medium"><%= t("transfers.table.status") %></th>
+              <th class="text-start px-5 py-3 font-medium"><%= t("transfers.table.created") %></th>
               <th class="px-5 py-3"></th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
-            <% @transfers.each do |t| %>
+            <% @transfers.each do |tr| %>
               <tr class="hover:bg-slate-50">
                 <td class="px-5 py-3 font-medium text-slate-800">
-                  <%= link_to t.patient&.display_name, dashboard_patient_path(t.patient),
-                        class: "hover:text-teal-600" if t.patient %>
+                  <%= link_to tr.patient&.display_name, dashboard_patient_path(tr.patient),
+                        class: "hover:text-teal-600" if tr.patient %>
                 </td>
-                <td class="px-5 py-3 text-slate-600"><%= t.from_clinic&.display_name || "—" %></td>
-                <td class="px-5 py-3 text-slate-600"><%= t.to_clinic&.display_name || "—" %></td>
+                <td class="px-5 py-3 text-slate-600"><%= tr.from_clinic&.display_name || t("transfers.none") %></td>
+                <td class="px-5 py-3 text-slate-600"><%= tr.to_clinic&.display_name || t("transfers.none") %></td>
                 <td class="px-5 py-3">
                   <%
                     badge =
-                      case t.status
+                      case tr.status
                       when "pending"   then "bg-amber-50 text-amber-700"
                       when "accepted"  then "bg-emerald-50 text-emerald-700"
                       when "rejected", "cancelled" then "bg-rose-50 text-rose-700"
                       when "completed" then "bg-teal-50 text-teal-700"
                       else "bg-slate-100 text-slate-700"
                       end
+                    status_label = t("transfers.statuses.#{tr.status}", default: tr.status)
                   %>
-                  <span class="text-xs font-semibold px-2 py-1 rounded-full <%= badge %>"><%= t.status %></span>
+                  <span class="text-xs font-semibold px-2 py-1 rounded-full <%= badge %>"><%= status_label %></span>
                 </td>
-                <td class="px-5 py-3 text-slate-500"><%= t.created_at.strftime("%Y-%m-%d") %></td>
+                <td class="px-5 py-3 text-slate-500"><%= tr.created_at.strftime("%Y-%m-%d") %></td>
                 <td class="px-5 py-3 text-end">
-                  <%= button_to "Delete", dashboard_transfer_path(t), method: :delete,
-                        data: { turbo_confirm: "Delete this transfer?" },
+                  <%= button_to t("transfers.actions.delete"), dashboard_transfer_path(tr), method: :delete,
+                        data: { turbo_confirm: t("transfers.confirm.delete") },
                         class: "text-xs text-rose-600 hover:text-rose-800 font-semibold" %>
                 </td>
               </tr>
@@ -103,11 +104,9 @@
       <% else %>
         <div class="p-12 text-center">
           <div class="text-5xl">🚑</div>
-          <div class="text-slate-500 mt-3 text-sm">No transfers yet.</div>
+          <div class="text-slate-500 mt-3 text-sm"><%= t("transfers.empty") %></div>
           <% if @destination_clinics.empty? %>
-            <div class="text-xs text-slate-400 mt-2">
-              Create a second clinic first to enable transfers.
-            </div>
+            <div class="text-xs text-slate-400 mt-2"><%= t("transfers.empty_hint") %></div>
           <% end %>
         </div>
       <% end %>

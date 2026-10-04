@@ -1,0 +1,89 @@
+<% content_for :title, @clinic.display_name %>
+
+<div class="space-y-5">
+  <%= link_to "← #{t('admin.show.back')}", admin_clinics_path, class: "text-sm text-teal-600 hover:underline" %>
+
+  <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+    <div class="flex items-start justify-between flex-wrap gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-800"><%= @clinic.display_name %></h1>
+        <p class="text-slate-500 mt-1 text-sm"><%= @clinic.city.presence || "—" %> · <%= @clinic.specialty.presence || "—" %></p>
+        <p class="text-xs text-slate-400 mt-1">Owner: <%= @clinic.owner&.name %> (<%= @clinic.owner&.email %>)</p>
+      </div>
+      <% if @clinic.suspended? %>
+        <span class="text-sm font-semibold px-3 py-1.5 rounded-full bg-rose-100 text-rose-700">suspended</span>
+      <% else %>
+        <span class="text-sm font-semibold px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700">active</span>
+      <% end %>
+    </div>
+
+    <div class="grid grid-cols-3 gap-3 mt-6">
+      <div class="p-3 rounded-lg bg-slate-50">
+        <div class="text-xs text-slate-500"><%= t("admin.show.patients_count") %></div>
+        <div class="text-xl font-bold text-slate-800"><%= @clinic.patients.count %></div>
+      </div>
+      <div class="p-3 rounded-lg bg-slate-50">
+        <div class="text-xs text-slate-500"><%= t("admin.show.appointments_count") %></div>
+        <div class="text-xl font-bold text-slate-800"><%= @clinic.appointments.count %></div>
+      </div>
+      <div class="p-3 rounded-lg bg-slate-50">
+        <div class="text-xs text-slate-500">Team</div>
+        <div class="text-xl font-bold text-slate-800"><%= @clinic.clinic_members.count %></div>
+      </div>
+    </div>
+
+    <!-- Admin actions -->
+    <div class="mt-6 pt-5 border-t border-slate-100">
+      <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Admin Actions</div>
+      <div class="flex flex-wrap gap-2">
+
+        <%= button_to (@clinic.is_public ? "🙈 Unpublish" : "🌐 Publish"),
+              toggle_public_admin_clinic_path(@clinic),
+              method: :patch,
+              class: "text-sm bg-slate-800 text-white px-4 py-2 rounded-lg font-semibold hover:bg-slate-900" %>
+
+        <% if @clinic.suspended? %>
+          <%= button_to "✅ Reactivate",
+                activate_admin_clinic_path(@clinic),
+                method: :patch,
+                class: "text-sm bg-emerald-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-emerald-700" %>
+        <% else %>
+          <%= button_to "🚫 Deactivate",
+                deactivate_admin_clinic_path(@clinic),
+                method: :patch,
+                data: { turbo_confirm: "Deactivate this clinic? It will be hidden from the public directory." },
+                class: "text-sm bg-rose-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-rose-700" %>
+        <% end %>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm">
+    <div class="p-4 border-b border-slate-100">
+      <h2 class="font-semibold text-slate-800"><%= t("admin.nav.subscriptions") %></h2>
+    </div>
+    <% if @subscriptions.any? %>
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 text-slate-500">
+          <tr>
+            <th class="text-start px-5 py-3 font-medium"><%= t("admin.subscriptions.table.plan") %></th>
+            <th class="text-start px-5 py-3 font-medium"><%= t("admin.subscriptions.table.status") %></th>
+            <th class="text-start px-5 py-3 font-medium"><%= t("admin.subscriptions.table.expires") %></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @subscriptions.each do |s| %>
+            <tr>
+              <td class="px-5 py-3 font-medium text-slate-800"><%= s.plan %></td>
+              <td class="px-5 py-3 text-slate-600"><%= s.status %></td>
+              <td class="px-5 py-3 text-slate-600"><%= s.expires_at&.strftime("%Y-%m-%d") || "—" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="p-6 text-center text-slate-400 text-sm">—</p>
+    <% end %>
+  </div>
+</div>

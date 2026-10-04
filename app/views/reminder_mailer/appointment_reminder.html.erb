@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="utf-8">
+</head>
+<body style="margin: 0; padding: 0; background: #f8fafc; font-family: 'Segoe UI', Tahoma, Arial, sans-serif;">
+  <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); border-radius: 16px 16px 0 0; padding: 30px; text-align: center; color: white;">
+      <div style="font-size: 48px; margin-bottom: 10px;">⏰</div>
+      <div style="font-size: 24px; font-weight: bold;">تذكير بموعدك</div>
+      <div style="font-size: 14px; opacity: 0.9; margin-top: 6px;"><%= @clinic.display_name %></div>
+    </div>
+
+    <!-- Body -->
+    <div style="background: white; padding: 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+
+      <p style="font-size: 16px; color: #1e293b; margin-bottom: 20px;">
+        مرحباً <strong><%= @patient.display_name %></strong>,
+      </p>
+
+      <p style="font-size: 15px; color: #475569; line-height: 1.7; margin-bottom: 24px;">
+        نود تذكيرك بموعدك <strong>غداً</strong>. يرجى الحضور قبل الموعد بـ 10 دقائق.
+      </p>
+
+      <!-- Appointment details card -->
+      <div style="background: #f0fdfa; border: 2px solid #14b8a6; border-radius: 14px; padding: 22px; margin: 20px 0;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 10px 0; color: #64748b; font-size: 14px;">📅 التاريخ</td>
+            <td style="padding: 10px 0; text-align: left; font-weight: bold; color: #0f172a; font-size: 16px;">
+              <%= @appointment.appointment_date.strftime("%A، %d %B %Y") rescue @appointment.appointment_date %>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 10px 0; color: #64748b; font-size: 14px;">🕐 الوقت</td>
+            <td style="padding: 10px 0; text-align: left; font-weight: bold; color: #0f172a; font-size: 16px;">
+              <%= @appointment.appointment_time&.strftime("%H:%M") %>
+            </td>
+          </tr>
+          <% if @doctor %>
+            <tr>
+              <td style="padding: 10px 0; color: #64748b; font-size: 14px;">👨‍⚕️ الطبيب</td>
+              <td style="padding: 10px 0; text-align: left; font-weight: bold; color: #0f172a;">
+                د. <%= @doctor.name %>
+              </td>
+            </tr>
+          <% end %>
+          <% if @clinic.address_display.present? %>
+            <tr>
+              <td style="padding: 10px 0; color: #64748b; font-size: 14px;">📍 المكان</td>
+              <td style="padding: 10px 0; text-align: left; font-weight: bold; color: #0f172a;">
+                <%= @clinic.address_display %>
+              </td>
+            </tr>
+          <% end %>
+          <% if @appointment.booking_ref.present? %>
+            <tr>
+              <td style="padding: 10px 0; color: #64748b; font-size: 14px;">🔖 رقم الحجز</td>
+              <td style="padding: 10px 0; text-align: left; font-weight: bold; color: #0d9488; direction: ltr;">
+                <%= @appointment.booking_ref %>
+              </td>
+            </tr>
+          <% end %>
+        </table>
+      </div>
+
+      <!-- Action buttons -->
+      <div style="text-align: center; margin: 28px 0;">
+        <a href="<%= @status_url %>"
+           style="display: inline-block; background: #0d9488; color: white; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px; margin-bottom: 10px;">
+          🔍 عرض تفاصيل الموعد
+        </a>
+      </div>
+
+      <% if @clinic.phone.present? %>
+        <div style="text-align: center; margin-top: 20px;">
+          <div style="font-size: 13px; color: #64748b; margin-bottom: 8px;">هل تحتاج إلى تغيير الموعد؟</div>
+          <a href="tel:<%= @clinic.phone %>"
+             style="display: inline-block; color: #0d9488; font-weight: bold; font-size: 15px; text-decoration: none;">
+            📞 اتصل: <%= @clinic.phone %>
+          </a>
+        </div>
+      <% end %>
+
+    </div>
+
+    <div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">
+      صادر من نظام ClinicApp — <a href="<%= root_url(host: default_url_host, only_path: false) rescue "#" %>" style="color: #94a3b8;">إلغاء الاشتراك</a>
+    </div>
+  </div>
+</body>
+</html>

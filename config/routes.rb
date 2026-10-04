@@ -1,3 +1,4 @@
+
 Rails.application.routes.draw do
   root "home#index"
 
@@ -48,14 +49,20 @@ Rails.application.routes.draw do
     get "calendar",            to: "calendars#index", as: :calendar
     get "calendar/day/:date",  to: "calendars#day",   as: :day_dashboard_calendar
 
-    resources :appointments, only: [:index, :show, :new, :create, :destroy] do
+     resources :appointments, only: [:index, :show, :new, :create, :destroy] do
       member do
+        post  :accept_booking
+        post  :reject_booking
+        get   :ics
+        get   :wizard
+        post  :wizard_save
         patch :check_in
         patch :start_visit
         patch :complete
         patch :cancel
         patch :no_show
         get   :prescription
+        post  :send_reminder
       end
     end
 
@@ -76,7 +83,13 @@ Rails.application.routes.draw do
         get   :receipt
       end
     end
-    resources :subscriptions, only: [:index]
+      resources :subscriptions, only: [:index] do
+      collection do
+        post :upgrade
+        get  :checkout
+        post :submit_payment
+      end
+    end
 
     get  "chat", to: "chat#index", as: :chat
     post "chat", to: "chat#create"
@@ -93,4 +106,41 @@ Rails.application.routes.draw do
   # Public clinic page (from directory)
   get "/c/:slug", to: "public_clinics#show", as: :public_clinic
 
+  # Public booking (patient-facing)
+  get  "/c/:slug/book",         to: "public_bookings#new",     as: :new_public_booking
+  post "/c/:slug/book",         to: "public_bookings#create",  as: :public_bookings
+  get  "/c/:slug/book/success", to: "public_bookings#success", as: :public_booking_success
+  get  "/c/:slug/book/status",  to: "public_bookings#status",  as: :public_booking_status
+
+
+  # Letter opener web UI (dev only)
+
+
+  namespace :admin do
+    root to: "dashboard#index"
+
+    resources :users, only: [:index, :show] do
+      member do
+        post  :impersonate
+        patch :deactivate
+        patch :activate
+        patch :reset_password
+      end
+    end
+
+    resources :clinics, only: [:index, :show] do
+      member do
+        patch :toggle_public
+        patch :deactivate
+        patch :activate
+      end
+    end
+
+    resources :subscriptions, only: [:index, :show, :update] do
+      member do
+        patch :confirm_payment
+        patch :reject_payment
+      end
+    end
+  end
 end

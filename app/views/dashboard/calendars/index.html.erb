@@ -1,4 +1,4 @@
-<% content_for :title, "التقويم — ClinicApp" %>
+<% content_for :title, "#{t('calendar.title')} — ClinicApp" %>
 <!-- CALENDAR-STYLES -->
 <style>
   .calendar-page { max-width: 1100px; margin: 0 auto; }
@@ -24,21 +24,13 @@
   .calendar-appt-line .time { font-weight: 600; }
   .calendar-appt-line .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .calendar-more { font-size: 8px; color: #94a3b8; padding-right: 8px; }
-
-  @media (min-width: 1024px) {
-    .calendar-page { max-width: 1000px; }
-  }
+  @media (min-width: 1024px) { .calendar-page { max-width: 1000px; } }
 </style>
 
-
 <%
-  month_names = {
-    1 => "يناير", 2 => "فبراير", 3 => "مارس", 4 => "أبريل",
-    5 => "مايو",  6 => "يونيو",  7 => "يوليو", 8 => "أغسطس",
-    9 => "سبتمبر", 10 => "أكتوبر", 11 => "نوفمبر", 12 => "ديسمبر"
-  }
-  # Week starts on Saturday (Arab week)
-  day_names = ["السبت", "الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة"]
+  # Localized month names via t() — no hardcoded hash
+  # Localized day names via t() — Arab week starts Saturday
+  day_keys = %w[saturday sunday monday tuesday wednesday thursday friday]
 
   prev_start = (@start_date - 1.month).beginning_of_month
   next_start = (@start_date + 1.month).beginning_of_month
@@ -60,7 +52,7 @@
         <% end %>
 
         <span class="px-4 py-1.5 text-sm font-bold text-slate-800 min-w-[120px] text-center">
-          <%= month_names[@start_date.month] %> <%= @start_date.year %>
+          <%= t("calendar.months.#{Date::MONTHNAMES[@start_date.month].downcase}") %> <%= @start_date.year %>
         </span>
 
         <%= link_to dashboard_calendar_path(start: next_start, doctor_id: @selected_doctor),
@@ -71,7 +63,7 @@
         <% end %>
       </div>
 
-      <%= link_to "اليوم",
+      <%= link_to t("calendar.today"),
             dashboard_calendar_path(start: Date.current.beginning_of_month, doctor_id: @selected_doctor),
             class: "text-xs font-semibold text-slate-600 hover:text-teal-600 px-3 py-1.5 bg-white border border-slate-200 rounded-lg" %>
     </div>
@@ -80,11 +72,11 @@
       <%= form_with url: dashboard_calendar_path, method: :get do %>
         <%= hidden_field_tag :start, @start_date %>
         <%= select_tag :doctor_id,
-              options_for_select([["كل الأطباء", ""]] + @doctors.map { |d| ["د. #{d.name}", d.id] }, @selected_doctor),
+              options_for_select([[t("calendar.all_doctors"), ""]] + @doctors.map { |d| ["#{t('calendar.doctor_prefix')} #{d.name}", d.id] }, @selected_doctor),
               onchange: "this.form.submit()",
               class: "text-xs border border-slate-300 rounded-lg px-2 py-1.5" %>
       <% end %>
-      <%= link_to "＋ موعد جديد",
+      <%= link_to t("calendar.new_appointment"),
             new_dashboard_appointment_path,
             class: "bg-teal-600 text-white rounded-lg px-3 py-1.5 text-xs font-semibold hover:bg-teal-700 shadow-sm" %>
     </div>
@@ -97,9 +89,9 @@
 
     <!-- Day-of-week header -->
     <div class="calendar-dow-header">
-      <% day_names.each do |day| %>
+      <% day_keys.each do |day_key| %>
         <div class="py-2 text-center text-xs font-bold text-slate-600">
-          <%= day %>
+          <%= t("calendar.days.#{day_key}") %>
         </div>
       <% end %>
     </div>
@@ -109,15 +101,13 @@
       month_end   = @start_date.end_of_month
 
       # Saturday = column 0. Ruby: Sun=0, Mon=1, Tue=2, Wed=3, Thu=4, Fri=5, Sat=6
-      # Convert: Sat(6) -> 0, Sun(0) -> 1, Mon(1) -> 2, Tue(2) -> 3, Wed(3) -> 4, Thu(4) -> 5, Fri(5) -> 6
-      first_col = (month_start.wday + 1) % 7
+      first_col  = (month_start.wday + 1) % 7
       grid_start = month_start - first_col.days
 
       last_col = (month_end.wday + 1) % 7
       tail = last_col == 6 ? 0 : 6 - last_col
       grid_end = month_end + tail.days
 
-      # Pad to exactly 6 weeks (42 days) so height is consistent
       days = (grid_start..grid_end).to_a
       while days.size < 42
         days << days.last + 1.day
@@ -167,11 +157,10 @@
                 </span>
               <% end %>
 
-              <!-- Green dot = free, Red dot = full -->
               <% if is_free %>
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1" title="<%= free_count %> فترة متاحة"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1" title="<%= t('calendar.free_slots_title', count: free_count) %>"></span>
               <% elsif is_full %>
-                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1" title="ممتلئ"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1" title="<%= t('calendar.full_day_title') %>"></span>
               <% end %>
             </div>
 
@@ -199,7 +188,7 @@
 
                 <% if appt_count > 1 %>
                   <div class="text-[9px] text-slate-400 leading-tight ps-2">
-                    +<%= appt_count - 1 %> أخرى
+                    <%= t("calendar.more_appointments", count: appt_count - 1) %>
                   </div>
                 <% end %>
               </div>
@@ -213,16 +202,16 @@
   <!-- Legend -->
   <div class="flex flex-wrap items-center gap-4 text-[11px] text-slate-500 pt-1">
     <span class="flex items-center gap-1.5">
-      <span class="w-2 h-2 rounded-full bg-emerald-500"></span> يوم به فترات متاحة
+      <span class="w-2 h-2 rounded-full bg-emerald-500"></span> <%= t("calendar.legend_free") %>
     </span>
     <span class="flex items-center gap-1.5">
-      <span class="w-2 h-2 rounded-full bg-rose-500"></span> يوم ممتلئ
+      <span class="w-2 h-2 rounded-full bg-rose-500"></span> <%= t("calendar.legend_full") %>
     </span>
     <span class="flex items-center gap-1.5">
-      <span class="w-2 h-2 rounded-full bg-teal-600"></span> اليوم
+      <span class="w-2 h-2 rounded-full bg-teal-600"></span> <%= t("calendar.legend_today") %>
     </span>
     <span class="text-slate-400">|</span>
-    <span>انقر على أي يوم لعرض الفترات</span>
+    <span><%= t("calendar.click_hint") %></span>
   </div>
 
 </div>

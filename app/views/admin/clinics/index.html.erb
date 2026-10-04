@@ -1,0 +1,62 @@
+<% content_for :title, t("admin.clinics.title") %>
+
+<div class="space-y-5">
+  <div class="flex items-center justify-between flex-wrap gap-3">
+    <h1 class="text-2xl font-bold text-slate-800">🏥 <%= t("admin.clinics.title") %></h1>
+    <%= form_with url: admin_clinics_path, method: :get, class: "flex gap-2" do %>
+      <input type="text" name="q" value="<%= params[:q] %>" placeholder="<%= t('admin.clinics.search_placeholder') %>"
+             class="border border-slate-300 rounded-lg px-3 py-2 text-sm w-64">
+      <button type="submit" class="bg-slate-800 text-white px-4 py-2 rounded-lg font-semibold text-sm"><%= t("actions.search") %></button>
+    <% end %>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <% if @clinics.any? %>
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 text-slate-500">
+          <tr>
+            <th class="text-start px-5 py-3 font-medium"><%= t("admin.clinics.table.id") %></th>
+            <th class="text-start px-5 py-3 font-medium"><%= t("admin.clinics.table.name") %></th>
+            <th class="text-start px-5 py-3 font-medium"><%= t("admin.clinics.table.owner") %></th>
+            <th class="text-start px-5 py-3 font-medium"><%= t("admin.clinics.table.city") %></th>
+            <th class="text-start px-5 py-3 font-medium"><%= t("admin.clinics.table.specialty") %></th>
+            <th class="text-start px-5 py-3 font-medium"><%= t("admin.clinics.table.plan") %></th>
+            <th class="text-start px-5 py-3 font-medium"><%= t("admin.clinics.table.public") %></th>
+            <th class="px-5 py-3"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @clinics.each do |c| %>
+            <%
+              sub = c.subscriptions.active.first
+              plan = sub&.plan || "—"
+            %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-5 py-3 text-slate-500">#<%= c.id %></td>
+              <td class="px-5 py-3 font-medium text-slate-800"><%= c.display_name %></td>
+              <td class="px-5 py-3 text-slate-600 text-xs"><%= c.owner&.name %></td>
+              <td class="px-5 py-3 text-slate-600 text-xs"><%= c.city.presence || "—" %></td>
+              <td class="px-5 py-3 text-slate-600 text-xs"><%= c.specialty.presence || "—" %></td>
+              <td class="px-5 py-3">
+                <span class="text-xs font-semibold px-2 py-1 rounded-full bg-teal-50 text-teal-700"><%= plan %></span>
+              </td>
+              <td class="px-5 py-3">
+                <% if c.is_public %>
+                  <span class="text-xs text-emerald-600">✓</span>
+                <% else %>
+                  <span class="text-xs text-slate-400">—</span>
+                <% end %>
+              </td>
+              <td class="px-5 py-3 text-end whitespace-nowrap">
+                <%= link_to t("admin.clinics.actions.view"), admin_clinic_path(c),
+                      class: "text-xs text-teal-600 hover:underline font-semibold" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="p-8 text-center text-slate-400 text-sm"><%= t("admin.clinics.empty") %></p>
+    <% end %>
+  </div>
+</div>

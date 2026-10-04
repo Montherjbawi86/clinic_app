@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="utf-8">
+</head>
+<body style="margin: 0; padding: 0; background: #f8fafc; font-family: 'Segoe UI', Tahoma, Arial, sans-serif;">
+  <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 16px 16px 0 0; padding: 30px; text-align: center; color: white;">
+      <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
+      <div style="font-size: 22px; font-weight: bold;">تم تأكيد موعدك!</div>
+      <div style="font-size: 14px; opacity: 0.9; margin-top: 5px;"><%= @clinic.display_name %></div>
+    </div>
+
+    <!-- Body -->
+    <div style="background: white; padding: 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+
+      <p style="font-size: 16px; color: #1e293b;">مرحباً <%= @patient.display_name %>,</p>
+
+      <p style="font-size: 14px; color: #475569; line-height: 1.6;">
+        تم تأكيد موعدك. الملف المرفق يحتوي على دعوة تقويم يمكنك إضافتها مباشرة.
+      </p>
+
+      <!-- Details card -->
+      <div style="background: #f0fdfa; border: 2px solid #14b8a6; border-radius: 12px; padding: 20px; margin: 20px 0;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 8px 0; color: #64748b; font-size: 14px;">📅 التاريخ</td>
+            <td style="padding: 8px 0; text-align: left; font-weight: bold; color: #0f172a; font-size: 16px;">
+              <%= @appointment.appointment_date %>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #64748b; font-size: 14px;">🕐 الوقت</td>
+            <td style="padding: 8px 0; text-align: left; font-weight: bold; color: #0f172a; font-size: 16px;">
+              <%= @appointment.appointment_time&.strftime("%H:%M") %>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #64748b; font-size: 14px;">👨‍⚕️ الطبيب</td>
+            <td style="padding: 8px 0; text-align: left; font-weight: bold; color: #0f172a;">
+              د. <%= @doctor&.name %>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #64748b; font-size: 14px;">📍 المكان</td>
+            <td style="padding: 8px 0; text-align: left; font-weight: bold; color: #0f172a;">
+              <%= @clinic.address_display %>
+            </td>
+          </tr>
+          <% if @appointment.booking_ref.present? %>
+            <tr>
+              <td style="padding: 8px 0; color: #64748b; font-size: 14px;">🔖 رقم الحجز</td>
+              <td style="padding: 8px 0; text-align: left; font-weight: bold; color: #0d9488; direction: ltr;">
+                <%= @appointment.booking_ref %>
+              </td>
+            </tr>
+          <% end %>
+        </table>
+      </div>
+
+      <!-- Add to calendar note -->
+      <div style="background: #fefce8; border: 1px solid #facc15; border-radius: 12px; padding: 15px; margin-bottom: 20px;">
+        <div style="font-size: 14px; font-weight: bold; color: #854d0e; margin-bottom: 5px;">
+          📆 أضف الموعد إلى تقويمك
+        </div>
+        <div style="font-size: 13px; color: #713f12; line-height: 1.5;">
+          افتح الملف المرفق <strong>appointment-<%= @appointment.id %>.ics</strong>
+          وسيضيف تلقائياً الموعد إلى Google Calendar أو Apple Calendar أو Outlook.
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="<%= @status_url %>"
+           style="display: inline-block; background: #0d9488; color: white; padding: 14px 28px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px;">
+          🔍 متابعة حالة الحجز
+        </a>
+      </div>
+
+      <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 25px 0;">
+
+      <% if @clinic.phone.present? %>
+        <p style="font-size: 13px; color: #64748b; text-align: center;">
+          لأي استفسار:
+          <a href="tel:<%= @clinic.phone %>" style="color: #0d9488; font-weight: bold;">
+            📞 <%= @clinic.phone %>
+          </a>
+        </p>
+      <% end %>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">
+      صادر من نظام ClinicApp
+    </div>
+  </div>
+</body>
+</html>

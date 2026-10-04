@@ -1,33 +1,130 @@
-<% content_for :title, "الاشتراكات — ClinicApp" %>
+<% content_for :title, "#{t('subscriptions.title')} — ClinicApp" %>
 
 <div class="space-y-6">
+
   <div>
-    <h1 class="text-2xl font-bold text-slate-800">💳 الاشتراكات</h1>
-    <p class="text-slate-500 mt-1">Your clinic's subscription.</p>
+    <h1 class="text-2xl font-bold text-slate-800">💳 <%= t("subscriptions.title") %></h1>
+    <p class="text-slate-500 mt-1"><%= t("subscriptions.subtitle") %></p>
   </div>
 
-  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-    <% if @subscriptions.any? %>
+  <% if @current %>
+    <div class="bg-gradient-to-br from-teal-500 to-teal-700 rounded-2xl p-6 text-white shadow-lg">
+      <div class="flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <div class="text-xs text-teal-100 mb-1"><%= t("subscriptions.current_plan") %></div>
+          <div class="text-3xl font-bold mb-1"><%= t("subscriptions.plans.#{@current.plan}.name") %></div>
+          <div class="text-teal-100 text-sm">
+            <%= t("subscriptions.statuses.#{@current.status}") %>
+            <% if @current.expires_at %> · <%= t("subscriptions.table.expires") %>: <%= @current.expires_at.strftime("%Y-%m-%d") %><% end %>
+          </div>
+        </div>
+        <div class="text-end">
+          <div class="text-2xl font-bold"><%= t("subscriptions.plans.#{@current.plan}.price") %></div>
+          <div class="text-xs text-teal-100"><%= t("subscriptions.plans.#{@current.plan}.period") %></div>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div class="bg-slate-100 rounded-2xl p-6 text-slate-500 text-sm text-center">
+      <%= t("subscriptions.no_subscription") %>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <% @plans.each do |plan| %>
+      <%
+        is_current = @current&.plan == plan
+        limits = Subscription::LIMITS[plan]
+        features = []
+        features << (limits[:patients] ? t("subscriptions.features.patients", count: limits[:patients]) : t("subscriptions.features.patients_unlim"))
+        features << (limits[:members]  ? t("subscriptions.features.members",  count: limits[:members])  : t("subscriptions.features.members_unlim"))
+        features << (limits[:clinics]  ? t("subscriptions.features.clinics",  count: limits[:clinics])  : t("subscriptions.features.clinics_unlim"))
+        features << (limits[:storage_mb] ? t("subscriptions.features.storage", mb: limits[:storage_mb]) : t("subscriptions.features.storage_unlim"))
+        features << t("subscriptions.features.reports") if %w[basic pro enterprise].include?(plan)
+        features << t("subscriptions.features.qr")      if %w[basic pro enterprise].include?(plan)
+        features << t("subscriptions.features.transfers") if %w[pro enterprise].include?(plan)
+        features << t("subscriptions.features.priority")  if %w[pro enterprise].include?(plan)
+        features << t("subscriptions.features.account_mgr") if plan == "enterprise"
+      %>
+      <div class="bg-white rounded-2xl border <%= is_current ? 'border-teal-500 ring-2 ring-teal-100' : 'border-slate-200' %> p-5 shadow-sm flex flex-col">
+
+        <div class="mb-3">
+          <div class="text-xs font-semibold uppercase tracking-wider text-slate-400"><%= t("subscriptions.plans.#{plan}.name") %></div>
+          <div class="text-2xl font-bold text-slate-800 mt-1"><%= t("subscriptions.plans.#{plan}.price") %></div>
+          <div class="text-xs text-slate-500"><%= t("subscriptions.plans.#{plan}.period") %></div>
+        </div>
+
+        <ul class="space-y-1.5 text-sm text-slate-600 flex-1 mb-4">
+          <% features.each do |feature| %>
+            <li class="flex items-start gap-2">
+              <span class="text-teal-500 mt-0.5">✓</span>
+              <span><%= feature %></span>
+            </li>
+          <% end %>
+        </ul>
+
+        <% if is_current %>
+          <div class="bg-teal-50 text-teal-700 text-center px-4 py-2 rounded-lg text-sm font-semibold">
+            <%= t("subscriptions.actions.current") %>
+          </div>
+        <% elsif plan == "enterprise" %>
+          <a href="mailto:sales@clinicapp.sy"
+             class="text-center bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-900">
+            <%= t("subscriptions.actions.contact") %>
+          </a>
+        <% else %>
+          <%= link_to t("subscriptions.actions.choose"),
+                checkout_dashboard_subscriptions_path(plan: plan),
+                class: "text-center block w-full bg-teal-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-teal-700" %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @usage.present? && @limits.present? %>
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+      <h2 class="font-semibold text-slate-800 mb-3"><%= t("subscriptions.usage.title") %></h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <% [
+          { label: t("subscriptions.usage.patients"), used: @usage[:patients],   limit: @limits[:patients] },
+          { label: t("subscriptions.usage.members"),  used: @usage[:members],    limit: @limits[:members] },
+          { label: t("subscriptions.usage.clinics"),  used: @usage[:clinics],    limit: @limits[:clinics] },
+          { label: t("subscriptions.usage.storage"),  used: @usage[:storage_mb], limit: @limits[:storage_mb] }
+        ].each do |item| %>
+          <div class="p-3 rounded-lg bg-slate-50">
+            <div class="text-xs text-slate-500"><%= item[:label] %></div>
+            <div class="text-xl font-bold text-slate-800 mt-1">
+              <%= item[:limit] ? t("subscriptions.usage.used", used: item[:used], limit: item[:limit]) : item[:used] %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @subscriptions.any? %>
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="p-4 border-b border-slate-100">
+        <h2 class="font-semibold text-slate-800 text-sm"><%= t("subscriptions.history") %></h2>
+      </div>
       <table class="w-full text-sm">
         <thead class="bg-slate-50 text-slate-500">
           <tr>
-            <th class="text-start px-5 py-3 font-medium">Plan</th>
-            <th class="text-start px-5 py-3 font-medium">Status</th>
-            <th class="text-start px-5 py-3 font-medium">Expires</th>
+            <th class="text-start px-5 py-3 font-medium"><%= t("subscriptions.table.plan") %></th>
+            <th class="text-start px-5 py-3 font-medium"><%= t("subscriptions.table.status") %></th>
+            <th class="text-start px-5 py-3 font-medium"><%= t("subscriptions.table.expires") %></th>
           </tr>
         </thead>
         <tbody class="divide-y divide-slate-100">
           <% @subscriptions.each do |s| %>
             <tr>
-              <td class="px-5 py-3 font-medium text-slate-800"><%= s.plan %></td>
-              <td class="px-5 py-3 text-slate-600"><%= s.status %></td>
+              <td class="px-5 py-3 font-medium text-slate-800"><%= t("subscriptions.plans.#{s.plan}.name", default: s.plan) %></td>
+              <td class="px-5 py-3 text-slate-600"><%= t("subscriptions.statuses.#{s.status}", default: s.status) %></td>
               <td class="px-5 py-3 text-slate-600"><%= s.expires_at&.strftime("%Y-%m-%d") || "—" %></td>
             </tr>
           <% end %>
         </tbody>
       </table>
-    <% else %>
-      <p class="p-8 text-center text-slate-500 text-sm">No subscription on file.</p>
-    <% end %>
-  </div>
+    </div>
+  <% end %>
 </div>

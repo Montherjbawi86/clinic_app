@@ -35,6 +35,54 @@
     </div>
   </div>
 
+  <!-- ═══════════════════════════════════════════════════════
+       VITALS CHARTS
+       ═══════════════════════════════════════════════════════ -->
+  <% if @vitals_present %>
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="p-5 border-b border-slate-200 flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h2 class="font-bold text-slate-800 flex items-center gap-2">📈 المؤشرات الصحية</h2>
+          <p class="text-xs text-slate-500 mt-1">تطور القراءات مع الوقت</p>
+        </div>
+      </div>
+
+      <div class="p-5 grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <%
+          charts = [
+            ["bp",          ["bp_systolic", "bp_diastolic"], "ضغط الدم",  "mmHg",  "rose"],
+            ["heart_rate",  ["heart_rate"],                  "النبض",     "bpm",   "emerald"],
+            ["weight",      ["weight"],                      "الوزن",     "kg",    "sky"],
+            ["temperature", ["temperature"],                 "الحرارة",   "°C",    "amber"],
+            ["glucose",     ["glucose"],                     "السكر",     "mg/dL", "purple"],
+            ["oxygen",      ["oxygen"],                      "الأكسجين",  "%",     "teal"]
+          ]
+        %>
+
+        <% charts.each do |chart_key, metrics, title, unit, color| %>
+          <%
+            series_data = metrics.map { |m| @vitals_data[m] || [] }
+            has_data = series_data.any? { |s| s.any? }
+          %>
+          <% if has_data %>
+            <div class="bg-slate-50 rounded-xl p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="text-sm font-semibold text-slate-700"><%= title %></div>
+                <div class="text-xs text-slate-400"><%= unit %></div>
+              </div>
+              <div class="h-48">
+                <canvas data-vitals-chart
+                        data-labels='<%= raw(series_data.flatten.map { |d| d[:date] }.uniq.sort.to_json) %>'
+                        data-series='<%= raw(metrics.map { |m| { name: m, data: @vitals_data[m] || [] } }.to_json) %>'
+                        data-color="<%= color %>"></canvas>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
   <!-- ===== Stat pills + quick actions ===== -->
   <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
     <%
@@ -282,3 +330,77 @@
   .shadow-sm, .shadow-md { box-shadow: none !important; }
   .rounded-xl, .rounded-2xl { border-radius: 4px !important; }
 </style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  const canvases = document.querySelectorAll("[data-vitals-chart]");
+  if (!canvases.length) return;
+
+  const colors = {
+    rose:    { border: "#e11d48", bg: "rgba(225, 29, 72, 0.1)" },
+    emerald: { border: "#10b981", bg: "rgba(16, 185, 129, 0.1)" },
+    sky:     { border: "#0ea5e9", bg: "rgba(14, 165, 233, 0.1)" },
+    amber:   { border: "#f59e0b", bg: "rgba(245, 158, 11, 0.1)" },
+    purple:  { border: "#a855f7", bg: "rgba(168, 85, 247, 0.1)" },
+    teal:    { border: "#0d9488", bg: "rgba(13, 148, 136, 0.1)" }
+  };
+
+  const metricNames = {
+    "bp_systolic":  "الانقباضي",
+    "bp_diastolic": "الانبساطي",
+    "heart_rate":   "النبض",
+    "temperature":  "الحرارة",
+    "weight":       "الوزن",
+    "glucose":      "السكر",
+    "oxygen":       "الأكسجين"
+  };
+
+  canvases.forEach(function (canvas) {
+    const series = JSON.parse(canvas.dataset.series || "[]");
+    const colorKey = canvas.dataset.color || "teal";
+    const palette = colors[colorKey] || colors.teal;
+    const allDates = [...new Set(series.flatMap(s => (s.data || []).map(d => d.date)))].sort();
+
+    const datasets = series.map((s, idx) => {
+      const valuesByDate = {};
+      (s.data || []).forEach(d => { valuesByDate[d.date] = d.value; });
+      return {
+        label: metricNames[s.name] || s.name,
+        data: allDates.map(d => valuesByDate[d] !== undefined ? valuesByDate[d] : null),
+        borderColor: idx === 0 ? palette.border : "#94a3b8",
+        backgroundColor: idx === 0 ? palette.bg : "rgba(148, 163, 184, 0.1)",
+        borderWidth: 2,
+        tension: 0.3,
+        spanGaps: true,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: idx === 0 ? palette.border : "#94a3b8",
+        fill: series.length === 1
+      };
+    });
+
+    new Chart(canvas, {
+      type: "line",
+      data: { labels: allDates, datasets: datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: series.length > 1,
+            position: "top",
+            labels: { font: { family: "Segoe UI, Tahoma, Arial", size: 11 }, boxWidth: 12 }
+          },
+          tooltip: { rtl: true }
+        },
+        scales: {
+          x: { ticks: { font: { size: 10 }, maxRotation: 45 }, grid: { display: false } },
+          y: { ticks: { font: { size: 10 } }, grid: { color: "#f1f5f9" } }
+        }
+      }
+    });
+  });
+})();
+</script>
+

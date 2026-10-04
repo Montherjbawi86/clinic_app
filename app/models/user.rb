@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  include Discard::Model
+
   has_secure_password
 
   ROLES   = %w[super_admin owner doctor nurse receptionist accountant].freeze
@@ -23,6 +25,12 @@ class User < ApplicationRecord
 
   before_validation { self.email = email.to_s.downcase.strip }
 
+
+  def self.search(q)
+    return all if q.blank?
+    where("name ILIKE :q OR email ILIKE :q", q: "%#{q}%")
+  end
+
   def member_of?(clinic)
     return false unless clinic
     clinic_members.exists?(clinic_id: clinic.id)
@@ -35,4 +43,20 @@ class User < ApplicationRecord
   def doctor?;      role == "doctor";      end
   def owner?;       role == "owner";       end
   def super_admin?; role == "super_admin"; end
+
+  def deactivate!
+    update!(discarded_at: Time.current)
+  end
+
+  def activate!
+    update!(discarded_at: nil)
+  end
+
+  def active?
+    discarded_at.nil?
+  end
+
+  def suspended?
+    discarded_at.present?
+  end
 end

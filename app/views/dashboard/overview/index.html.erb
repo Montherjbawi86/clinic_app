@@ -1,38 +1,100 @@
-<% content_for :title, "لوحة التحكم — ClinicApp" %>
+<% content_for :title, "#{t('overview.title')} — ClinicApp" %>
 
 <div class="space-y-5">
 
-  <!-- Setup banner — shows if clinic is incomplete -->
+  <% sub_pending  = current_clinic.subscriptions.pending_payment.first %>
+  <% sub_rejected = current_clinic.subscriptions.where(status: "rejected").order(created_at: :desc).first %>
+
+  <% if sub_pending %>
+    <div class="bg-blue-50 border-2 border-blue-300 rounded-2xl p-4 flex items-center gap-3">
+      <span class="text-2xl">⏳</span>
+      <div class="flex-1 min-w-0">
+        <div class="font-bold text-blue-900"><%= t("overview.sub_pending_title") %></div>
+        <div class="text-sm text-blue-700"><%= t("overview.sub_pending_hint") %></div>
+      </div>
+      <%= link_to t("overview.sub_pending_view"), dashboard_subscriptions_path, class: "bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-blue-700 whitespace-nowrap" %>
+    </div>
+  <% elsif sub_rejected && sub_rejected.created_at > 7.days.ago %>
+    <div class="bg-rose-50 border-2 border-rose-300 rounded-2xl p-4 flex items-center gap-3">
+      <span class="text-2xl">❌</span>
+      <div class="flex-1 min-w-0">
+        <div class="font-bold text-rose-900"><%= t("overview.sub_rejected_title") %></div>
+        <div class="text-sm text-rose-700"><%= t("overview.sub_rejected_hint") %></div>
+      </div>
+      <%= link_to t("overview.sub_rejected_resubmit"), dashboard_subscriptions_path, class: "bg-rose-600 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-rose-700 whitespace-nowrap" %>
+    </div>
+  <% end %>
+
+  <!-- Setup banner -->
   <% if current_clinic && (current_clinic.city.blank? || current_clinic.specialty.blank?) %>
     <div class="bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl p-6 text-white shadow-lg">
       <div class="flex items-start gap-4 flex-wrap">
-        <div class="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-3xl shrink-0">
-          🏥
-        </div>
+        <div class="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-3xl shrink-0">🏥</div>
         <div class="flex-1 min-w-0">
-          <h2 class="text-xl font-bold mb-1">أكمل بيانات عيادتك</h2>
-          <p class="text-amber-100 text-sm mb-4">
-            أدخل مدينة عيادتك وتخصصها حتى تظهر في الدليل العام وتستفيد من كل الميزات.
-          </p>
-          <div class="flex gap-2 flex-wrap">
-            <%= link_to "🏥 أكمل البيانات الآن",
-                  edit_dashboard_clinic_path(current_clinic),
-                  class: "bg-white text-amber-700 px-5 py-2.5 rounded-xl font-bold hover:bg-amber-50 transition shadow-md" %>
-          </div>
+          <h2 class="text-xl font-bold mb-1"><%= t("overview.complete_clinic_title") %></h2>
+          <p class="text-amber-100 text-sm mb-4"><%= t("overview.complete_clinic_hint") %></p>
+          <%= link_to t("overview.complete_clinic_cta"),
+                edit_dashboard_clinic_path(current_clinic),
+                class: "bg-white text-amber-700 px-5 py-2.5 rounded-xl font-bold hover:bg-amber-50 transition shadow-md inline-block" %>
         </div>
       </div>
     </div>
   <% end %>
 
+  <!-- NEW BOOKING REQUESTS -->
+  <% if @pending_bookings&.any? %>
+    <div class="bg-gradient-to-br from-rose-500 to-rose-600 rounded-2xl p-5 text-white shadow-lg">
+      <div class="flex items-start gap-4 flex-wrap">
+        <div class="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-3xl shrink-0 relative">
+          🔔
+          <span class="absolute -top-1 -end-1 w-6 h-6 rounded-full bg-white text-rose-600 flex items-center justify-center text-xs font-black">
+            <%= @pending_bookings.count %>
+          </span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h2 class="text-xl font-bold mb-1">
+            <%= t("overview.new_bookings_title", count: @pending_bookings.count) %>
+          </h2>
+          <p class="text-rose-100 text-sm mb-4"><%= t("overview.new_bookings_hint") %></p>
 
+          <div class="space-y-2 mb-4">
+            <% @pending_bookings.first(2).each do |b| %>
+              <div class="bg-white/10 backdrop-blur rounded-xl p-3 flex items-center justify-between gap-3">
+                <div class="min-w-0">
+                  <div class="font-semibold text-sm truncate"><%= b.patient&.display_name %></div>
+                  <div class="text-xs text-rose-100">
+                    📅 <%= b.appointment_date %> · 🕐 <%= b.appointment_time&.strftime("%H:%M") %>
+                  </div>
+                </div>
+                <div class="shrink-0">
+                  <%= link_to t("overview.new_bookings_review"), dashboard_appointment_path(b),
+                        class: "text-xs bg-white text-rose-600 px-3 py-1.5 rounded-lg font-bold" %>
+                </div>
+              </div>
+            <% end %>
+            <% if @pending_bookings.count > 2 %>
+              <div class="text-xs text-rose-100 text-center">
+                <%= t("overview.new_bookings_more", count: @pending_bookings.count - 2) %>
+              </div>
+            <% end %>
+          </div>
+
+          <%= link_to dashboard_appointments_path(filter: "pending_bookings"),
+                class: "bg-white text-rose-600 px-5 py-2.5 rounded-xl font-bold hover:bg-rose-50 transition shadow-md text-sm inline-block" do %>
+            <%= t("overview.new_bookings_view_all") %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
 
   <!-- WELCOME HEADER -->
   <div class="bg-gradient-to-br from-teal-500 to-teal-700 rounded-2xl p-6 text-white shadow-lg">
     <div class="flex items-center justify-between flex-wrap gap-4">
       <div>
         <div class="text-2xl font-bold mb-1">
-          <%= Time.current.hour < 12 ? "صباح الخير" : "مساء الخير" %>،
-          د. <%= current_user.name %>
+          <%= Time.current.hour < 12 ? t("overview.greeting_morning") : t("overview.greeting_evening") %>،
+          <%= t("overview.greeting_prefix") %> <%= current_user.name %>
         </div>
         <div class="text-teal-100 text-sm">
           <%= Date.current.strftime("%A، %d %B %Y") rescue Date.current.strftime("%Y-%m-%d") %>
@@ -42,11 +104,11 @@
       <div class="flex gap-2 flex-wrap">
         <%= link_to new_dashboard_appointment_path,
               class: "bg-white/20 hover:bg-white/30 backdrop-blur text-white px-4 py-2 rounded-xl font-semibold text-sm flex items-center gap-2" do %>
-          📅 موعد جديد
+          <%= t("overview.new_appointment") %>
         <% end %>
         <%= link_to new_dashboard_patient_path,
               class: "bg-white text-teal-700 hover:bg-teal-50 px-4 py-2 rounded-xl font-semibold text-sm flex items-center gap-2 shadow-sm" do %>
-          👤 مريض جديد
+          <%= t("overview.new_patient") %>
         <% end %>
       </div>
     </div>
@@ -58,40 +120,40 @@
           class: "bg-white rounded-2xl border border-slate-200 p-4 shadow-sm hover:shadow-md hover:border-teal-300 transition" do %>
       <div class="flex items-center justify-between mb-1">
         <div class="w-9 h-9 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center text-lg">📅</div>
-        <span class="text-[10px] text-slate-400">اليوم</span>
+        <span class="text-[10px] text-slate-400"><%= t("overview.today") %></span>
       </div>
       <div class="text-2xl font-bold text-slate-800"><%= @stats[:today_appointments] %></div>
-      <div class="text-xs text-slate-500">مواعيد اليوم</div>
+      <div class="text-xs text-slate-500"><%= t("overview.today_appointments") %></div>
     <% end %>
 
     <%= link_to dashboard_appointments_path(filter: "open"),
           class: "bg-white rounded-2xl border border-slate-200 p-4 shadow-sm hover:shadow-md hover:border-amber-300 transition" do %>
       <div class="flex items-center justify-between mb-1">
         <div class="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-lg">⏳</div>
-        <span class="text-[10px] text-slate-400">منتظرون</span>
+        <span class="text-[10px] text-slate-400"><%= t("overview.waiting") %></span>
       </div>
       <div class="text-2xl font-bold text-amber-600"><%= @stats[:checked_in] %></div>
-      <div class="text-xs text-slate-500">في العيادة</div>
+      <div class="text-xs text-slate-500"><%= t("overview.in_clinic") %></div>
     <% end %>
 
     <%= link_to dashboard_reports_path,
           class: "bg-white rounded-2xl border border-slate-200 p-4 shadow-sm hover:shadow-md hover:border-emerald-300 transition" do %>
       <div class="flex items-center justify-between mb-1">
         <div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">📋</div>
-        <span class="text-[10px] text-slate-400">اليوم</span>
+        <span class="text-[10px] text-slate-400"><%= t("overview.today") %></span>
       </div>
       <div class="text-2xl font-bold text-emerald-600"><%= @stats[:reports_today] %></div>
-      <div class="text-xs text-slate-500">تقارير</div>
+      <div class="text-xs text-slate-500"><%= t("overview.reports_today") %></div>
     <% end %>
 
     <%= link_to dashboard_payments_path(filter: "today"),
           class: "bg-white rounded-2xl border border-slate-200 p-4 shadow-sm hover:shadow-md hover:border-sky-300 transition" do %>
       <div class="flex items-center justify-between mb-1">
         <div class="w-9 h-9 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center text-lg">💰</div>
-        <span class="text-[10px] text-slate-400">اليوم</span>
+        <span class="text-[10px] text-slate-400"><%= t("overview.today") %></span>
       </div>
       <div class="text-xl font-bold text-slate-800"><%= number_to_currency(@stats[:revenue_today], unit: "SYP ", precision: 0) %></div>
-      <div class="text-xs text-slate-500">إيرادات</div>
+      <div class="text-xs text-slate-500"><%= t("overview.revenue_today") %></div>
     <% end %>
   </div>
 
@@ -102,14 +164,14 @@
     <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
       <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
         <div class="flex items-center gap-2">
-          <h2 class="font-bold text-slate-800">📅 جدول اليوم</h2>
+          <h2 class="font-bold text-slate-800"><%= t("overview.today_schedule") %></h2>
           <% if @today_appointments.any? %>
             <span class="text-xs font-semibold text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full">
               <%= @today_appointments.count %>
             </span>
           <% end %>
         </div>
-        <%= link_to "عرض الكل ←", dashboard_appointments_path(filter: "today"),
+        <%= link_to t("overview.view_all"), dashboard_appointments_path(filter: "today"),
               class: "text-xs text-teal-600 hover:underline font-semibold" %>
       </div>
 
@@ -118,12 +180,13 @@
           <% @today_appointments.each do |a| %>
             <%
               badge = case a.status
-                      when "scheduled"  then ["bg-teal-50 text-teal-700", "📅"]
-                      when "confirmed"  then ["bg-indigo-50 text-indigo-700", "✓"]
-                      when "checked_in" then ["bg-amber-50 text-amber-700", "⏳"]
-                      when "in_progress"then ["bg-purple-50 text-purple-700", "▶"]
-                      when "completed"  then ["bg-emerald-50 text-emerald-700", "✅"]
-                      when "cancelled", "no_show" then ["bg-rose-50 text-rose-700", "✕"]
+                      when "scheduled"  then ["bg-teal-50 text-teal-700", t("overview.statuses.scheduled")]
+                      when "confirmed"  then ["bg-indigo-50 text-indigo-700", t("overview.statuses.confirmed")]
+                      when "checked_in" then ["bg-amber-50 text-amber-700", t("overview.statuses.checked_in")]
+                      when "in_progress"then ["bg-purple-50 text-purple-700", t("overview.statuses.in_progress")]
+                      when "completed"  then ["bg-emerald-50 text-emerald-700", t("overview.statuses.completed")]
+                      when "cancelled"  then ["bg-rose-50 text-rose-700", t("overview.statuses.cancelled")]
+                      when "no_show"    then ["bg-rose-50 text-rose-700", t("overview.statuses.no_show")]
                       else ["bg-slate-100 text-slate-700", "•"]
                       end
             %>
@@ -139,7 +202,7 @@
                   <%= a.patient&.display_name %>
                 <% end %>
                 <div class="text-xs text-slate-500">
-                  د. <%= a.doctor&.name || "—" %>
+                  <%= t("appointments.doctor") %> <%= a.doctor&.name || "—" %>
                   <% if a.reason.present? %> · <%= a.reason %><% end %>
                 </div>
               </div>
@@ -152,8 +215,8 @@
       <% else %>
         <div class="p-8 text-center">
           <div class="text-4xl mb-2">☕</div>
-          <div class="text-sm text-slate-500">لا توجد مواعيد اليوم</div>
-          <%= link_to "＋ أضف موعداً", new_dashboard_appointment_path,
+          <div class="text-sm text-slate-500"><%= t("overview.no_appointments_today") %></div>
+          <%= link_to t("overview.add_appointment"), new_dashboard_appointment_path,
                 class: "inline-block mt-3 text-xs text-teal-600 hover:underline font-semibold" %>
         </div>
       <% end %>
@@ -161,45 +224,45 @@
 
     <!-- QUICK ACTIONS -->
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
-      <h2 class="font-bold text-slate-800 mb-3">⚡ إجراءات سريعة</h2>
+      <h2 class="font-bold text-slate-800 mb-3"><%= t("overview.quick_actions") %></h2>
       <div class="space-y-2">
         <%= link_to new_dashboard_appointment_path,
               class: "flex items-center gap-3 p-3 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 transition" do %>
           <span class="text-xl">📅</span>
-          <span class="font-semibold text-sm">موعد جديد</span>
+          <span class="font-semibold text-sm"><%= t("overview.quick_new_appointment") %></span>
         <% end %>
         <%= link_to new_dashboard_patient_path,
               class: "flex items-center gap-3 p-3 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 transition" do %>
           <span class="text-xl">👤</span>
-          <span class="font-semibold text-sm">مريض جديد</span>
+          <span class="font-semibold text-sm"><%= t("overview.quick_new_patient") %></span>
         <% end %>
         <%= link_to dashboard_medications_path,
               class: "flex items-center gap-3 p-3 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-800 transition" do %>
           <span class="text-xl">💊</span>
-          <span class="font-semibold text-sm">وصفة طبية</span>
+          <span class="font-semibold text-sm"><%= t("overview.quick_new_prescription") %></span>
         <% end %>
         <%= link_to dashboard_payments_path,
               class: "flex items-center gap-3 p-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 transition" do %>
           <span class="text-xl">💳</span>
-          <span class="font-semibold text-sm">تسجيل دفعة</span>
+          <span class="font-semibold text-sm"><%= t("overview.quick_record_payment") %></span>
         <% end %>
       </div>
 
-      <% if @unread_count > 0 %>
+      <% if @unread_count.to_i > 0 %>
         <%= link_to notifications_path,
               class: "flex items-center gap-2 mt-4 p-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 transition" do %>
           <span class="text-xl">🔔</span>
-          <span class="font-semibold text-sm flex-1">لديك <%= @unread_count %> إشعار</span>
+          <span class="font-semibold text-sm flex-1"><%= t("overview.unread_notifications", count: @unread_count) %></span>
           <span class="text-xs">←</span>
         <% end %>
       <% end %>
 
-      <% if @stats[:pending_payments] > 0 %>
+      <% if @stats[:pending_payments].to_f > 0 %>
         <%= link_to dashboard_payments_path(filter: "pending"),
               class: "flex items-center gap-2 mt-2 p-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 transition" do %>
           <span class="text-xl">⏳</span>
           <div class="flex-1 min-w-0">
-            <div class="font-semibold text-xs">مدفوعات معلّقة</div>
+            <div class="font-semibold text-xs"><%= t("overview.pending_payments") %></div>
             <div class="font-bold text-sm"><%= number_to_currency(@stats[:pending_payments], unit: "SYP ", precision: 0) %></div>
           </div>
         <% end %>
@@ -212,12 +275,12 @@
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm">
       <div class="p-4 border-b border-slate-200 bg-amber-50/50 flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <h2 class="font-bold text-slate-800">🔄 بحاجة إلى متابعة</h2>
+          <h2 class="font-bold text-slate-800"><%= t("overview.follow_ups_title") %></h2>
           <span class="text-xs font-semibold text-amber-600 bg-white px-2 py-0.5 rounded-full">
             <%= @follow_ups.count %>
           </span>
         </div>
-        <div class="text-xs text-slate-500">خلال الأسبوعين القادمين</div>
+        <div class="text-xs text-slate-500"><%= t("overview.follow_ups_window") %></div>
       </div>
       <ul class="divide-y divide-slate-100">
         <% @follow_ups.first(5).each do |r| %>
@@ -228,6 +291,11 @@
               elsif days <= 3 then "bg-amber-100 text-amber-700"
               else "bg-teal-100 text-teal-700"
               end
+            urgency_label =
+              if days <= 0 then t("overview.follow_up_late")
+              elsif days == 1 then t("overview.follow_up_tomorrow")
+              else t("overview.follow_up_in_days", days: days)
+              end
           %>
           <li class="p-4 hover:bg-slate-50 flex items-center gap-3">
             <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-lg shrink-0">🔄</div>
@@ -237,7 +305,7 @@
                 <%= r.patient&.display_name %>
               <% end %>
               <div class="text-xs text-slate-500">
-                د. <%= r.doctor&.name || "—" %>
+                <%= t("appointments.doctor") %> <%= r.doctor&.name || "—" %>
                 <% if r.display_diagnosis.present? %> · <%= r.display_diagnosis.truncate(60) %><% end %>
               </div>
             </div>
@@ -246,7 +314,7 @@
                 <%= r.follow_up_date.strftime("%Y-%m-%d") %>
               </div>
               <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full <%= urgency %>">
-                <%= days <= 0 ? "متأخر" : (days == 1 ? "غداً" : "خلال #{days} يوم") %>
+                <%= urgency_label %>
               </span>
             </div>
           </li>
@@ -260,8 +328,8 @@
 
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm">
       <div class="p-4 border-b border-slate-200 flex items-center justify-between">
-        <h3 class="font-semibold text-slate-800 text-sm">💰 آخر المدفوعات</h3>
-        <%= link_to "الكل", dashboard_payments_path, class: "text-xs text-teal-600 hover:underline" %>
+        <h3 class="font-semibold text-slate-800 text-sm"><%= t("overview.recent_payments") %></h3>
+        <%= link_to t("overview.see_all"), dashboard_payments_path, class: "text-xs text-teal-600 hover:underline" %>
       </div>
       <% if @recent_payments.any? %>
         <ul class="divide-y divide-slate-100">
@@ -276,14 +344,14 @@
           <% end %>
         </ul>
       <% else %>
-        <p class="p-4 text-xs text-slate-400 text-center">لا يوجد</p>
+        <p class="p-4 text-xs text-slate-400 text-center"><%= t("overview.none") %></p>
       <% end %>
     </div>
 
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm">
       <div class="p-4 border-b border-slate-200 flex items-center justify-between">
-        <h3 class="font-semibold text-slate-800 text-sm">📋 آخر التقارير</h3>
-        <%= link_to "الكل", dashboard_reports_path, class: "text-xs text-teal-600 hover:underline" %>
+        <h3 class="font-semibold text-slate-800 text-sm"><%= t("overview.recent_reports") %></h3>
+        <%= link_to t("overview.see_all"), dashboard_reports_path, class: "text-xs text-teal-600 hover:underline" %>
       </div>
       <% if @recent_reports.any? %>
         <ul class="divide-y divide-slate-100">
@@ -300,21 +368,21 @@
           <% end %>
         </ul>
       <% else %>
-        <p class="p-4 text-xs text-slate-400 text-center">لا يوجد</p>
+        <p class="p-4 text-xs text-slate-400 text-center"><%= t("overview.none") %></p>
       <% end %>
     </div>
 
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm">
       <div class="p-4 border-b border-slate-200 flex items-center justify-between">
-        <h3 class="font-semibold text-slate-800 text-sm">👥 مرضى جدد</h3>
-        <%= link_to "الكل", dashboard_patients_path(filter: "recent"), class: "text-xs text-teal-600 hover:underline" %>
+        <h3 class="font-semibold text-slate-800 text-sm"><%= t("overview.recent_patients") %></h3>
+        <%= link_to t("overview.see_all"), dashboard_patients_path(filter: "recent"), class: "text-xs text-teal-600 hover:underline" %>
       </div>
       <% if @recent_patients.any? %>
         <ul class="divide-y divide-slate-100">
           <% @recent_patients.each do |p| %>
             <li class="p-3 text-sm flex items-center gap-3">
               <div class="w-8 h-8 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-bold shrink-0">
-                <%= p.display_name&.first&.upcase || "؟" %>
+                <%= p.display_name&.first&.upcase || "?" %>
               </div>
               <div class="min-w-0 flex-1">
                 <%= link_to p.display_name, dashboard_patient_path(p),
@@ -325,7 +393,7 @@
           <% end %>
         </ul>
       <% else %>
-        <p class="p-4 text-xs text-slate-400 text-center">لا يوجد</p>
+        <p class="p-4 text-xs text-slate-400 text-center"><%= t("overview.none") %></p>
       <% end %>
     </div>
   </div>

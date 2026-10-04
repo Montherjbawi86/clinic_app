@@ -1,0 +1,66 @@
+<% content_for :title, t("admin.users.title") %>
+
+<div class="space-y-5">
+  <div class="flex items-center justify-between flex-wrap gap-3">
+    <h1 class="text-2xl font-bold text-slate-800">👥 <%= t("admin.users.title") %></h1>
+    <%= form_with url: admin_users_path, method: :get, class: "flex gap-2" do %>
+      <input type="text" name="q" value="<%= params[:q] %>" placeholder="<%= t('admin.users.search_placeholder') %>"
+             class="border border-slate-300 rounded-lg px-3 py-2 text-sm w-64">
+      <select name="role" class="border border-slate-300 rounded-lg px-2 py-2 text-sm">
+        <option value=""><%= t("admin.users.all_roles") %></option>
+        <% User::ROLES.each do |r| %>
+          <option value="<%= r %>" <%= "selected" if params[:role] == r %>><%= r %></option>
+        <% end %>
+      </select>
+      <button type="submit" class="bg-slate-800 text-white px-4 py-2 rounded-lg font-semibold text-sm"><%= t("actions.search") %></button>
+    <% end %>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <% if @users.any? %>
+      <table class="w-full text-sm">
+        <thead class="bg-slate-50 text-slate-500">
+          <tr>
+            <th class="text-start px-5 py-3 font-medium"><%= t("admin.users.table.id") %></th>
+            <th class="text-start px-5 py-3 font-medium"><%= t("admin.users.table.name") %></th>
+            <th class="text-start px-5 py-3 font-medium"><%= t("admin.users.table.email") %></th>
+            <th class="text-start px-5 py-3 font-medium"><%= t("admin.users.table.role") %></th>
+            <th class="text-start px-5 py-3 font-medium"><%= t("admin.users.table.clinics") %></th>
+            <th class="text-start px-5 py-3 font-medium"><%= t("admin.users.table.registered") %></th>
+            <th class="px-5 py-3"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% @users.each do |u| %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-5 py-3 text-slate-500">#<%= u.id %></td>
+              <td class="px-5 py-3 font-medium text-slate-800"><%= u.name %></td>
+              <td class="px-5 py-3 text-slate-600"><%= u.email %></td>
+              <td class="px-5 py-3">
+                <span class="text-xs font-semibold px-2 py-1 rounded-full
+                  <%= u.role == "super_admin" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-700" %>">
+                  <%= u.role %>
+                </span>
+              </td>
+              <td class="px-5 py-3 text-slate-600"><%= u.clinics.count %></td>
+              <td class="px-5 py-3 text-slate-500 text-xs"><%= u.created_at.strftime("%Y-%m-%d") %></td>
+              <td class="px-5 py-3 text-end whitespace-nowrap">
+                <%= link_to t("admin.users.actions.view"), admin_user_path(u),
+                      class: "text-xs text-teal-600 hover:underline font-semibold me-2" %>
+                <% unless u.super_admin? %>
+                  <%= button_to t("admin.users.actions.impersonate"),
+                        impersonate_admin_user_path(u),
+                        method: :post,
+                        data: { turbo_confirm: t("admin.users.confirm_impersonate") },
+                        class: "text-xs text-purple-600 hover:underline font-semibold" %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="p-8 text-center text-slate-400 text-sm"><%= t("admin.users.empty") %></p>
+    <% end %>
+  </div>
+</div>

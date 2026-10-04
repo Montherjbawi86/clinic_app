@@ -1,0 +1,14 @@
+# Rails 7.1+ recurring jobs (via Solid Queue or similar)
+# This runs every night at 8:00 PM
+
+production:
+  appointment_reminders:
+    class: AppointmentReminderJob
+    queue: default
+    schedule: "0 20 * * *"
+
+development:
+  appointment_reminders:
+    class: AppointmentReminderJob
+    queue: default
+    schedule: "0 20 * * *"

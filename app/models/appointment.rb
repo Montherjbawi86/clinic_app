@@ -26,6 +26,7 @@ class Appointment < ApplicationRecord
 
   before_validation :default_status
   before_validation :default_duration
+  before_validation :generate_booking_ref, on: :create
   before_validation :generate_public_token, on: :create
 
   scope :upcoming,   -> { where("appointment_date >= ?", Date.current).order(:appointment_date, :appointment_time) }
@@ -96,6 +97,11 @@ class Appointment < ApplicationRecord
 
   def default_duration
     self.duration_minutes ||= 30
+  end
+
+  def generate_booking_ref
+    return if booking_ref.present?
+    self.booking_ref = "BK-#{SecureRandom.alphanumeric(8).upcase}"
   end
 
   def generate_public_token

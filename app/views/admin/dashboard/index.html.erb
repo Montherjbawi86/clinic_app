@@ -1,0 +1,86 @@
+<% content_for :title, t("admin.title") %>
+
+<div class="space-y-6">
+
+  <div>
+    <h1 class="text-2xl font-bold text-slate-800">👑 <%= t("admin.title") %></h1>
+    <p class="text-slate-500 mt-1"><%= t("admin.subtitle") %></p>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+    <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+      <div class="text-xs text-slate-500"><%= t("admin.stats.users") %></div>
+      <div class="text-2xl font-bold text-slate-800 mt-1"><%= @stats[:users] %></div>
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+      <div class="text-xs text-slate-500"><%= t("admin.stats.clinics") %></div>
+      <div class="text-2xl font-bold text-slate-800 mt-1"><%= @stats[:clinics] %></div>
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+      <div class="text-xs text-slate-500"><%= t("admin.stats.patients") %></div>
+      <div class="text-2xl font-bold text-slate-800 mt-1"><%= @stats[:patients] %></div>
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+      <div class="text-xs text-slate-500"><%= t("admin.stats.appointments") %></div>
+      <div class="text-2xl font-bold text-slate-800 mt-1"><%= @stats[:appointments] %></div>
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+      <div class="text-xs text-slate-500"><%= t("admin.stats.revenue_mtd") %></div>
+      <div class="text-xl font-bold text-emerald-600 mt-1"><%= number_to_currency(@stats[:revenue_mtd], unit: "SYP ", precision: 0) %></div>
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm">
+      <div class="text-xs text-slate-500"><%= t("admin.stats.plan_breakdown") %></div>
+      <div class="text-xs mt-2 space-y-0.5">
+        <% @stats[:plan_counts].each do |plan, count| %>
+          <div class="flex justify-between">
+            <span class="text-slate-600"><%= plan %></span>
+            <span class="font-bold text-slate-800"><%= count %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm">
+      <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+        <h2 class="font-semibold text-slate-800"><%= t("admin.users.title") %></h2>
+        <%= link_to t("overview.view_all"), admin_users_path, class: "text-xs text-teal-600 hover:underline" %>
+      </div>
+      <ul class="divide-y divide-slate-100">
+        <% @recent_users.each do |u| %>
+          <li class="p-3 flex items-center justify-between">
+            <%= link_to admin_user_path(u), class: "flex-1 min-w-0 hover:text-teal-600" do %>
+              <div class="font-medium text-slate-800 truncate"><%= u.name %></div>
+              <div class="text-xs text-slate-500 truncate"><%= u.email %></div>
+            <% end %>
+            <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full"><%= u.role %></span>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm">
+      <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+        <h2 class="font-semibold text-slate-800"><%= t("admin.clinics.title") %></h2>
+        <%= link_to t("overview.view_all"), admin_clinics_path, class: "text-xs text-teal-600 hover:underline" %>
+      </div>
+      <ul class="divide-y divide-slate-100">
+        <% @recent_clinics.each do |c| %>
+          <li class="p-3 flex items-center justify-between">
+            <%= link_to admin_clinic_path(c), class: "flex-1 min-w-0 hover:text-teal-600" do %>
+              <div class="font-medium text-slate-800 truncate"><%= c.display_name %></div>
+              <div class="text-xs text-slate-500 truncate"><%= c.city.presence || "—" %> · <%= c.owner&.name %></div>
+            <% end %>
+            <% if c.is_public %>
+              <span class="text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">public</span>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</div>

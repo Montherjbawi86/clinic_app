@@ -1,294 +1,706 @@
+---
 ar:
-  app_name: "نظام إدارة العيادات"
-  brand: "ClinicApp"
-
+  app_name: نظام إدارة العيادات
+  brand: ClinicApp
   nav:
-    overview:      "نظرة عامة"
-    patients:      "المرضى"
-    appointments:  "المواعيد"
-    calendar:      "التقويم"
-    reports:       "التقارير"
-    medications:   "الأدوية"
-    transfers:     "التحويلات"
-    payments:      "المدفوعات"
-    clinics:       "العيادات"
-    subscriptions: "الاشتراكات"
-    chat:          "المساعد الذكي"
-    profile:       "الملف الشخصي"
-    notifications: "الإشعارات"
-    logout:        "تسجيل الخروج"
-    dashboard:     "لوحة التحكم"
-    login:         "تسجيل الدخول"
-    signup:        "إنشاء حساب"
-    signup_free:   "ابدأ مجاناً"
-    search_placeholder: "ابحث عن مريض…"
-    current_clinic: "العيادة الحالية"
-    medical:       "الطبي"
-    admin:         "الإداري"
-
+    overview: نظرة عامة
+    patients: المرضى
+    appointments: المواعيد
+    calendar: التقويم
+    reports: التقارير
+    medications: الأدوية
+    transfers: التحويلات
+    payments: المدفوعات
+    clinics: العيادات
+    subscriptions: الاشتراكات
+    chat: المساعد الذكي
+    profile: الملف الشخصي
+    notifications: الإشعارات
+    logout: تسجيل الخروج
+    dashboard: لوحة التحكم
+    login: تسجيل الدخول
+    signup: إنشاء حساب
+    signup_free: ابدأ مجاناً
+    search_placeholder: ابحث عن مريض…
+    current_clinic: العيادة الحالية
+    medical: الطبي
+    admin: الإداري
   actions:
-    new: "جديد"
-    edit: "تعديل"
-    delete: "حذف"
-    cancel: "إلغاء"
-    save: "حفظ"
-    update: "تحديث"
-    create: "إنشاء"
-    search: "بحث"
-    filter: "تصفية"
-    back: "رجوع"
-    view: "عرض"
-    archive: "أرشفة"
-    print: "طباعة"
-    today: "اليوم"
-    all: "الكل"
-
+    new: جديد
+    edit: تعديل
+    delete: حذف
+    cancel: إلغاء
+    save: حفظ
+    update: تحديث
+    create: إنشاء
+    search: بحث
+    filter: تصفية
+    back: رجوع
+    view: عرض
+    archive: أرشفة
+    print: طباعة
+    today: اليوم
+    all: الكل
   overview:
-    title: "نظرة عامة"
-    subtitle: "ملخص عيادتك"
-    patients: "المرضى"
-    today_appointments: "اليوم"
-    this_week: "هذا الأسبوع"
-    unread: "غير مقروء"
-    revenue_month: "إيراد الشهر"
-    pending_payments: "مدفوعات معلقة"
-    today_schedule: "جدول اليوم"
-    new_patients: "مرضى جدد"
-    recent_payments: "أحدث المدفوعات"
-    no_appointments_today: "لا توجد مواعيد اليوم"
-    no_patients_yet: "لا يوجد مرضى بعد"
-    no_payments_yet: "لا توجد مدفوعات بعد"
-    view_all: "عرض الكل"
-
+    title: لوحة التحكم
+    subtitle: ملخص عيادتك
+    greeting_morning: صباح الخير
+    greeting_evening: مساء الخير
+    greeting_prefix: د.
+    complete_clinic_title: أكمل بيانات عيادتك
+    complete_clinic_hint: أدخل مدينة عيادتك وتخصصها حتى تظهر في الدليل العام وتستفيد
+      من كل الميزات.
+    complete_clinic_cta: "\U0001F3E5 أكمل البيانات الآن"
+    new_bookings_title: "%{count} طلب حجز جديد"
+    new_bookings_hint: مرضى حجزوا من الموقع وينتظرون تأكيدك
+    new_bookings_review: مراجعة ←
+    new_bookings_more: "+ %{count} طلب آخر"
+    new_bookings_view_all: "\U0001F514 عرض كل الطلبات"
+    new_appointment: "\U0001F4C5 موعد جديد"
+    new_patient: "\U0001F464 مريض جديد"
+    today: اليوم
+    waiting: منتظرون
+    in_clinic: في العيادة
+    reports_today: تقارير
+    revenue_today: إيرادات
+    today_appointments: مواعيد اليوم
+    today_schedule: "\U0001F4C5 جدول اليوم"
+    view_all: عرض الكل ←
+    no_appointments_today: لا توجد مواعيد اليوم
+    add_appointment: "＋ أضف موعداً"
+    quick_actions: "⚡ إجراءات سريعة"
+    quick_new_appointment: موعد جديد
+    quick_new_patient: مريض جديد
+    quick_new_prescription: وصفة طبية
+    quick_record_payment: تسجيل دفعة
+    unread_notifications: لديك %{count} إشعار
+    pending_payments: مدفوعات معلّقة
+    follow_ups_title: "\U0001F504 بحاجة إلى متابعة"
+    follow_ups_window: خلال الأسبوعين القادمين
+    follow_up_late: متأخر
+    follow_up_tomorrow: غداً
+    follow_up_in_days: خلال %{days} يوم
+    recent_payments: "\U0001F4B0 آخر المدفوعات"
+    recent_reports: "\U0001F4CB آخر التقارير"
+    recent_patients: "\U0001F465 مرضى جدد"
+    see_all: الكل
+    none: لا يوجد
+    statuses:
+      scheduled: "\U0001F4C5"
+      confirmed: "✓"
+      checked_in: "⏳"
+      in_progress: "▶"
+      completed: "✅"
+      cancelled: "✕"
+      no_show: "✕"
+    sub_pending_title: اشتراكك قيد المراجعة
+    sub_pending_hint: تم إرسال إثبات الدفع — سيتم التفعيل قريباً
+    sub_pending_view: عرض
+    sub_rejected_title: تم رفض دفع الاشتراك
+    sub_rejected_hint: لم نتمكن من التحقق من الدفعة. يرجى إعادة الإرسال.
+    sub_rejected_resubmit: إعادة الإرسال
   patients:
-    title: "المرضى"
-    new: "مريض جديد"
-    name: "الاسم"
-    phone: "الهاتف"
-    gender: "الجنس"
-    age: "العمر"
-    blood_type: "فصيلة الدم"
-    allergies: "الحساسية"
-    created: "تم تسجيل المريض بنجاح."
-    updated: "تم تحديث بيانات المريض."
-    archived: "تم أرشفة المريض."
-
-  appointments:
-    title: "المواعيد"
-    subtitle: "كل المواعيد في هذه العيادة"
-    new: "موعد جديد"
-    patient: "المريض"
-    doctor: "الطبيب"
-    select_patient: "اختر المريض"
-    select_doctor: "اختر الطبيب"
-    date: "التاريخ"
-    time: "الوقت"
-    duration: "المدة (دقيقة)"
-    duration_unit: "دقيقة"
-    reason: "السبب"
-    status: "الحالة"
-    statuses:
-      scheduled:  "مجدول"
-      confirmed:  "مؤكد"
-      checked_in: "تم الوصول"
-      in_progress: "قيد الفحص"
-      completed:  "مكتمل"
-      cancelled:  "ملغى"
-      no_show:    "لم يحضر"
+    title: المرضى
+    subtitle: كل مرضى عيادتك
+    new: مريض جديد
+    name: الاسم
+    phone: الهاتف
+    gender: الجنس
+    age: العمر
+    blood_type: فصيلة الدم
+    allergies: الحساسية
+    created: تم تسجيل المريض بنجاح.
+    updated: تم تحديث بيانات المريض.
+    archived: تم أرشفة المريض.
+    print_pdf: "\U0001F4C4 طباعة / PDF"
+    export_csv: "\U0001F4E5 CSV"
+    search_placeholder: ابحث بالاسم أو الهاتف…
     filters:
-      upcoming:  "قادمة"
-      open:      "قيد التنفيذ"
-      completed: "مكتملة"
-      cancelled: "ملغاة"
-    scheduled: "تم جدولة الموعد بنجاح."
-    checked_in_notice: "تم تسجيل وصول المريض."
-    started_notice:    "بدأت الزيارة."
-    completed_notice:  "تم إكمال الزيارة."
-    cancelled_notice:  "تم إلغاء الموعد."
-    no_show_notice:    "تم تسجيل عدم حضور المريض."
-    destroyed_notice:  "تم حذف الموعد."
-    cancelled_by:  "أُلغي بواسطة"
-    checked_in_by: "تم الوصول بواسطة"
-    completed_by:  "أُكمل بواسطة"
-    cancellation_reason: "سبب الإلغاء"
-    cancellation_reason_placeholder: "اكتب سبب الإلغاء…"
-    visit_notes:   "ملاحظات الزيارة"
-    visit_notes_ar: "ملاحظات الزيارة (عربي)"
-    visit_notes_en: "ملاحظات الزيارة (إنجليزي)"
-    follow_up: "موعد المتابعة"
-    vitals:
-      bp:   "ضغط الدم"
-      hr:   "النبض"
-      temp: "الحرارة"
+      all: الكل
+      in_clinic: "\U0001F7E2 في العيادة"
+      today: "\U0001F4C5 مواعيد اليوم"
+      pending: "⚠️ دفعات معلقة"
+      recent: "✨ مرضى جدد"
+      allergies: "\U0001F6A8 حساسية"
+      chronic: "\U0001F48A أمراض مزمنة"
+      insurance: "\U0001F6E1️ تأمين"
+    table:
+      patient: المريض
+      phone: الهاتف
+      age: العمر
+      status: الحالة
+      allergies: الحساسية
+      insurance: التأمين
+      actions: إجراءات
+    status:
+      in_clinic: في العيادة
+      appointment_at: موعد %{time}
+      appointment_on: موعد %{date}
+      pending_payment: دفعة معلقة
+      prescription_today: وصفة اليوم
+      prescription_days_ago: وصفة منذ %{days} يوم
     actions:
-      check_in:       "تسجيل وصول"
-      start:          "بدء الزيارة"
-      complete:       "إكمال"
-      complete_visit: "إكمال الزيارة"
-      cancel:         "إلغاء"
-      confirm_cancel: "تأكيد الإلغاء"
-      no_show:        "لم يحضر"
-      confirm_no_show: "تأكيد عدم الحضور"
-    no_show_confirm: "تأكيد أن المريض لم يحضر؟"
-    create_report_prompt: "أنشئ تقريراً طبياً لهذه الزيارة"
-    create_report_hint: "سجّل التشخيص والعلاج والمتابعة"
-    no_appointments: "لا توجد مواعيد."
-
-  reports:
-    title: "التقارير الطبية"
-    new: "تقرير جديد"
-    patient: "المريض"
-    diagnosis: "التشخيص"
-    treatment: "العلاج"
-    notes: "ملاحظات"
-    follow_up: "موعد المتابعة"
-    created: "تم إضافة التقرير بنجاح."
-    removed: "تم حذف التقرير."
-    no_reports: "لا توجد تقارير."
-
-  medications:
-    title: "الأدوية"
-    new: "وصفة جديدة"
-    patient: "المريض"
-    name: "الدواء"
-    name_ar: "الاسم بالعربي"
-    dosage: "الجرعة"
-    frequency: "عدد المرات"
-    duration: "المدة"
-    route: "طريقة الاستخدام"
-    routes:
-      oral: "فموي"
-      topical: "موضعي"
-      injection: "إبرة"
-      inhalation: "استنشاق"
-      sublingual: "تحت اللسان"
-      rectal: "شرجي"
-    quantity: "الكمية"
-    refills: "عدد الإعادات"
-    instructions: "التعليمات"
-    status: "الحالة"
-    created: "تم وصف الدواء بنجاح."
-    removed: "تم حذف الوصفة."
-    no_medications: "لا توجد وصفات."
-    prescribe: "وصف"
-
-  transfers:
-    title: "التحويلات"
-    new: "تحويل جديد"
-    patient: "المريض"
-    from: "من"
-    to: "إلى"
-    destination: "العيادة المستقبِلة"
-    reason: "السبب"
-    status: "الحالة"
-    created: "تم إنشاء طلب التحويل."
-    removed: "تم حذف التحويل."
-    no_transfers: "لا توجد تحويلات."
-    no_destinations: "لا توجد عيادات أخرى للتحويل إليها."
-
-  payments:
-    title: "المدفوعات"
-    new: "دفعة جديدة"
-    record: "تسجيل دفعة"
-    patient: "المريض"
-    patient_optional: "اختر المريض (اختياري)"
-    amount: "المبلغ"
-    currency: "العملة"
-    method: "طريقة الدفع"
-    methods:
-      cash: "نقدي"
-      card: "بطاقة"
-      transfer: "حوالة"
-      insurance: "تأمين"
-      stripe: "بطاقة إلكترونية"
-    status: "الحالة"
+      view: عرض
+      edit: تعديل
+      appts: المواعيد
+      payment: دفعة
+    sort:
+      newest: الأحدث
+      oldest: الأقدم
+      name: الاسم
+      updated: آخر تحديث
+    no_results: لا توجد نتائج مطابقة
+    try_other: جرّب كلمة بحث أخرى
+    empty: لا يوجد مرضى بعد
+    empty_hint: ابدأ بإضافة أول مريض لعيادتك
+    add_first: "＋ إضافة أول مريض"
+  appointments:
+    title: المواعيد
+    subtitle: كل المواعيد في هذه العيادة
+    new: موعد جديد
+    patient: المريض
+    doctor: الطبيب
+    select_patient: اختر المريض
+    select_doctor: اختر الطبيب
+    date: التاريخ
+    time: الوقت
+    duration: المدة (دقيقة)
+    duration_unit: دقيقة
+    reason: السبب
+    status: الحالة
     statuses:
-      pending: "معلّق"
-      paid: "مدفوع"
-      failed: "فشل"
-      refunded: "مسترجع"
-      cancelled: "ملغى"
-    reference: "المرجع"
-    notes: "ملاحظات"
-    date: "التاريخ"
-    by: "بواسطة"
-    total_paid: "إجمالي المدفوع"
-    total_pending: "المعلّق"
-    created: "تم تسجيل الدفعة."
-    removed: "تم حذف الدفعة."
-    no_payments: "لا توجد مدفوعات."
-
+      scheduled: مجدول
+      confirmed: مؤكد
+      checked_in: تم الوصول
+      in_progress: قيد الفحص
+      completed: مكتمل
+      cancelled: ملغى
+      no_show: لم يحضر
+    filters:
+      upcoming: قادمة
+      open: قيد التنفيذ
+      completed: مكتملة
+      cancelled: ملغاة
+    scheduled: تم جدولة الموعد بنجاح.
+    checked_in_notice: تم تسجيل وصول المريض.
+    started_notice: بدأت الزيارة.
+    completed_notice: تم إكمال الزيارة.
+    cancelled_notice: تم إلغاء الموعد.
+    no_show_notice: تم تسجيل عدم حضور المريض.
+    destroyed_notice: تم حذف الموعد.
+    cancelled_by: أُلغي بواسطة
+    checked_in_by: تم الوصول بواسطة
+    completed_by: أُكمل بواسطة
+    cancellation_reason: سبب الإلغاء
+    cancellation_reason_placeholder: اكتب سبب الإلغاء…
+    visit_notes: ملاحظات الزيارة
+    visit_notes_ar: ملاحظات الزيارة (عربي)
+    visit_notes_en: ملاحظات الزيارة (إنجليزي)
+    follow_up: موعد المتابعة
+    download_ics: تنزيل دعوة التقويم (.ics)
+    print_prescription: طباعة الوصفة
+    wizard: بدء الزيارة (خطوات)
+    accept_booking: "✅ قبول الحجز"
+    reject_booking: "\U0001F6AB رفض الحجز"
+    vitals:
+      bp: ضغط الدم
+      hr: النبض
+      temp: الحرارة
+      blood_pressure: ضغط الدم
+      heart_rate: النبض
+      temperature: الحرارة
+      weight: الوزن
+      oxygen: الأكسجين
+      glucose: السكر
+    actions:
+      check_in: تسجيل وصول
+      start: بدء الزيارة
+      complete: إكمال
+      complete_visit: إكمال الزيارة
+      cancel: إلغاء
+      confirm_cancel: تأكيد الإلغاء
+      no_show: لم يحضر
+      confirm_no_show: تأكيد عدم الحضور
+      follow_up: "\U0001F4C5 موعد متابعة"
+      send_reminder: "\U0001F4E7 إرسال تذكير للمريض"
+      send_whatsapp: "\U0001F4AC إرسال تذكير واتساب"
+      finish_visit: "✓ إكمال الزيارة"
+      finish_and_prescribe: "\U0001F48A إكمال + كتابة وصفة"
+    whatsapp_reminder_message: مرحباً %{name}، نذكّرك بموعدك في %{clinic} يوم %{date}
+      الساعة %{time}.
+    no_show_confirm: تأكيد أن المريض لم يحضر؟
+    create_report_prompt: أنشئ تقريراً طبياً لهذه الزيارة
+    create_report_hint: سجّل التشخيص والعلاج والمتابعة
+    no_appointments: لا توجد مواعيد.
+    new_subtitle: احجز موعداً لمريض
+    schedule_button: حجز الموعد
+  reports:
+    title: التقارير الطبية
+    new: تقرير جديد
+    patient: المريض
+    diagnosis: التشخيص
+    treatment: العلاج
+    notes: ملاحظات
+    follow_up: موعد المتابعة
+    created: تم إضافة التقرير بنجاح.
+    removed: تم حذف التقرير.
+    no_reports: لا توجد تقارير.
+  medications:
+    title: الأدوية
+    new: وصفة جديدة
+    patient: المريض
+    name: الدواء
+    name_ar: الاسم بالعربي
+    dosage: الجرعة
+    frequency: عدد المرات
+    duration: المدة
+    route: طريقة الاستخدام
+    routes:
+      oral: فموي
+      topical: موضعي
+      injection: إبرة
+      inhalation: استنشاق
+      sublingual: تحت اللسان
+      rectal: شرجي
+    quantity: الكمية
+    refills: عدد الإعادات
+    instructions: التعليمات
+    status: الحالة
+    created: تم وصف الدواء بنجاح.
+    removed: تم حذف الوصفة.
+    no_medications: لا توجد وصفات.
+    prescribe: وصف
+    subtitle: الوصفات الطبية الموصوفة للمرضى
+    print_pdf: "\U0001F4C4 طباعة / PDF"
+    export_csv: "\U0001F4E5 CSV"
+    new_prescription: "\U0001F48A وصف دواء جديد"
+    search_placeholder: ابحث بالدواء أو المريض…
+    stats:
+      total: "\U0001F48A الإجمالي"
+      active: "✅ فعالة"
+      completed: "\U0001F3C1 مكتملة"
+      refill_due: "\U0001F501 بحاجة تجديد"
+    filters:
+      all: الكل
+      active: فعالة
+      completed: مكتملة
+      discontinued: موقوفة
+      refill_due: بحاجة تجديد
+    table:
+      patient: المريض
+      medication: الدواء
+      dosage: الجرعة
+      frequency: التكرار
+      status: الحالة
+    form:
+      patient: المريض
+      select_patient: اختر المريض
+      name_en: اسم الدواء (EN)
+      name_en_placeholder: 'مثال: Amoxicillin'
+      name_ar: الاسم (AR)
+      name_ar_placeholder: أموكسيسيلين
+      dosage: الجرعة
+      dosage_placeholder: 500mg
+      route: الطريق
+      frequency: التكرار
+      frequency_placeholder: 3 مرات يومياً
+      duration: المدة
+      duration_placeholder: 7 أيام
+      quantity: الكمية
+      refills: تجديدات
+      instructions: تعليمات
+      instructions_placeholder: بعد الأكل
+      submit: وصف الدواء
+    statuses:
+      active: فعالة
+      completed: مكتملة
+      discontinued: موقوفة
+    empty: لا توجد وصفات بعد
+    no_results: لا نتائج مطابقة لبحثك
+    refills_available: "%{count} متاح"
+    actions:
+      refill: تجديد
+      complete: إكمال
+      discontinue: إيقاف
+      delete: حذف
+      print: طباعة
+      qr_view: عرض QR
+      show_qr: عرض QR
+    confirm:
+      discontinue: إيقاف الوصفة؟
+      delete: حذف الوصفة؟
+      delete_permanent: حذف الوصفة نهائياً؟
+  transfers:
+    title: التحويلات
+    new: تحويل جديد
+    patient: المريض
+    from: من
+    to: إلى
+    destination: العيادة المستقبِلة
+    reason: السبب
+    status: الحالة
+    created: تم إنشاء طلب التحويل.
+    removed: تم حذف التحويل.
+    no_transfers: لا توجد تحويلات.
+    no_destinations: لا توجد عيادات أخرى للتحويل إليها.
+    subtitle: نقل المرضى إلى عيادة أخرى
+    new_transfer: تحويل جديد
+    no_destinations_title: "⚠️ لا توجد عيادات أخرى لتحويل المرضى إليها."
+    no_destinations_hint: أنشئ عيادة ثانية من العيادات لتتمكن من التحويل.
+    no_destinations_hint_strong: العيادات
+    form:
+      patient: المريض
+      select_patient: اختر المريض
+      destination: العيادة المستقبِلة
+      select_destination: اختر العيادة
+      reason: السبب
+      reason_placeholder: سبب التحويل…
+      submit: إنشاء التحويل
+    table:
+      patient: المريض
+      from: من
+      to: إلى
+      status: الحالة
+      created: التاريخ
+    statuses:
+      pending: قيد الانتظار
+      accepted: مقبول
+      rejected: مرفوض
+      cancelled: ملغى
+      completed: مكتمل
+    actions:
+      delete: حذف
+    confirm:
+      delete: حذف هذا التحويل؟
+    empty: لا توجد تحويلات بعد
+    empty_hint: أنشئ عيادة ثانية أولاً لتتمكن من التحويل
+    none: "—"
+  payments:
+    title: المدفوعات
+    new: دفعة جديدة
+    record: تسجيل دفعة
+    patient: المريض
+    patient_optional: اختر المريض (اختياري)
+    amount: المبلغ
+    currency: العملة
+    method: طريقة الدفع
+    methods:
+      cash: نقدي
+      card: بطاقة
+      transfer: حوالة
+      insurance: تأمين
+      stripe: بطاقة إلكترونية
+    status: الحالة
+    statuses:
+      pending: معلّق
+      paid: مدفوع
+      failed: فشل
+      refunded: مسترجع
+      cancelled: ملغى
+    reference: المرجع
+    notes: ملاحظات
+    date: التاريخ
+    by: بواسطة
+    total_paid: إجمالي المدفوع
+    total_pending: المعلّق
+    created: تم تسجيل الدفعة.
+    removed: تم حذف الدفعة.
+    no_payments: لا توجد مدفوعات.
   clinics:
-    title: "العيادات"
-    subtitle: "العيادات التي تنتمي إليها"
-    members: "الأعضاء"
-    owner: "المالك"
-    phone: "الهاتف"
-    email: "البريد الإلكتروني"
-    city: "المدينة"
-    specialty: "التخصص"
-    address: "العنوان"
-
+    title: العيادات
+    subtitle: العيادات التي تنتمي إليها
+    members: الأعضاء
+    owner: المالك
+    phone: الهاتف
+    email: البريد الإلكتروني
+    city: المدينة
+    specialty: التخصص
+    address: العنوان
   notifications:
-    title: "الإشعارات"
-    empty: "لا توجد إشعارات"
-    mark_read: "تحديد كمقروء"
-    mark_all: "تحديد الكل كمقروء"
-    marked_read: "تم التحديد كمقروء."
-    all_marked_read: "تم تحديد الكل كمقروء."
-
+    title: الإشعارات
+    empty: لا توجد إشعارات
+    mark_read: تحديد كمقروء
+    mark_all: تحديد الكل كمقروء
+    marked_read: تم التحديد كمقروء.
+    all_marked_read: تم تحديد الكل كمقروء.
   chat:
-    title: "المساعد الذكي"
-    subtitle: "مساعد طبي بالذكاء الاصطناعي"
-    placeholder: "اكتب رسالة…"
-    send: "إرسال"
-
+    title: المساعد الذكي
+    subtitle: مساعد طبي بالذكاء الاصطناعي
+    placeholder: اكتب رسالة…
+    send: إرسال
   profile:
-    title: "الملف الشخصي"
-    edit: "تعديل الملف"
-    name: "الاسم الكامل"
-    email: "البريد الإلكتروني"
-    locale: "اللغة المفضلة"
-    updated: "تم تحديث الملف."
-
+    title: الملف الشخصي
+    edit: تعديل الملف
+    name: الاسم الكامل
+    email: البريد الإلكتروني
+    locale: اللغة المفضلة
+    updated: تم تحديث الملف.
   auth:
-    login_title: "تسجيل الدخول"
-    email: "البريد الإلكتروني"
-    password: "كلمة المرور"
-    login_button: "دخول"
-    no_account: "ليس لديك حساب؟"
-    signup_link: "أنشئ حساباً مجاناً"
-    signup_title: "إنشاء حساب جديد"
-    name: "الاسم الكامل"
-    role: "الدور"
-    locale: "اللغة"
-    have_account: "لديك حساب بالفعل؟"
-    login_link: "سجّل دخولك"
-    or: "أو"
-
+    login_title: تسجيل الدخول
+    email: البريد الإلكتروني
+    password: كلمة المرور
+    login_button: دخول
+    no_account: ليس لديك حساب؟
+    signup_link: أنشئ حساباً مجاناً
+    signup_title: إنشاء حساب جديد
+    name: الاسم الكامل
+    role: الدور
+    locale: اللغة
+    have_account: لديك حساب بالفعل؟
+    login_link: سجّل دخولك
+    or: أو
   home:
-    hero_title_1: "نظام إدارة العيادات"
-    hero_title_2: "الحديث"
-    hero_subtitle: "أدر مرضاك، مواعيدك، تقاريرك الطبية، أدويتك، ومدفوعاتك — كل شيء في مكان واحد."
-    cta_primary: "ابدأ مجاناً"
-    cta_secondary: "تسجيل الدخول"
-
+    hero_title_1: نظام إدارة العيادات
+    hero_title_2: الحديث
+    hero_subtitle: أدر مرضاك، مواعيدك، تقاريرك الطبية، أدويتك، ومدفوعاتك — كل شيء
+      في مكان واحد.
+    cta_primary: ابدأ مجاناً
+    cta_secondary: تسجيل الدخول
   footer:
-    built: "صُنع بواسطة Ruby on Rails و Tailwind CSS"
-
+    built: صُنع بواسطة Ruby on Rails و Tailwind CSS
   common:
     none: "—"
-
   time:
     formats:
       short: "%H:%M"
       long: "%Y-%m-%d %H:%M"
-
   days:
-    monday:    "الإثنين"
-    tuesday:   "الثلاثاء"
-    wednesday: "الأربعاء"
-    thursday:  "الخميس"
-    friday:    "الجمعة"
-    saturday:  "السبت"
-    sunday:    "الأحد"
+    monday: الإثنين
+    tuesday: الثلاثاء
+    wednesday: الأربعاء
+    thursday: الخميس
+    friday: الجمعة
+    saturday: السبت
+    sunday: الأحد
+  calendar:
+    title: التقويم
+    today: اليوم
+    all_doctors: كل الأطباء
+    doctor_prefix: د.
+    new_appointment: "＋ موعد جديد"
+    more_appointments: "+%{count} أخرى"
+    free_slots_title: "%{count} فترة متاحة"
+    full_day_title: ممتلئ
+    legend_free: يوم به فترات متاحة
+    legend_full: يوم ممتلئ
+    legend_today: اليوم
+    click_hint: انقر على أي يوم لعرض الفترات
+    months:
+      january: يناير
+      february: فبراير
+      march: مارس
+      april: أبريل
+      may: مايو
+      june: يونيو
+      july: يوليو
+      august: أغسطس
+      september: سبتمبر
+      october: أكتوبر
+      november: نوفمبر
+      december: ديسمبر
+    days:
+      saturday: السبت
+      sunday: الأحد
+      monday: الإثنين
+      tuesday: الثلاثاء
+      wednesday: الأربعاء
+      thursday: الخميس
+      friday: الجمعة
+  prescription_pdf:
+    title: وصفة طبية
+    patient_name: 'اسم المريض:'
+    date: 'التاريخ:'
+    age: 'العمر:'
+    doctor: 'الطبيب:'
+    doctor_prefix: د.
+    allergies: 'الحساسية:'
+    medications_heading: الأدوية الموصوفة
+    col_num: "#"
+    col_medication: الدواء
+    col_dosage: الجرعة
+    col_frequency: التكرار
+    col_duration: المدة
+    col_notes: ملاحظات
+    no_medications: لا توجد أدوية موصوفة
+    visit_notes: 'ملاحظات الزيارة:'
+    signature: توقيع الطبيب
+    qr_hint: امسح الرمز لعرض الوصفة على جوالك
+    footer: هذه الوصفة صادرة إلكترونياً من نظام ClinicApp
+    phone_label: 'هاتف:'
+  medication_show:
+    breadcrumb_dashboard: لوحة التحكم
+    breadcrumb_medications: الأدوية
+    route_label: طريقة الاستخدام
+    quantity_label: الكمية
+    refills_label: تجديدات متبقية
+    instructions_label: "\U0001F4A1 تعليمات"
+    patient_label: "\U0001F464 المريض"
+    doctor_label: "\U0001F468‍⚕️ الطبيب"
+    doctor_prefix: د.
+    actions_label: "⚡ إجراءات"
+    other_meds_title: "\U0001F48A أدوية أخرى للمريض"
+    other_meds_count: "%{count} وصفة"
+    allergies_label: "⚠️ حساسية:"
+    qr_card_title: "\U0001F4F1 رمز الوصفة"
+    qr_hint: امسح الرمز لفتح الوصفة على الجوال
+    qr_open: "\U0001F517 فتح الصفحة"
+    qr_copy: "\U0001F4CB نسخ الرابط"
+    qr_copied: "✅ تم النسخ"
+    qr_missing: "⚠️ لم يتم إنشاء رمز QR"
+    info_title: ℹ️ معلومات
+    info_number: 'رقم الوصفة:'
+    info_created: 'تاريخ الوصف:'
+    info_updated: 'آخر تحديث:'
+  qr_modal:
+    title: رمز الوصفة
+    hint: امسح الرمز لعرض الوصفة على الجوال
+    download: "⬇️ تحميل"
+    copy: "\U0001F4CB نسخ الرابط"
+    copied: "✅ تم النسخ"
+    open: "\U0001F517 فتح الصفحة على المتصفح ←"
+  subscriptions:
+    title: الاشتراكات
+    subtitle: خطة اشتراك عيادتك
+    current_plan: الخطة الحالية
+    no_subscription: لا يوجد اشتراك مسجّل
+    history: سجل الاشتراكات
+    table:
+      plan: الخطة
+      status: الحالة
+      expires: ينتهي في
+    plans:
+      free:
+        name: مجاني
+        price: '0'
+        period: مجاناً للأبد
+      basic:
+        name: أساسي
+        price: '50,000'
+        period: ل.س / شهر
+      pro:
+        name: احترافي
+        price: '150,000'
+        period: ل.س / شهر
+      enterprise:
+        name: مؤسسات
+        price: حسب الطلب
+        period: تواصل معنا
+    features:
+      patients: حتى %{count} مريض
+      patients_unlim: مرضى غير محدود
+      members: "%{count} أعضاء فريق"
+      members_unlim: أعضاء غير محدود
+      clinics: "%{count} عيادة"
+      clinics_unlim: عيادات غير محدودة
+      storage: "%{mb} MB تخزين"
+      storage_unlim: تخزين غير محدود
+      reports: تقارير ووصفات طبية
+      qr: QR للوصفات
+      transfers: تحويلات بين العيادات
+      priority: دعم ذو أولوية
+      account_mgr: مدير حساب مخصص
+    statuses:
+      active: نشط
+      trialing: تجريبي
+      past_due: متأخر
+      cancelled: ملغى
+      expired: منتهي
+      pending_payment: قيد المراجعة
+      rejected: مرفوض
+    actions:
+      current: خطتك الحالية
+      upgrade: ترقية
+      choose: اختر الخطة
+      contact: تواصل معنا
+    usage:
+      title: الاستخدام الحالي
+      patients: المرضى
+      members: الأعضاء
+      clinics: العيادات
+      storage: التخزين (MB)
+      unlimited: غير محدود
+      used: "%{used} من %{limit}"
+    notices:
+      upgraded: تم تفعيل خطة %{plan}
+    checkout:
+      title: إتمام الاشتراك
+      step1: الخطوة 1 — حوّل المبلغ
+      step2: الخطوة 2 — ارفع صورة التحويل
+      submit: إرسال الطلب
+      transfer_amount: 'حوّل %{amount} إلى أحد الحسابات التالية:'
+      choose_method: اختر الطريقة
+      upload_hint: صورة واضحة للإيصال أو لقطة شاشة
+      label_method: طريقة الدفع
+      label_reference: رقم العملية (اختياري)
+      label_proof: صورة الإيصال *
+      label_note: ملاحظات (اختياري)
+  admin:
+    title: لوحة الإدارة
+    subtitle: إدارة كامل الموقع
+    nav:
+      dashboard: لوحة الإدارة
+      users: المستخدمون
+      clinics: العيادات
+      subscriptions: الاشتراكات
+    stats:
+      users: المستخدمون
+      clinics: العيادات
+      patients: المرضى
+      appointments: المواعيد
+      revenue_mtd: إيرادات الشهر
+      plan_breakdown: توزيع الخطط
+    users:
+      title: المستخدمون
+      search_placeholder: ابحث بالاسم أو البريد…
+      all_roles: كل الأدوار
+      table:
+        id: "#"
+        name: الاسم
+        email: البريد
+        role: الدور
+        clinics: العيادات
+        registered: التسجيل
+        actions: إجراءات
+      actions:
+        view: عرض
+        impersonate: الدخول كـ
+      confirm_impersonate: الدخول باسم هذا المستخدم؟
+      empty: لا يوجد مستخدمون
+    clinics:
+      title: العيادات
+      search_placeholder: ابحث بالاسم…
+      table:
+        id: "#"
+        name: الاسم
+        owner: المالك
+        city: المدينة
+        specialty: التخصص
+        plan: الخطة
+        public: عامة
+        actions: إجراءات
+      actions:
+        view: عرض
+        make_public: نشر
+        make_private: إخفاء
+      empty: لا توجد عيادات
+    subscriptions:
+      title: كل الاشتراكات
+      filter_plan: كل الخطط
+      filter_status: كل الحالات
+      table:
+        id: "#"
+        clinic: العيادة
+        owner: المالك
+        plan: الخطة
+        status: الحالة
+        expires: ينتهي في
+        actions: إجراءات
+      actions:
+        edit: تعديل
+      empty: لا توجد اشتراكات
+    show:
+      back: رجوع
+      member_since: عضو منذ
+      clinics_count: العيادات
+      patients_count: المرضى
+      appointments_count: المواعيد

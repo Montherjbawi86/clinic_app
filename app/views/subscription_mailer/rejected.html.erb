@@ -1,0 +1,29 @@
+<div style="font-family: 'Segoe UI', Tahoma, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background: #f8fafc;">
+  <div style="background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); padding: 32px 24px; border-radius: 16px 16px 0 0; text-align: center; color: white;">
+    <div style="font-size: 48px;">❌</div>
+    <div style="font-size: 22px; font-weight: bold; margin-top: 12px;">
+      <%= I18n.locale == :ar ? "تم رفض دفع الاشتراك" : "Subscription Payment Rejected" %>
+    </div>
+  </div>
+
+  <div style="background: white; padding: 32px 24px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+    <p style="font-size: 16px; color: #1e293b; margin-bottom: 20px;">
+      <%= I18n.locale == :ar ? "مرحباً #{@user.name}،" : "Hi #{@user.name}," %>
+    </p>
+
+    <p style="font-size: 15px; color: #475569; line-height: 1.7; margin-bottom: 24px;">
+      <% if I18n.locale == :ar %>
+        لم نتمكن من التحقق من دفعة خطة <strong><%= @subscription.plan.titleize %></strong>. يرجى إعادة الإرسال أو التواصل مع الدعم.
+      <% else %>
+        We could not verify your payment for the <strong><%= @subscription.plan.titleize %></strong> plan. Please re-submit or contact support.
+      <% end %>
+    </p>
+
+    <div style="text-align: center; margin-top: 24px;">
+      <a href="<%= dashboard_subscriptions_url(host: ENV.fetch('APP_HOST', '127.0.0.1:3000'), protocol: Rails.env.production? ? 'https' : 'http') %>"
+         style="display: inline-block; background: #e11d48; color: white; padding: 12px 28px; text-decoration: none; border-radius: 10px; font-weight: bold;">
+        <%= I18n.locale == :ar ? "إعادة الإرسال" : "Re-submit" %>
+      </a>
+    </div>
+  </div>
+</div>

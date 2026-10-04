@@ -21,7 +21,6 @@ gem "jbuilder"
 gem "bcrypt"
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
-
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
 
@@ -71,3 +70,11 @@ gem "wicked_pdf", "~> 2.8"
 gem "wkhtmltopdf-binary", "~> 0.12.6"
 
 gem "rqrcode", "~> 3.2"
+
+
+
+# Email preview in development
+gem "letter_opener",     group: [:development]
+gem "letter_opener_web", group: [:development]
+
+gem "dotenv-rails", "~> 3.2", groups: [:development, :test]

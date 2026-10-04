@@ -1,6 +1,6 @@
 class Clinic < ApplicationRecord
   include ClinicOptions
-
+  include Discard::Model
   belongs_to :owner, class_name: "User", foreign_key: "user_id"
 
   has_many :clinic_members, dependent: :destroy
@@ -19,6 +19,8 @@ class Clinic < ApplicationRecord
 
   validates :name, presence: true
 
+  after_create :create_default_subscription
+
   before_validation :generate_slug
 
   def display_name
@@ -28,7 +30,21 @@ class Clinic < ApplicationRecord
   def address_display
     address_ar.presence || address
   end
+  def deactivate!
+    update!(discarded_at: Time.current)
+  end
 
+  def activate!
+    update!(discarded_at: nil)
+  end
+
+  def active?
+    discarded_at.nil?
+  end
+
+  def suspended?
+    discarded_at.present?
+  end
   def open_now?
     return false if working_hours.blank?
     today_key = Date.current.strftime("%A").downcase

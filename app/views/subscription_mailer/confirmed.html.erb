@@ -1,0 +1,54 @@
+<div style="font-family: 'Segoe UI', Tahoma, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background: #f8fafc;">
+  <div style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); padding: 32px 24px; border-radius: 16px 16px 0 0; text-align: center; color: white;">
+    <div style="font-size: 48px;">✅</div>
+    <div style="font-size: 22px; font-weight: bold; margin-top: 12px;">
+      <%= I18n.locale == :ar ? "تم تفعيل الاشتراك" : "Subscription Activated" %>
+    </div>
+  </div>
+
+  <div style="background: white; padding: 32px 24px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+    <p style="font-size: 16px; color: #1e293b; margin-bottom: 20px;">
+      <%= I18n.locale == :ar ? "مرحباً #{@user.name}،" : "Hi #{@user.name}," %>
+    </p>
+
+    <p style="font-size: 15px; color: #475569; line-height: 1.7; margin-bottom: 24px;">
+      <% if I18n.locale == :ar %>
+        تم تفعيل خطة <strong><%= @subscription.plan.titleize %></strong> لعيادة <strong><%= @clinic.display_name %></strong>.
+      <% else %>
+        Your <strong><%= @subscription.plan.titleize %></strong> plan is now active for <strong><%= @clinic.display_name %></strong>.
+      <% end %>
+    </p>
+
+    <div style="background: #f0fdfa; border: 2px solid #14b8a6; border-radius: 14px; padding: 20px; margin: 20px 0;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td style="padding: 8px 0; color: #64748b; font-size: 14px;">
+            <%= I18n.locale == :ar ? "الخطة" : "Plan" %>
+          </td>
+          <td style="padding: 8px 0; text-align: left; font-weight: bold; color: #0f172a;">
+            <%= @subscription.plan.titleize %>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; color: #64748b; font-size: 14px;">
+            <%= I18n.locale == :ar ? "ينتهي في" : "Expires" %>
+          </td>
+          <td style="padding: 8px 0; text-align: left; font-weight: bold; color: #0f172a;">
+            <%= @subscription.expires_at.strftime("%Y-%m-%d") %>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div style="text-align: center; margin-top: 24px;">
+      <a href="<%= dashboard_subscriptions_url(host: ENV.fetch('APP_HOST', '127.0.0.1:3000'), protocol: Rails.env.production? ? 'https' : 'http') %>"
+         style="display: inline-block; background: #0d9488; color: white; padding: 12px 28px; text-decoration: none; border-radius: 10px; font-weight: bold;">
+        <%= I18n.locale == :ar ? "عرض الاشتراك" : "View Subscription" %>
+      </a>
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">
+    <%= I18n.locale == :ar ? "صادر من نظام ClinicApp" : "Sent by ClinicApp" %>
+  </div>
+</div>

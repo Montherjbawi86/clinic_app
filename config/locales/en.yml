@@ -1,294 +1,706 @@
+---
 en:
-  app_name: "Clinic Management System"
-  brand: "ClinicApp"
-
+  app_name: Clinic Management System
+  brand: ClinicApp
   nav:
-    overview:      "Overview"
-    patients:      "Patients"
-    appointments:  "Appointments"
-    calendar:      "Calendar"
-    reports:       "Reports"
-    medications:   "Medications"
-    transfers:     "Transfers"
-    payments:      "Payments"
-    clinics:       "Clinics"
-    subscriptions: "Subscriptions"
-    chat:          "AI Assistant"
-    profile:       "Profile"
-    notifications: "Notifications"
-    logout:        "Log Out"
-    dashboard:     "Dashboard"
-    login:         "Log In"
-    signup:        "Sign Up"
-    signup_free:   "Sign Up Free"
-    search_placeholder: "Search for a patient…"
-    current_clinic: "Current Clinic"
-    medical:       "Medical"
-    admin:         "Admin"
-
+    overview: Overview
+    patients: Patients
+    appointments: Appointments
+    calendar: Calendar
+    reports: Reports
+    medications: Medications
+    transfers: Transfers
+    payments: Payments
+    clinics: Clinics
+    subscriptions: Subscriptions
+    chat: AI Assistant
+    profile: Profile
+    notifications: Notifications
+    logout: Log Out
+    dashboard: Dashboard
+    login: Log In
+    signup: Sign Up
+    signup_free: Sign Up Free
+    search_placeholder: Search for a patient…
+    current_clinic: Current Clinic
+    medical: Medical
+    admin: Admin
   actions:
-    new: "New"
-    edit: "Edit"
-    delete: "Delete"
-    cancel: "Cancel"
-    save: "Save"
-    update: "Update"
-    create: "Create"
-    search: "Search"
-    filter: "Filter"
-    back: "Back"
-    view: "View"
-    archive: "Archive"
-    print: "Print"
-    today: "Today"
-    all: "All"
-
+    new: New
+    edit: Edit
+    delete: Delete
+    cancel: Cancel
+    save: Save
+    update: Update
+    create: Create
+    search: Search
+    filter: Filter
+    back: Back
+    view: View
+    archive: Archive
+    print: Print
+    today: Today
+    all: All
   overview:
-    title: "Overview"
-    subtitle: "Summary of your clinic"
-    patients: "Patients"
-    today_appointments: "Today"
-    this_week: "This Week"
-    unread: "Unread"
-    revenue_month: "Revenue (Month)"
-    pending_payments: "Pending Payments"
-    today_schedule: "Today's Schedule"
-    new_patients: "New Patients"
-    recent_payments: "Recent Payments"
-    no_appointments_today: "No appointments today."
-    no_patients_yet: "No patients yet."
-    no_payments_yet: "No payments yet."
-    view_all: "View all"
-
+    title: Dashboard
+    subtitle: Summary of your clinic
+    greeting_morning: Good morning
+    greeting_evening: Good evening
+    greeting_prefix: Dr.
+    complete_clinic_title: Complete your clinic profile
+    complete_clinic_hint: Add your city and specialty so you appear in the public
+      directory and unlock all features.
+    complete_clinic_cta: "\U0001F3E5 Complete now"
+    new_bookings_title: "%{count} new booking request(s)"
+    new_bookings_hint: Patients booked online and are waiting for your confirmation
+    new_bookings_review: Review →
+    new_bookings_more: "+ %{count} more"
+    new_bookings_view_all: "\U0001F514 View all requests"
+    new_appointment: "\U0001F4C5 New Appointment"
+    new_patient: "\U0001F464 New Patient"
+    today: Today
+    waiting: Waiting
+    in_clinic: In Clinic
+    reports_today: Reports
+    revenue_today: Revenue
+    today_appointments: Today's appointments
+    today_schedule: "\U0001F4C5 Today's Schedule"
+    view_all: View all →
+    no_appointments_today: No appointments today
+    add_appointment: "＋ Add appointment"
+    quick_actions: "⚡ Quick Actions"
+    quick_new_appointment: New Appointment
+    quick_new_patient: New Patient
+    quick_new_prescription: New Prescription
+    quick_record_payment: Record Payment
+    unread_notifications: You have %{count} notification(s)
+    pending_payments: Pending payments
+    follow_ups_title: "\U0001F504 Follow-ups due"
+    follow_ups_window: Next 2 weeks
+    follow_up_late: Overdue
+    follow_up_tomorrow: Tomorrow
+    follow_up_in_days: In %{days} days
+    recent_payments: "\U0001F4B0 Recent Payments"
+    recent_reports: "\U0001F4CB Recent Reports"
+    recent_patients: "\U0001F465 New Patients"
+    see_all: All
+    none: None
+    statuses:
+      scheduled: "\U0001F4C5"
+      confirmed: "✓"
+      checked_in: "⏳"
+      in_progress: "▶"
+      completed: "✅"
+      cancelled: "✕"
+      no_show: "✕"
+    sub_pending_title: Subscription pending review
+    sub_pending_hint: Payment proof submitted — activation coming soon
+    sub_pending_view: View
+    sub_rejected_title: Subscription payment rejected
+    sub_rejected_hint: We could not verify your payment. Please re-submit.
+    sub_rejected_resubmit: Re-submit
   patients:
-    title: "Patients"
-    new: "New Patient"
-    name: "Name"
-    phone: "Phone"
-    gender: "Gender"
-    age: "Age"
-    blood_type: "Blood Type"
-    allergies: "Allergies"
-    created: "Patient registered successfully."
-    updated: "Patient updated."
-    archived: "Patient archived."
-
-  appointments:
-    title: "Appointments"
-    subtitle: "All appointments at this clinic"
-    new: "New Appointment"
-    patient: "Patient"
-    doctor: "Doctor"
-    select_patient: "Select patient"
-    select_doctor: "Select doctor"
-    date: "Date"
-    time: "Time"
-    duration: "Duration (min)"
-    duration_unit: "min"
-    reason: "Reason"
-    status: "Status"
-    statuses:
-      scheduled:  "Scheduled"
-      confirmed:  "Confirmed"
-      checked_in: "Checked In"
-      in_progress: "In Progress"
-      completed:  "Completed"
-      cancelled:  "Cancelled"
-      no_show:    "No Show"
+    title: Patients
+    subtitle: All patients at your clinic
+    new: New Patient
+    name: Name
+    phone: Phone
+    gender: Gender
+    age: Age
+    blood_type: Blood Type
+    allergies: Allergies
+    created: Patient registered successfully.
+    updated: Patient updated.
+    archived: Patient archived.
+    print_pdf: "\U0001F4C4 Print / PDF"
+    export_csv: "\U0001F4E5 CSV"
+    search_placeholder: Search by name or phone…
     filters:
-      upcoming:  "Upcoming"
-      open:      "Open"
-      completed: "Completed"
-      cancelled: "Cancelled"
-    scheduled: "Appointment scheduled successfully."
-    checked_in_notice: "Patient checked in."
-    started_notice:    "Visit started."
-    completed_notice:  "Visit completed."
-    cancelled_notice:  "Appointment cancelled."
-    no_show_notice:    "Marked as no-show."
-    destroyed_notice:  "Appointment deleted."
-    cancelled_by:  "Cancelled by"
-    checked_in_by: "Checked in by"
-    completed_by:  "Completed by"
-    cancellation_reason: "Cancellation Reason"
-    cancellation_reason_placeholder: "Reason for cancellation…"
-    visit_notes:   "Visit Notes"
-    visit_notes_ar: "Visit Notes (Arabic)"
-    visit_notes_en: "Visit Notes (English)"
-    follow_up: "Follow-up Date"
-    vitals:
-      bp:   "Blood Pressure"
-      hr:   "Heart Rate"
-      temp: "Temperature"
+      all: All
+      in_clinic: "\U0001F7E2 In Clinic"
+      today: "\U0001F4C5 Today"
+      pending: "⚠️ Pending Payments"
+      recent: "✨ New Patients"
+      allergies: "\U0001F6A8 Allergies"
+      chronic: "\U0001F48A Chronic"
+      insurance: "\U0001F6E1️ Insured"
+    table:
+      patient: Patient
+      phone: Phone
+      age: Age
+      status: Status
+      allergies: Allergies
+      insurance: Insurance
+      actions: Actions
+    status:
+      in_clinic: In Clinic
+      appointment_at: Appt %{time}
+      appointment_on: Appt %{date}
+      pending_payment: Pending Payment
+      prescription_today: Rx Today
+      prescription_days_ago: Rx %{days}d ago
     actions:
-      check_in:       "Check In"
-      start:          "Start Visit"
-      complete:       "Complete"
-      complete_visit: "Complete Visit"
-      cancel:         "Cancel"
-      confirm_cancel: "Confirm Cancellation"
-      no_show:        "No Show"
-      confirm_no_show: "Confirm No-Show"
-    no_show_confirm: "Confirm the patient did not show up?"
-    create_report_prompt: "Create a medical report for this visit"
-    create_report_hint: "Record diagnosis, treatment, and follow-up"
-    no_appointments: "No appointments yet."
-
-  reports:
-    title: "Medical Reports"
-    new: "New Report"
-    patient: "Patient"
-    diagnosis: "Diagnosis"
-    treatment: "Treatment"
-    notes: "Notes"
-    follow_up: "Follow-up Date"
-    created: "Medical report added successfully."
-    removed: "Report removed."
-    no_reports: "No reports yet."
-
-  medications:
-    title: "Medications"
-    new: "New Prescription"
-    patient: "Patient"
-    name: "Medication"
-    name_ar: "Arabic Name"
-    dosage: "Dosage"
-    frequency: "Frequency"
-    duration: "Duration"
-    route: "Route"
-    routes:
-      oral: "Oral"
-      topical: "Topical"
-      injection: "Injection"
-      inhalation: "Inhalation"
-      sublingual: "Sublingual"
-      rectal: "Rectal"
-    quantity: "Quantity"
-    refills: "Refills"
-    instructions: "Instructions"
-    status: "Status"
-    created: "Medication prescribed successfully."
-    removed: "Prescription removed."
-    no_medications: "No prescriptions yet."
-    prescribe: "Prescribe"
-
-  transfers:
-    title: "Transfers"
-    new: "New Transfer"
-    patient: "Patient"
-    from: "From"
-    to: "To"
-    destination: "Destination Clinic"
-    reason: "Reason"
-    status: "Status"
-    created: "Transfer request created."
-    removed: "Transfer removed."
-    no_transfers: "No transfers yet."
-    no_destinations: "No other clinics available to transfer to."
-
-  payments:
-    title: "Payments"
-    new: "New Payment"
-    record: "Record Payment"
-    patient: "Patient"
-    patient_optional: "Select patient (optional)"
-    amount: "Amount"
-    currency: "Currency"
-    method: "Method"
-    methods:
-      cash: "Cash"
-      card: "Card"
-      transfer: "Bank Transfer"
-      insurance: "Insurance"
-      stripe: "Stripe"
-    status: "Status"
+      view: View
+      edit: Edit
+      appts: Appointments
+      payment: Payment
+    sort:
+      newest: Newest
+      oldest: Oldest
+      name: Name
+      updated: Last Updated
+    no_results: No matching results
+    try_other: Try a different search
+    empty: No patients yet
+    empty_hint: Start by adding your first patient
+    add_first: "＋ Add First Patient"
+  appointments:
+    title: Appointments
+    subtitle: All appointments at this clinic
+    new: New Appointment
+    patient: Patient
+    doctor: Doctor
+    select_patient: Select patient
+    select_doctor: Select doctor
+    date: Date
+    time: Time
+    duration: Duration (min)
+    duration_unit: min
+    reason: Reason
+    status: Status
     statuses:
-      pending: "Pending"
-      paid: "Paid"
-      failed: "Failed"
-      refunded: "Refunded"
-      cancelled: "Cancelled"
-    reference: "Reference"
-    notes: "Notes"
-    date: "Date"
-    by: "By"
-    total_paid: "Total Paid"
-    total_pending: "Pending"
-    created: "Payment recorded."
-    removed: "Payment removed."
-    no_payments: "No payments yet."
-
+      scheduled: Scheduled
+      confirmed: Confirmed
+      checked_in: Checked In
+      in_progress: In Progress
+      completed: Completed
+      cancelled: Cancelled
+      no_show: No Show
+    filters:
+      upcoming: Upcoming
+      open: Open
+      completed: Completed
+      cancelled: Cancelled
+    scheduled: Appointment scheduled successfully.
+    checked_in_notice: Patient checked in.
+    started_notice: Visit started.
+    completed_notice: Visit completed.
+    cancelled_notice: Appointment cancelled.
+    no_show_notice: Marked as no-show.
+    destroyed_notice: Appointment deleted.
+    cancelled_by: Cancelled by
+    checked_in_by: Checked in by
+    completed_by: Completed by
+    cancellation_reason: Cancellation Reason
+    cancellation_reason_placeholder: Reason for cancellation…
+    visit_notes: Visit Notes
+    visit_notes_ar: Visit Notes (Arabic)
+    visit_notes_en: Visit Notes (English)
+    follow_up: Follow-up Date
+    download_ics: Download ICS
+    print_prescription: Print Prescription
+    wizard: Visit Wizard
+    accept_booking: "✅ Accept Booking"
+    reject_booking: "\U0001F6AB Reject Booking"
+    vitals:
+      bp: Blood Pressure
+      hr: Heart Rate
+      temp: Temperature
+      blood_pressure: Blood Pressure
+      heart_rate: Heart Rate
+      temperature: Temperature
+      weight: Weight
+      oxygen: Oxygen
+      glucose: Glucose
+    actions:
+      check_in: Check In
+      start: Start Visit
+      complete: Complete
+      complete_visit: Complete Visit
+      cancel: Cancel
+      confirm_cancel: Confirm Cancellation
+      no_show: No Show
+      confirm_no_show: Confirm No-Show
+      follow_up: "\U0001F4C5 Follow-up"
+      send_reminder: "\U0001F4E7 Send Reminder"
+      send_whatsapp: "\U0001F4AC Send WhatsApp Reminder"
+      finish_visit: "✓ Finish Visit"
+      finish_and_prescribe: "\U0001F48A Finish + Write Prescription"
+    whatsapp_reminder_message: Hi %{name}, reminding you of your appointment at %{clinic}
+      on %{date} at %{time}.
+    no_show_confirm: Confirm the patient did not show up?
+    create_report_prompt: Create a medical report for this visit
+    create_report_hint: Record diagnosis, treatment, and follow-up
+    no_appointments: No appointments yet.
+    new_subtitle: Book an appointment for a patient
+    schedule_button: Book Appointment
+  reports:
+    title: Medical Reports
+    new: New Report
+    patient: Patient
+    diagnosis: Diagnosis
+    treatment: Treatment
+    notes: Notes
+    follow_up: Follow-up Date
+    created: Medical report added successfully.
+    removed: Report removed.
+    no_reports: No reports yet.
+  medications:
+    title: Medications
+    new: New Prescription
+    patient: Patient
+    name: Medication
+    name_ar: Arabic Name
+    dosage: Dosage
+    frequency: Frequency
+    duration: Duration
+    route: Route
+    routes:
+      oral: Oral
+      topical: Topical
+      injection: Injection
+      inhalation: Inhalation
+      sublingual: Sublingual
+      rectal: Rectal
+    quantity: Quantity
+    refills: Refills
+    instructions: Instructions
+    status: Status
+    created: Medication prescribed successfully.
+    removed: Prescription removed.
+    no_medications: No prescriptions yet.
+    prescribe: Prescribe
+    subtitle: Prescriptions written for your patients
+    print_pdf: "\U0001F4C4 Print / PDF"
+    export_csv: "\U0001F4E5 CSV"
+    new_prescription: "\U0001F48A New Prescription"
+    search_placeholder: Search by medication or patient…
+    stats:
+      total: "\U0001F48A Total"
+      active: "✅ Active"
+      completed: "\U0001F3C1 Completed"
+      refill_due: "\U0001F501 Refill Due"
+    filters:
+      all: All
+      active: Active
+      completed: Completed
+      discontinued: Discontinued
+      refill_due: Refill Due
+    table:
+      patient: Patient
+      medication: Medication
+      dosage: Dosage
+      frequency: Frequency
+      status: Status
+    form:
+      patient: Patient
+      select_patient: Select patient
+      name_en: Medication Name (EN)
+      name_en_placeholder: e.g. Amoxicillin
+      name_ar: Name (AR)
+      name_ar_placeholder: أموكسيسيلين
+      dosage: Dosage
+      dosage_placeholder: 500mg
+      route: Route
+      frequency: Frequency
+      frequency_placeholder: 3x daily
+      duration: Duration
+      duration_placeholder: 7 days
+      quantity: Quantity
+      refills: Refills
+      instructions: Instructions
+      instructions_placeholder: Take after meals
+      submit: Prescribe
+    statuses:
+      active: Active
+      completed: Completed
+      discontinued: Discontinued
+    empty: No prescriptions yet
+    no_results: No results match your search
+    refills_available: "%{count} available"
+    actions:
+      refill: Refill
+      complete: Complete
+      discontinue: Discontinue
+      delete: Delete
+      print: Print
+      qr_view: View QR
+      show_qr: Show QR
+    confirm:
+      discontinue: Discontinue this prescription?
+      delete: Delete this prescription?
+      delete_permanent: Delete this prescription permanently?
+  transfers:
+    title: Transfers
+    new: New Transfer
+    patient: Patient
+    from: From
+    to: To
+    destination: Destination Clinic
+    reason: Reason
+    status: Status
+    created: Transfer request created.
+    removed: Transfer removed.
+    no_transfers: No transfers yet.
+    no_destinations: No other clinics available to transfer to.
+    subtitle: Transfer patients to another clinic
+    new_transfer: New Transfer
+    no_destinations_title: "⚠️ No other clinics available to transfer to."
+    no_destinations_hint: Create a second clinic from Clinics to enable transfers.
+    no_destinations_hint_strong: Clinics
+    form:
+      patient: Patient
+      select_patient: Select patient
+      destination: Destination Clinic
+      select_destination: Select destination
+      reason: Reason
+      reason_placeholder: Reason for transfer…
+      submit: Create Transfer
+    table:
+      patient: Patient
+      from: From
+      to: To
+      status: Status
+      created: Created
+    statuses:
+      pending: Pending
+      accepted: Accepted
+      rejected: Rejected
+      cancelled: Cancelled
+      completed: Completed
+    actions:
+      delete: Delete
+    confirm:
+      delete: Delete this transfer?
+    empty: No transfers yet
+    empty_hint: Create a second clinic first to enable transfers
+    none: "—"
+  payments:
+    title: Payments
+    new: New Payment
+    record: Record Payment
+    patient: Patient
+    patient_optional: Select patient (optional)
+    amount: Amount
+    currency: Currency
+    method: Method
+    methods:
+      cash: Cash
+      card: Card
+      transfer: Bank Transfer
+      insurance: Insurance
+      stripe: Stripe
+    status: Status
+    statuses:
+      pending: Pending
+      paid: Paid
+      failed: Failed
+      refunded: Refunded
+      cancelled: Cancelled
+    reference: Reference
+    notes: Notes
+    date: Date
+    by: By
+    total_paid: Total Paid
+    total_pending: Pending
+    created: Payment recorded.
+    removed: Payment removed.
+    no_payments: No payments yet.
   clinics:
-    title: "Clinics"
-    subtitle: "Clinics you belong to"
-    members: "Members"
-    owner: "Owner"
-    phone: "Phone"
-    email: "Email"
-    city: "City"
-    specialty: "Specialty"
-    address: "Address"
-
+    title: Clinics
+    subtitle: Clinics you belong to
+    members: Members
+    owner: Owner
+    phone: Phone
+    email: Email
+    city: City
+    specialty: Specialty
+    address: Address
   notifications:
-    title: "Notifications"
-    empty: "No notifications"
-    mark_read: "Mark as read"
-    mark_all: "Mark all as read"
-    marked_read: "Marked as read."
-    all_marked_read: "All marked as read."
-
+    title: Notifications
+    empty: No notifications
+    mark_read: Mark as read
+    mark_all: Mark all as read
+    marked_read: Marked as read.
+    all_marked_read: All marked as read.
   chat:
-    title: "AI Assistant"
-    subtitle: "AI-powered medical assistant"
-    placeholder: "Type a message…"
-    send: "Send"
-
+    title: AI Assistant
+    subtitle: AI-powered medical assistant
+    placeholder: Type a message…
+    send: Send
   profile:
-    title: "Profile"
-    edit: "Edit Profile"
-    name: "Full Name"
-    email: "Email"
-    locale: "Preferred Language"
-    updated: "Profile updated."
-
+    title: Profile
+    edit: Edit Profile
+    name: Full Name
+    email: Email
+    locale: Preferred Language
+    updated: Profile updated.
   auth:
-    login_title: "Log In"
-    email: "Email"
-    password: "Password"
-    login_button: "Log In"
-    no_account: "Don't have an account?"
-    signup_link: "Create one free"
-    signup_title: "Create Account"
-    name: "Full Name"
-    role: "Role"
-    locale: "Language"
-    have_account: "Already have an account?"
-    login_link: "Log in"
-    or: "or"
-
+    login_title: Log In
+    email: Email
+    password: Password
+    login_button: Log In
+    no_account: Don't have an account?
+    signup_link: Create one free
+    signup_title: Create Account
+    name: Full Name
+    role: Role
+    locale: Language
+    have_account: Already have an account?
+    login_link: Log in
+    or: or
   home:
-    hero_title_1: "Modern Clinic"
-    hero_title_2: "Management System"
-    hero_subtitle: "Manage your patients, appointments, medical reports, medications, and payments — all in one place."
-    cta_primary: "Get Started Free"
-    cta_secondary: "Log In"
-
+    hero_title_1: Modern Clinic
+    hero_title_2: Management System
+    hero_subtitle: Manage your patients, appointments, medical reports, medications,
+      and payments — all in one place.
+    cta_primary: Get Started Free
+    cta_secondary: Log In
   footer:
-    built: "Built with Ruby on Rails & Tailwind CSS"
-
+    built: Built with Ruby on Rails & Tailwind CSS
   common:
     none: "—"
-
   time:
     formats:
       short: "%H:%M"
       long: "%Y-%m-%d %H:%M"
-
   days:
-    monday:    "Monday"
-    tuesday:   "Tuesday"
-    wednesday: "Wednesday"
-    thursday:  "Thursday"
-    friday:    "Friday"
-    saturday:  "Saturday"
-    sunday:    "Sunday"
+    monday: Monday
+    tuesday: Tuesday
+    wednesday: Wednesday
+    thursday: Thursday
+    friday: Friday
+    saturday: Saturday
+    sunday: Sunday
+  calendar:
+    title: Calendar
+    today: Today
+    all_doctors: All doctors
+    doctor_prefix: Dr.
+    new_appointment: "＋ New Appointment"
+    more_appointments: "+%{count} more"
+    free_slots_title: "%{count} slots available"
+    full_day_title: Full
+    legend_free: Day with available slots
+    legend_full: Fully booked
+    legend_today: Today
+    click_hint: Click any day to view slots
+    months:
+      january: January
+      february: February
+      march: March
+      april: April
+      may: May
+      june: June
+      july: July
+      august: August
+      september: September
+      october: October
+      november: November
+      december: December
+    days:
+      saturday: Saturday
+      sunday: Sunday
+      monday: Monday
+      tuesday: Tuesday
+      wednesday: Wednesday
+      thursday: Thursday
+      friday: Friday
+  prescription_pdf:
+    title: Medical Prescription
+    patient_name: 'Patient Name:'
+    date: 'Date:'
+    age: 'Age:'
+    doctor: 'Doctor:'
+    doctor_prefix: Dr.
+    allergies: 'Allergies:'
+    medications_heading: Prescribed Medications
+    col_num: "#"
+    col_medication: Medication
+    col_dosage: Dosage
+    col_frequency: Frequency
+    col_duration: Duration
+    col_notes: Notes
+    no_medications: No medications prescribed
+    visit_notes: 'Visit Notes:'
+    signature: Doctor's Signature
+    qr_hint: Scan the QR code to view the prescription on your phone
+    footer: This prescription was issued electronically by ClinicApp
+    phone_label: 'Phone:'
+  medication_show:
+    breadcrumb_dashboard: Dashboard
+    breadcrumb_medications: Medications
+    route_label: Route
+    quantity_label: Quantity
+    refills_label: Refills remaining
+    instructions_label: "\U0001F4A1 Instructions"
+    patient_label: "\U0001F464 Patient"
+    doctor_label: "\U0001F468‍⚕️ Doctor"
+    doctor_prefix: Dr.
+    actions_label: "⚡ Actions"
+    other_meds_title: "\U0001F48A Other medications for this patient"
+    other_meds_count: "%{count} prescription(s)"
+    allergies_label: "⚠️ Allergies:"
+    qr_card_title: "\U0001F4F1 Prescription QR"
+    qr_hint: Scan the code to open the prescription on mobile
+    qr_open: "\U0001F517 Open page"
+    qr_copy: "\U0001F4CB Copy link"
+    qr_copied: "✅ Copied"
+    qr_missing: "⚠️ QR code not generated"
+    info_title: ℹ️ Info
+    info_number: 'Prescription #:'
+    info_created: 'Prescribed:'
+    info_updated: 'Last updated:'
+  qr_modal:
+    title: Prescription QR
+    hint: Scan the code to view on mobile
+    download: "⬇️ Download"
+    copy: "\U0001F4CB Copy link"
+    copied: "✅ Copied"
+    open: "\U0001F517 Open page in browser →"
+  subscriptions:
+    title: Subscriptions
+    subtitle: Your clinic's subscription plan
+    current_plan: Current Plan
+    no_subscription: No subscription on file
+    history: Subscription History
+    table:
+      plan: Plan
+      status: Status
+      expires: Expires
+    plans:
+      free:
+        name: Free
+        price: '0'
+        period: Free forever
+      basic:
+        name: Basic
+        price: '50,000'
+        period: SYP / month
+      pro:
+        name: Pro
+        price: '150,000'
+        period: SYP / month
+      enterprise:
+        name: Enterprise
+        price: On request
+        period: Contact us
+    features:
+      patients: Up to %{count} patients
+      patients_unlim: Unlimited patients
+      members: "%{count} team members"
+      members_unlim: Unlimited team members
+      clinics: "%{count} clinics"
+      clinics_unlim: Unlimited clinics
+      storage: "%{mb} MB storage"
+      storage_unlim: Unlimited storage
+      reports: Reports & prescriptions
+      qr: Prescription QR
+      transfers: Inter-clinic transfers
+      priority: Priority support
+      account_mgr: Dedicated account manager
+    statuses:
+      active: Active
+      trialing: Trialing
+      past_due: Past Due
+      cancelled: Cancelled
+      expired: Expired
+      pending_payment: Pending Review
+      rejected: Rejected
+    actions:
+      current: Current plan
+      upgrade: Upgrade
+      choose: Choose plan
+      contact: Contact us
+    usage:
+      title: Current Usage
+      patients: Patients
+      members: Team members
+      clinics: Clinics
+      storage: Storage (MB)
+      unlimited: Unlimited
+      used: "%{used} of %{limit}"
+    notices:
+      upgraded: Plan %{plan} activated
+    checkout:
+      title: Complete Subscription
+      step1: Step 1 - Transfer the amount
+      step2: Step 2 - Upload transfer proof
+      submit: Submit request
+      transfer_amount: 'Transfer %{amount} to one of these accounts:'
+      choose_method: Choose method
+      upload_hint: A clear photo of the receipt or a screenshot
+      label_method: Payment method
+      label_reference: Transaction reference (optional)
+      label_proof: Receipt image *
+      label_note: Notes (optional)
+  admin:
+    title: Admin Panel
+    subtitle: Manage the entire platform
+    nav:
+      dashboard: Admin
+      users: Users
+      clinics: Clinics
+      subscriptions: Subscriptions
+    stats:
+      users: Users
+      clinics: Clinics
+      patients: Patients
+      appointments: Appointments
+      revenue_mtd: Revenue (MTD)
+      plan_breakdown: Plan Breakdown
+    users:
+      title: Users
+      search_placeholder: Search by name or email…
+      all_roles: All roles
+      table:
+        id: "#"
+        name: Name
+        email: Email
+        role: Role
+        clinics: Clinics
+        registered: Registered
+        actions: Actions
+      actions:
+        view: View
+        impersonate: Impersonate
+      confirm_impersonate: Impersonate this user?
+      empty: No users
+    clinics:
+      title: Clinics
+      search_placeholder: Search by name…
+      table:
+        id: "#"
+        name: Name
+        owner: Owner
+        city: City
+        specialty: Specialty
+        plan: Plan
+        public: Public
+        actions: Actions
+      actions:
+        view: View
+        make_public: Publish
+        make_private: Hide
+      empty: No clinics
+    subscriptions:
+      title: All Subscriptions
+      filter_plan: All plans
+      filter_status: All statuses
+      table:
+        id: "#"
+        clinic: Clinic
+        owner: Owner
+        plan: Plan
+        status: Status
+        expires: Expires
+        actions: Actions
+      actions:
+        edit: Edit
+      empty: No subscriptions
+    show:
+      back: Back
+      member_since: Member since
+      clinics_count: Clinics
+      patients_count: Patients
+      appointments_count: Appointments

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_09_30_201119) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_03_012350) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -68,7 +68,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_30_201119) do
     t.datetime "cancelled_at"
     t.time "appointment_time"
     t.string "public_token"
+    t.string "source", default: "staff"
+    t.string "patient_name"
+    t.string "patient_phone"
+    t.string "booking_ref"
     t.index ["appointment_date"], name: "index_appointments_on_appointment_date"
+    t.index ["booking_ref"], name: "index_appointments_on_booking_ref", unique: true
     t.index ["cancelled_by_id"], name: "index_appointments_on_cancelled_by_id"
     t.index ["checked_in_by_id"], name: "index_appointments_on_checked_in_by_id"
     t.index ["clinic_id", "appointment_date", "status"], name: "idx_appt_clinic_date_status"
@@ -78,6 +83,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_30_201119) do
     t.index ["doctor_id"], name: "index_appointments_on_doctor_id"
     t.index ["patient_id"], name: "index_appointments_on_patient_id"
     t.index ["public_token"], name: "index_appointments_on_public_token", unique: true
+    t.index ["source"], name: "index_appointments_on_source"
   end
 
   create_table "chat_messages", force: :cascade do |t|
@@ -138,7 +144,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_30_201119) do
     t.string "timezone", default: "Asia/Damascus"
     t.string "logo_url"
     t.jsonb "settings", default: {}
-    t.datetime "deleted_at"
+    t.datetime "discarded_at"
     t.jsonb "working_hours", default: {}
     t.string "slug"
     t.text "about"
@@ -269,6 +275,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_30_201119) do
     t.text "chronic_conditions"
     t.string "insurance_provider"
     t.string "insurance_number"
+    t.string "email"
     t.index ["clinic_id", "name"], name: "index_patients_on_clinic_id_and_name"
     t.index ["clinic_id"], name: "index_patients_on_clinic_id"
     t.index ["deleted_at"], name: "index_patients_on_deleted_at"
@@ -306,6 +313,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_30_201119) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "stripe_subscription_id"
+    t.text "payment_proof_note"
+    t.string "payment_method"
+    t.string "transaction_reference"
+    t.datetime "submitted_at"
+    t.datetime "confirmed_at"
+    t.bigint "confirmed_by_id"
     t.index ["clinic_id"], name: "index_subscriptions_on_clinic_id"
   end
 
@@ -332,6 +345,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_30_201119) do
     t.string "locale"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "discarded_at"
+    t.index ["discarded_at"], name: "index_users_on_discarded_at"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 

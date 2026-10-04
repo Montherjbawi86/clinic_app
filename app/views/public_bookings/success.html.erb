@@ -1,0 +1,142 @@
+<% content_for :title, "تم الحجز — #{@clinic.display_name}" %>
+
+<%
+  status_url = public_booking_status_url(
+    @clinic.slug,
+    ref: @appointment&.booking_ref,
+    host: ENV["APP_HOST"].presence || request.host_with_port
+  )
+
+  patient_phone = @appointment&.patient&.phone.to_s.gsub(/\D/, "")
+  patient_phone = "963#{patient_phone.sub(/^0/, "")}" if patient_phone.start_with?("0")
+  patient_phone = "963#{patient_phone}" unless patient_phone.start_with?("963")
+
+  wa_message = "🏥 #{@clinic.display_name}\n\nتم استلام طلب حجزك.\n\n🔖 رقم الحجز: #{@appointment&.booking_ref}\n🔍 تابع حالة حجزك:\n#{status_url}"
+  wa_url = "https://wa.me/#{patient_phone}?text=#{CGI.escape(wa_message)}"
+  sms_url = "sms:#{patient_phone}?body=#{CGI.escape("متابعة حالة الحجز: #{status_url}")}"
+%>
+
+<div class="max-w-lg mx-auto p-4">
+
+  <div class="bg-white rounded-3xl border border-slate-200 shadow-lg overflow-hidden">
+
+    <!-- Header -->
+    <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 p-8 text-center text-white">
+      <div class="w-20 h-20 mx-auto rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-5xl mb-4">
+        ✅
+      </div>
+      <h1 class="text-2xl font-bold mb-2">تم استلام طلبك!</h1>
+      <p class="text-emerald-100 text-sm leading-relaxed">
+        سنتواصل معك قريباً لتأكيد الموعد
+      </p>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6">
+
+      <!-- Reference -->
+      <% if @appointment&.booking_ref.present? %>
+        <div class="bg-slate-50 border-2 border-dashed border-teal-300 rounded-2xl p-5 text-center mb-6">
+          <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+            رقم الحجز المرجعي
+          </div>
+          <div class="text-3xl font-black text-teal-700 tracking-wider" dir="ltr">
+            <%= @appointment.booking_ref %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- ═══════════════════════════════════════════════════════
+           SEND THE LINK
+           ═══════════════════════════════════════════════════════ -->
+      <div class="mb-6">
+        <div class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+          📤 احفظ رابط المتابعة
+        </div>
+        <p class="text-xs text-slate-500 mb-4">
+          أرسل الرابط لنفسك حتى تتمكن من متابعة حالة الحجز لاحقاً
+        </p>
+
+        <div class="space-y-2">
+
+          <!-- WhatsApp -->
+          <a href="<%= wa_url %>" target="_blank"
+             class="flex items-center justify-center gap-2 w-full bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-3 rounded-xl font-bold text-sm transition no-underline shadow-md shadow-emerald-500/20">
+            <span class="text-lg">💬</span>
+            إرسال على واتساب
+          </a>
+
+          <!-- SMS -->
+          <a href="<%= sms_url %>"
+             class="flex items-center justify-center gap-2 w-full bg-sky-500 hover:bg-sky-600 text-white px-4 py-3 rounded-xl font-bold text-sm transition no-underline shadow-md shadow-sky-500/20">
+            <span class="text-lg">📱</span>
+            إرسال رسالة SMS
+          </a>
+
+          <!-- Copy link -->
+          <button type="button"
+                  onclick="navigator.clipboard.writeText('<%= status_url %>'); this.innerHTML = '✅ تم نسخ الرابط'; setTimeout(() => this.innerHTML = '📋 نسخ الرابط', 2000)"
+                  class="flex items-center justify-center gap-2 w-full bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-3 rounded-xl font-bold text-sm transition cursor-pointer">
+            📋 نسخ الرابط
+          </button>
+
+          <!-- Open status page -->
+          <%= link_to status_url,
+                class: "flex items-center justify-center gap-2 w-full bg-white border-2 border-teal-600 hover:bg-teal-50 text-teal-700 px-4 py-3 rounded-xl font-bold text-sm transition no-underline" do %>
+            <span class="text-lg">🔍</span>
+            فتح صفحة المتابعة الآن
+          <% end %>
+
+        </div>
+
+        <% if @appointment&.patient&.email.present? %>
+          <div class="mt-4 p-3 bg-teal-50 border border-teal-200 rounded-xl text-xs text-teal-700 flex items-start gap-2">
+            <span class="text-lg">📧</span>
+            <span>
+              أرسلنا أيضاً رابط المتابعة إلى بريدك:
+              <strong class="block mt-0.5" dir="ltr"><%= @appointment.patient.email %></strong>
+            </span>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Details -->
+      <% if @appointment %>
+        <div class="space-y-3 mb-6">
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">
+            تفاصيل طلبك
+          </div>
+          <div class="flex items-center justify-between text-sm p-3 bg-slate-50 rounded-xl">
+            <span class="text-slate-500">📅 التاريخ</span>
+            <span class="font-bold text-slate-800"><%= @appointment.appointment_date %></span>
+          </div>
+          <div class="flex items-center justify-between text-sm p-3 bg-slate-50 rounded-xl">
+            <span class="text-slate-500">🕐 الوقت</span>
+            <span class="font-bold text-slate-800"><%= @appointment.appointment_time&.strftime("%H:%M") %></span>
+          </div>
+          <div class="flex items-center justify-between text-sm p-3 bg-slate-50 rounded-xl">
+            <span class="text-slate-500">👤 المريض</span>
+            <span class="font-bold text-slate-800"><%= @appointment.patient&.display_name %></span>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Actions -->
+      <div class="pt-6 border-t border-slate-100 space-y-2">
+        <% if @clinic.phone.present? %>
+          <a href="tel:<%= @clinic.phone %>"
+             class="block w-full bg-white border-2 border-slate-300 text-slate-700 hover:bg-slate-50 px-6 py-3 rounded-xl font-bold transition no-underline text-center">
+            📞 اتصل بالعيادة
+          </a>
+        <% end %>
+        <%= link_to "← العودة لصفحة العيادة", public_clinic_path(@clinic.slug),
+              class: "block w-full bg-slate-100 hover:bg-slate-200 text-slate-700 px-6 py-3 rounded-xl font-semibold transition no-underline text-center" %>
+      </div>
+
+    </div>
+  </div>
+
+  <p class="text-center text-xs text-slate-400 mt-6">
+    صادر من نظام ClinicApp
+  </p>
+</div>

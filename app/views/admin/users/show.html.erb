@@ -1,0 +1,86 @@
+<% content_for :title, @user.name %>
+
+<div class="space-y-5">
+  <%= link_to "← #{t('admin.show.back')}", admin_users_path, class: "text-sm text-teal-600 hover:underline" %>
+
+  <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+    <div class="flex items-start justify-between flex-wrap gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-800"><%= @user.name %></h1>
+        <p class="text-slate-500 mt-1"><%= @user.email %></p>
+        <p class="text-xs text-slate-400 mt-1">
+          <%= t("admin.show.member_since") %>: <%= @user.created_at.strftime("%Y-%m-%d") %>
+        </p>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        <span class="text-sm font-semibold px-3 py-1.5 rounded-full
+          <%= @user.role == 'super_admin' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700' %>">
+          <%= @user.role %>
+        </span>
+        <% if @user.suspended? %>
+          <span class="text-sm font-semibold px-3 py-1.5 rounded-full bg-rose-100 text-rose-700">suspended</span>
+        <% else %>
+          <span class="text-sm font-semibold px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700">active</span>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Admin actions -->
+    <div class="mt-6 pt-5 border-t border-slate-100">
+      <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Admin Actions</div>
+      <div class="flex flex-wrap gap-2">
+
+        <% unless @user.super_admin? %>
+          <%= button_to t("admin.users.actions.impersonate"),
+                impersonate_admin_user_path(@user),
+                method: :post,
+                data: { turbo_confirm: t("admin.users.confirm_impersonate") },
+                class: "text-sm bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-purple-700" %>
+        <% end %>
+
+        <%= button_to "🔑 Reset Password",
+              reset_password_admin_user_path(@user),
+              method: :patch,
+              data: { turbo_confirm: "Generate a new temporary password for #{@user.email}?" },
+              class: "text-sm bg-amber-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-amber-700" %>
+
+        <% if @user.suspended? %>
+          <%= button_to "✅ Reactivate",
+                activate_admin_user_path(@user),
+                method: :patch,
+                class: "text-sm bg-emerald-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-emerald-700" %>
+        <% else %>
+          <% unless @user.super_admin? %>
+            <%= button_to "🚫 Deactivate",
+                  deactivate_admin_user_path(@user),
+                  method: :patch,
+                  data: { turbo_confirm: "Deactivate #{@user.email}? They will not be able to log in." },
+                  class: "text-sm bg-rose-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-rose-700" %>
+          <% end %>
+        <% end %>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm">
+    <div class="p-4 border-b border-slate-100">
+      <h2 class="font-semibold text-slate-800"><%= t("admin.clinics.title") %> (<%= @clinics.count %>)</h2>
+    </div>
+    <% if @clinics.any? %>
+      <ul class="divide-y divide-slate-100">
+        <% @clinics.each do |c| %>
+          <li class="p-4 flex items-center justify-between">
+            <%= link_to admin_clinic_path(c), class: "flex-1 min-w-0 hover:text-teal-600" do %>
+              <div class="font-medium text-slate-800"><%= c.display_name %></div>
+              <div class="text-xs text-slate-500"><%= c.city.presence || "—" %> · <%= c.specialty.presence || "—" %></div>
+            <% end %>
+            <span class="text-xs text-slate-500"><%= c.patients.count %> patients</span>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="p-6 text-center text-slate-400 text-sm">—</p>
+    <% end %>
+  </div>
+</div>

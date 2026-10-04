@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head><meta charset="utf-8"></head>
+<body style="margin: 0; padding: 0; background: #f8fafc; font-family: 'Segoe UI', Tahoma, Arial, sans-serif;">
+  <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); border-radius: 16px 16px 0 0; padding: 25px; text-align: center; color: white;">
+      <div style="font-size: 36px;">📅</div>
+      <div style="font-size: 20px; font-weight: bold; margin-top: 8px;">جدول الغد</div>
+      <div style="font-size: 13px; opacity: 0.9; margin-top: 4px;">
+        <%= @date.strftime("%A، %d %B %Y") rescue @date %>
+      </div>
+    </div>
+
+    <div style="background: white; padding: 25px; border-radius: 0 0 16px 16px;">
+      <p style="color: #1e293b; font-size: 15px;">
+        مرحباً د. <%= @user.name %>,
+      </p>
+      <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">
+        لديك <strong><%= @appointments.count %></strong> موعد في <%= @clinic.display_name %> غداً:
+      </p>
+
+      <% @appointments.each do |a| %>
+        <div style="border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-bottom: 8px; background: #f8fafc;">
+          <table style="width: 100%;">
+            <tr>
+              <td style="font-size: 14px; font-weight: bold; color: #0d9488; width: 60px;">
+                <%= a.appointment_time&.strftime("%H:%M") %>
+              </td>
+              <td style="font-size: 14px; color: #1e293b;">
+                <%= a.patient&.display_name %>
+                <% if a.reason.present? %>
+                  <div style="font-size: 12px; color: #64748b; margin-top: 2px;"><%= a.reason %></div>
+                <% end %>
+              </td>
+            </tr>
+          </table>
+        </div>
+      <% end %>
+
+      <div style="text-align: center; margin-top: 24px;">
+        <a href="<%= dashboard_appointments_url(host: ENV.fetch("APP_HOST", "127.0.0.1:3000"), protocol: Rails.env.production? ? "https" : "http") rescue "#" %>"
+           style="display: inline-block; background: #0d9488; color: white; padding: 12px 24px; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 15px;">
+          📅 فتح جدول المواعيد
+        </a>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8;">
+      صادر من نظام ClinicApp
+    </div>
+  </div>
+</body>
+</html>
