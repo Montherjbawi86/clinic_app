@@ -15,19 +15,45 @@
   <% if @notifications.any? %>
     <div class="space-y-2">
       <% @notifications.each do |notification| %>
-        <%= link_to notification_link_path(notification),
-              class: "block p-4 rounded-xl border transition #{notification.read? ? 'bg-white border-slate-100' : 'bg-teal-50/40 border-teal-200 hover:bg-teal-50'}" do %>
+        <%
+          link_path =
+            case notification.notifiable
+            when Appointment then dashboard_appointment_path(notification.notifiable)
+            when Subscription then dashboard_subscriptions_path
+            else notifications_path
+            end
+
+          icon =
+            case notification.notification_type
+            when "appointment_reminder" then "📅"
+            when "payment_due"          then "💳"
+            when "system"               then "🔔"
+            else "🔔"
+            end
+
+          title_text =
+            if I18n.locale == :ar && notification.try(:title_ar).present?
+              notification.title_ar
+            else
+              notification.title
+            end
+
+          message_text =
+            if I18n.locale == :ar && notification.try(:message_ar).present?
+              notification.message_ar
+            else
+              notification.message
+            end
+        %>
+        <%= link_to link_path,
+              class: "block p-4 rounded-xl border transition #{notification.read? ? 'bg-white border-slate-100 hover:bg-slate-50' : 'bg-teal-50/40 border-teal-200 hover:bg-teal-50'}" do %>
           <div class="flex items-start gap-3">
             <div class="w-10 h-10 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center text-lg shrink-0">
-              <%= notification_icon(notification) %>
+              <%= icon %>
             </div>
             <div class="flex-1 min-w-0">
-              <div class="font-semibold text-slate-800">
-                <%= notification_title(notification) %>
-              </div>
-              <div class="text-sm text-slate-500 mt-1">
-                <%= notification_message(notification) %>
-              </div>
+              <div class="font-semibold text-slate-800"><%= title_text %></div>
+              <div class="text-sm text-slate-500 mt-1"><%= message_text %></div>
               <div class="text-xs text-slate-400 mt-2">
                 <%= time_ago_in_words(notification.created_at) %>
               </div>

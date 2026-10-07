@@ -1,14 +1,11 @@
 module NotificationsHelper
   def notification_link_path(notification)
     case notification.notifiable
-    when Subscription
-      dashboard_subscriptions_path
-    when Appointment
-      dashboard_appointment_path(notification.notifiable)
-    when Payment
-      dashboard_payments_path
-    else
-      notifications_path
+    when Subscription   then dashboard_subscriptions_path
+    when Appointment    then dashboard_appointment_path(notification.notifiable)
+    when Payment        then dashboard_payments_path
+    when MedicalReport  then dashboard_reports_path
+    else notifications_path
     end
   rescue
     notifications_path
@@ -32,8 +29,9 @@ module NotificationsHelper
 
   def notification_icon(notification)
     case notification.notification_type
-    when "payment_due"          then "💳"
     when "appointment_reminder" then "📅"
+    when "payment_due"          then "💳"
+    when "transfer_request"     then "🚑"
     when "system"               then "🔔"
     else "🔔"
     end

@@ -60,12 +60,14 @@ class PublicBookingsController < ApplicationController
     if appointment.save
       # Notify clinic owner
       Notification.create!(
-        user: @clinic.owner,
-        notification_type: "appointment_reminder",
-        title: "طلب حجز جديد",
-        title_ar: "طلب حجز جديد",
-        message: "#{name} طلب موعد على #{appointment.appointment_date} — #{phone}",
-        severity: "info"
+      user:              @clinic.owner,
+      notifiable:        appointment,
+      notification_type: "appointment_reminder",
+      title:             "New booking request from #{patient.display_name}",
+      title_ar:          "طلب حجز جديد من #{patient.display_name}",
+      message:           "#{patient.display_name} requested an appointment on #{appointment.appointment_date} — #{phone}",
+      message_ar:        "#{patient.display_name} طلب موعد على #{appointment.appointment_date} — #{phone}",
+      severity:          "info"
       )
 
       # Send confirmation email if email provided
