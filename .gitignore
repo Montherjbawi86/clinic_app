@@ -38,3 +38,4 @@
 !/app/assets/builds/.keep
 .env
 /config/master.key
+/config/master.key
